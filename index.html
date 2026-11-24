@@ -126,14 +126,14 @@ svg text{font-family:inherit}
  th{position:static}
 }
 body.ro #mEdit,body.ro #mDel,body.ro [data-del],body.ro [data-edit],body.ro .cocard.add,body.ro #demoBtn,body.ro #srSave,body.ro [data-srdel],body.ro #bkUp,body.ro label:has(#bkUp),body.ro [data-snap],body.ro #fhNew,body.ro label:has(#coUp),body.ro #fhRe,body.ro .mtop a.iconbtn,body.ro .homehead a[href="#/data"]{display:none!important}
-</style>
+.bulk td{padding:5px 4px;vertical-align:top}.bulk .in{padding:8px 10px;font-size:14px}.bulk tr.bad td{background:var(--bads)}.sum{display:flex;gap:10px;flex-wrap:wrap}.pill{background:var(--accs);color:var(--acc);border-radius:12px;padding:9px 14px;font-weight:600}.pill.dk{background:var(--dark);color:#fff}</style>
 </head>
 <body>
 <div id="root"></div>
 <div id="modal"></div>
 <script>
 'use strict';
-const APP_VERSION = '3.3.0';
+const APP_VERSION = '3.4.0';
 // ---------- helpers
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -2547,5 +2547,108 @@ function decSwitch() {
 }
 const _render13 = render;
 render = function () { _render13(); try { tableSearch(); if (route().page === 'data') decSwitch(); } catch (e) { ERRORS.push({ t: new Date().toISOString(), m: 'ui: ' + e.message }); } };
+
+// ---------- "مصروفات اليوم": several paid expenses (any items, branches, sources) in one screen.
+// Each row is saved as an ordinary expense entry (same meta as the single form), so editing/deleting/reports work unchanged.
+let BULK = null;
+function bulkRow(b, prev) {
+  const ex = expAccs(b);
+  return { acc: '', br: prev ? prev.br : ((allBranches(b)[0] || {}).id || ''), src: prev ? prev.src : ((wallets(b)[0] || {}).id || ''), amount: '', memo: '', tag: '' };
+}
+function freshBulk(cid) { const b = book(cid); const r1 = bulkRow(b); return { cid, date: today(), rows: [r1, bulkRow(b, r1), bulkRow(b, r1)] }; }
+function bulkExp(cid, date, x) {
+  return Object.assign(freshExp(cid), { date, etype: 'paid', mode: 'single', src: x.src, acc: x.acc, br: x.br, amount: x.amount, memo: x.memo || '', tag: x.tag || '', vatInc: true });
+}
+function bulkFilled(x) { return x.acc || num(x.amount) > 0; }
+function bulkTotals(B) {
+  const b = book(B.cid); const by = {}; let n = 0, tot = 0;
+  B.rows.forEach((x) => { const v = r2(num(x.amount)); if (!(v > 0)) return; n++; tot = r2(tot + v); by[x.src] = r2((by[x.src] || 0) + v); });
+  return '<div class="sum">' + Object.keys(by).map((k) => '<span class="pill">' + esc((acc(b, k) || {}).name || '—') + ' · <span class="num">' + f2(by[k]) + '</span></span>').join('') +
+    '<span class="pill dk">الإجمالي · <span class="num">' + f2(tot) + '</span> · ' + n + ' مصروف</span></div>';
+}
+function vBulk(r) {
+  const c = company(r.cid), b = book(r.cid);
+  if (!BULK || BULK.cid !== r.cid) BULK = freshBulk(r.cid);
+  const B = BULK;
+  const accOpts = (sel) => '<option value="">اختر البند…</option>' + b.accounts.filter((g) => g.group && g.level === 3 && g.type === 'expense').sort((x, y) => x.code.localeCompare(y.code)).map((g) => { const its = expAccs(b).filter((a) => a.parent === g.id); return its.length ? '<optgroup label="' + esc(g.name) + '">' + its.map((a) => '<option value="' + a.id + '"' + (a.id === sel ? ' selected' : '') + '>' + esc(a.name) + '</option>').join('') + '</optgroup>' : ''; }).join('');
+  const rowsH = B.rows.map((x, i) => {
+    const A = acc(b, x.acc) || {}; const tagOk = A.tags && b.tags.length;
+    return '<tr' + (x._err ? ' class="bad"' : '') + '><td class="sub">' + (i + 1) + '</td>' +
+      '<td><select class="in" data-r="' + i + '" data-k="acc">' + accOpts(x.acc) + '</select></td>' +
+      '<td><select class="in" data-r="' + i + '" data-k="br">' + brOptions(b, x.br) + '</select></td>' +
+      '<td><select class="in" data-r="' + i + '" data-k="src">' + srcOptions(b, x.src) + '</select></td>' +
+      '<td><input class="in num" data-r="' + i + '" data-k="amount" value="' + esc(x.amount) + '" inputmode="decimal" placeholder="0.00"></td>' +
+      '<td><input class="in" data-r="' + i + '" data-k="memo" value="' + esc(x.memo) + '" placeholder="اختياري"></td>' +
+      '<td>' + (tagOk ? '<select class="in" data-r="' + i + '" data-k="tag"><option value="">— بدون —</option>' + b.tags.map((t) => '<option' + (t === x.tag ? ' selected' : '') + '>' + esc(t) + '</option>').join('') + '</select>' : '<span class="sub">—</span>') + '</td>' +
+      '<td><button class="btn" style="padding:6px 12px;color:var(--bad)" data-del="' + i + '" title="حذف السطر" aria-label="حذف السطر">×</button></td></tr>' +
+      (x._err ? '<tr class="bad"><td></td><td colspan="7" style="color:var(--bad);font-size:13px">' + esc(x._err) + '</td></tr>' : '');
+  }).join('');
+  const locked = lockedFor(r.cid, B.date);
+  const n = B.rows.filter((x) => num(x.amount) > 0).length;
+  return layout(r, 'مصروف',
+    '<div class="head"><div><div class="sub">' + esc(c.name) + ' · المصروفات</div><h1>مصروفات اليوم</h1></div></div>' + expTabs('bulk') +
+    '<div class="card row" style="gap:16px;flex-wrap:wrap"><label class="f" style="width:220px">التاريخ<input type="date" class="in" id="bkDate" value="' + esc(B.date) + '"></label><div class="sub sp" style="align-self:end;padding-bottom:10px">كل المصروفات هنا <b>مدفوعة</b> في نفس اليوم · كل سطر جديد بياخد مصدر وفرع السطر اللي قبله. للمستحق أو المقدم أو التوزيع على كذا فرع أو السلف استخدم "مصروف واحد".</div></div>' +
+    (locked ? '<div class="note w">هذا التاريخ يقع في شهر مقفل، وستُسأل قبل الحفظ.</div>' : '') +
+    '<div class="card"><div style="overflow-x:auto"><table class="bulk"><thead><tr><th style="width:28px">#</th><th style="min-width:180px">البند</th><th style="min-width:120px">الفرع</th><th style="min-width:170px">المصدر</th><th style="min-width:110px">المبلغ</th><th style="min-width:140px">ملاحظة</th><th style="min-width:110px">صنف البقالة</th><th style="width:40px"></th></tr></thead><tbody>' + rowsH + '</tbody></table></div>' +
+    '<div class="row" style="margin-top:12px;justify-content:space-between;flex-wrap:wrap"><button class="btn" id="bkAdd">+ سطر</button><span class="sub">Enter في خانة المبلغ أو الملاحظة يفتح سطر جديد</span></div></div>' +
+    '<div class="card"><div class="sub" style="margin-bottom:10px">الإجمالي حسب المصدر — طابقه مع الورقة اللي اتبعتتلك</div><div id="bkTot">' + bulkTotals(B) + '</div></div>' +
+    '<div class="row"><button class="btn p" id="bkSave"' + (n ? '' : ' disabled') + '>حفظ ' + (n || '') + ' مصروفات</button><button class="btn" id="bkClr">مسح الكل</button></div>');
+}
+function expTabs(on) {
+  return '<div class="chips noprint" style="margin-bottom:4px"><button class="chip' + (on === 'one' ? ' on' : '') + '" data-xt="one">مصروف واحد</button><button class="chip' + (on === 'bulk' ? ' on' : '') + '" data-xt="bulk">مصروفات اليوم (أكثر من مصروف)</button></div>';
+}
+const _vExpense14 = vExpense;
+vExpense = function (r) {
+  if (UI.expTab === 'bulk' && !(EXP && EXP.editId && EXP.cid === r.cid)) return vBulk(r);
+  const h = _vExpense14(r);
+  if (EXP && EXP.editId) return h;
+  const i = h.indexOf('<div class="grid g-2" style="align-items:start">');
+  return i < 0 ? h : h.slice(0, i) + expTabs('one') + h.slice(i);
+};
+const _afterExp14 = AFTER.expense;
+AFTER.expense = (r) => {
+  $$('[data-xt]').forEach((x) => { x.onclick = () => { UI.expTab = x.dataset.xt; render(); }; });
+  if (!(UI.expTab === 'bulk' && !(EXP && EXP.editId && EXP.cid === r.cid))) return _afterExp14(r);
+  const B = BULK, b = book(r.cid);
+  const refreshTot = () => { const t = $('#bkTot'); if (t) t.innerHTML = bulkTotals(B); const n = B.rows.filter((x) => num(x.amount) > 0).length; const s = $('#bkSave'); if (s) { s.disabled = !n; s.textContent = 'حفظ ' + (n || '') + ' مصروفات'; } };
+  const addRow = (focus) => { B.rows.push(bulkRow(b, B.rows[B.rows.length - 1])); render(); if (focus) { const el = $('[data-r="' + (B.rows.length - 1) + '"][data-k="acc"]'); if (el) el.focus(); } };
+  $('#bkDate').onchange = (ev) => { B.date = ev.target.value || today(); render(); };
+  $$('[data-r]').forEach((el) => {
+    const i = +el.dataset.r, k = el.dataset.k;
+    if (el.tagName === 'SELECT') el.onchange = () => {
+      B.rows[i][k] = el.value; delete B.rows[i]._err;
+      if (k === 'acc') { B.rows[i].tag = ''; render(); const n = $('[data-r="' + i + '"][data-k="amount"]'); if (n) n.focus(); }
+      if (k === 'br' || k === 'src') { for (let j = i + 1; j < B.rows.length; j++) if (!bulkFilled(B.rows[j])) B.rows[j][k] = el.value; render(); }
+    };
+    else {
+      el.oninput = () => { B.rows[i][k] = el.value; if (k === 'amount') refreshTot(); };
+      el.onkeydown = (ev) => {
+        if (ev.key !== 'Enter') return; ev.preventDefault();
+        if (i === B.rows.length - 1) addRow(true); else { const nx = $('[data-r="' + (i + 1) + '"][data-k="acc"]'); if (nx) nx.focus(); }
+      };
+    }
+  });
+  $$('[data-del]').forEach((x) => { x.onclick = () => { B.rows.splice(+x.dataset.del, 1); if (!B.rows.length) B.rows.push(bulkRow(b)); render(); }; });
+  $('#bkAdd').onclick = () => addRow(true);
+  $('#bkClr').onclick = () => { BULK = freshBulk(r.cid); BULK.date = B.date; render(); };
+  $('#bkSave').onclick = () => {
+    const todo = []; let bad = 0;
+    B.rows.forEach((x) => {
+      delete x._err; if (!bulkFilled(x)) return;
+      const E = bulkExp(r.cid, B.date, x); const res = expCompute(r.cid, E);
+      if (res.err) { x._err = res.err; bad++; } else todo.push({ x, E, res });
+    });
+    if (bad) { render(); toast('صحّح السطور المعلَّمة بالأحمر أولًا'); return; }
+    if (!todo.length) { toast('أدخل مصروفًا واحدًا على الأقل'); return; }
+    const tot = r2(todo.reduce((s, t) => s + t.res.gross, 0));
+    guarded(r.cid, [B.date], 'إضافة', 'مصروفات اليوم (' + todo.length + ') — ' + f2(tot), () => {
+      try {
+        todo.forEach(({ E, res }) => { const meta = JSON.parse(JSON.stringify(E)); delete meta.cid; meta.bulk = 1; addEntry(r.cid, { kind: 'exp', date: E.date, memo: E.memo, lines: res.lines, meta }); });
+        toast('تم تسجيل ' + todo.length + ' مصروفات · ' + f2(tot) + ' ✓'); custodyWarn(r.cid);
+        const d = B.date; BULK = freshBulk(r.cid); BULK.date = d; render();
+      } catch (err) { toast(err.message); }
+    });
+  };
+};
 </script>
 </body></html>
