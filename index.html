@@ -126,14 +126,65 @@ svg text{font-family:inherit}
  th{position:static}
 }
 body.ro #mEdit,body.ro #mDel,body.ro [data-del],body.ro [data-edit],body.ro .cocard.add,body.ro #demoBtn,body.ro #srSave,body.ro [data-srdel],body.ro #bkUp,body.ro label:has(#bkUp),body.ro [data-snap],body.ro #fhNew,body.ro label:has(#coUp),body.ro #fhRe,body.ro .mtop a.iconbtn,body.ro .homehead a[href="#/data"]{display:none!important}
-.bulk td{padding:5px 4px;vertical-align:top}.bulk .in{padding:8px 10px;font-size:14px}.bulk tr.bad td{background:var(--bads)}.sum{display:flex;gap:10px;flex-wrap:wrap}.pill{background:var(--accs);color:var(--acc);border-radius:12px;padding:9px 14px;font-weight:600}.pill.dk{background:var(--dark);color:#fff}.plar{display:inline-block;width:16px;color:var(--mute);font-size:12px}.plt tr.pls td:first-child{font-weight:600}.plt tr.plg td{background:#FBFAF6;font-size:14px}.plt tr.pld td{font-size:13.5px;color:#3A3D44}.plt a.placc{color:inherit;text-decoration:none;border-bottom:1px dashed var(--line)}.plt a.placc:hover{color:var(--acc)}</style>
+.bulk td{padding:5px 4px;vertical-align:top}.bulk .in{padding:8px 10px;font-size:14px}.bulk tr.bad td{background:var(--bads)}.sum{display:flex;gap:10px;flex-wrap:wrap}.pill{background:var(--accs);color:var(--acc);border-radius:12px;padding:9px 14px;font-weight:600}.pill.dk{background:var(--dark);color:#fff}.plar{display:inline-block;width:16px;color:var(--mute);font-size:12px}.plt tr.pls td:first-child{font-weight:600}.plt tr.plg td{background:#FBFAF6;font-size:14px}.plt tr.pld td{font-size:13.5px;color:#3A3D44}.plt a.placc{color:inherit;text-decoration:none;border-bottom:1px dashed var(--line)}.plt a.placc:hover{color:var(--acc)}
+/* v3.6 — drill-down panel, report hierarchy, light motion */
+[data-dd]{cursor:pointer}
+td[data-dd]{transition:background .15s,color .15s}
+td[data-dd]:hover{background:#FFF4DC !important;color:#7A4A00}
+tr.tot td[data-dd]:hover{color:#7A4A00}
+.ddk{cursor:pointer;transition:transform .18s ease,box-shadow .18s ease}
+.ddk:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(20,22,27,.08)}
+.ddi{cursor:pointer;border-radius:8px;transition:background .15s}
+.ddi:hover{background:#FFF4DC}
+.ddbar{cursor:pointer;transition:opacity .15s}.ddbar:hover{opacity:.7}
+.ddov{position:fixed;inset:0;z-index:90}
+.ddbg{position:absolute;inset:0;background:rgba(20,22,27,.38);animation:ddFade .2s ease both}
+.ddp{position:absolute;top:0;bottom:0;left:0;width:min(660px,100%);background:#fff;box-shadow:16px 0 48px rgba(0,0,0,.2);padding:22px;overflow:auto;animation:ddIn .26s cubic-bezier(.2,.8,.2,1) both}
+.ddov.out .ddbg{animation:ddFade .18s ease reverse both}.ddov.out .ddp{animation:ddIn .18s ease reverse both}
+@keyframes ddFade{from{opacity:0}to{opacity:1}}
+@keyframes ddIn{from{transform:translateX(-100%)}to{transform:none}}
+body.ddlock{overflow:hidden}
+.ddpill{background:var(--accs);color:var(--acc);border-radius:10px;padding:6px 12px;font-weight:600;font-size:13px}
+.ddpill.ok{background:#E3F3EA;color:#1D6B3A}.ddpill.bad{background:var(--bads);color:var(--bad)}
+.ddtw{overflow-x:auto}
+.ddt{width:100%;border-collapse:collapse}.ddt th{font-size:12.5px;color:var(--mute);font-weight:500;text-align:right;padding:8px 6px;border-bottom:1px solid var(--line)}.ddt th.l{text-align:left}
+.ddt td{padding:8px 6px;border-bottom:1px solid var(--line2);font-size:13.5px;vertical-align:top}
+.ddt tbody tr:not(.tot):hover td{background:#FAF9F5}
+.ddopen{border:0;background:none;color:var(--acc);font-weight:600;font-size:12.5px;cursor:pointer;padding:2px 4px;white-space:nowrap}
+.ddopen:hover{text-decoration:underline}
+/* income statement hierarchy */
+.plt tr.pls td{background:#F1EFE8;font-weight:700;border-bottom:1px solid var(--line)}
+.plt tr.pls td:first-child{font-size:15.5px}
+.plt tr.plg td{background:#fff;font-weight:600;font-size:14.5px}
+.plt tr.plg td:first-child{box-shadow:inset -4px 0 0 var(--acc)}
+.plt tr.pld td{font-size:13.5px;color:#4A4E57;background:#FCFBF8;font-weight:400}
+.plt tr.pld td:first-child:before{content:'•';color:#B5B2A8;margin-left:8px}
+.plt tr.plgp td{background:#E9F3F1;color:var(--acc);font-weight:700}
+.plt tr.tot td{background:var(--dark);color:#fff;font-size:15.5px}
+.plt tr.tot td:first-child{border-radius:0 12px 12px 0}.plt tr.tot td:last-child{border-radius:12px 0 0 12px}
+.plar{transition:transform .2s}
+tr.rin td{animation:rowIn .28s ease both}
+@keyframes rowIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+tr.rgrp td{background:var(--bg)}
+tr.rdet td{font-size:14px;color:#3A3D44}
+/* light motion */
+main.enter>*{animation:fadeUp .34s ease both}
+main.enter>*:nth-child(2){animation-delay:.04s}main.enter>*:nth-child(3){animation-delay:.08s}main.enter>*:nth-child(4){animation-delay:.12s}main.enter>*:nth-child(n+5){animation-delay:.16s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.btn,.chip{transition:transform .12s ease,background .15s,box-shadow .15s}
+.btn:active,.chip:active{transform:scale(.97)}
+tbody tr td{transition:background .15s}
+.click:hover td{background:#F7F5EF}
+@media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
+@media print{.ddov{display:none !important}*{animation:none !important}.plt tr.tot td{background:#eee !important;color:#000 !important}}
+</style>
 </head>
 <body>
 <div id="root"></div>
 <div id="modal"></div>
 <script>
 'use strict';
-const APP_VERSION = '3.5.0';
+const APP_VERSION = '3.7.0';
 // ---------- helpers
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -722,8 +773,9 @@ function barChart(months, a, bArr, opt) {
   for (let g = 0; g <= 3; g++) { const y = H - 26 - g * (H - 50) / 3; s += '<line x1="' + P + '" x2="' + W + '" y1="' + y + '" y2="' + y + '" stroke="#EEECE6"/><text x="' + (P - 6) + '" y="' + (y + 4) + '" font-size="10" fill="#5F6368" text-anchor="end">' + fK(max * g / 3) + '</text>'; }
   months.forEach((m, i) => {
     const x = P + 8 + i * gw + gw / 2; const h1 = a[i] / max * (H - 50), h2 = bArr[i] / max * (H - 50);
-    s += '<rect x="' + (x - bw - 1) + '" y="' + (H - 26 - h1) + '" width="' + bw + '" height="' + h1 + '" rx="3" fill="#0E6B63"><title>' + esc(ymLabel(m)) + ': ' + f0(a[i]) + '</title></rect>';
-    s += '<rect x="' + (x + 1) + '" y="' + (H - 26 - h2) + '" width="' + bw + '" height="' + h2 + '" rx="3" fill="#E0A84E"><title>' + esc(ymLabel(m)) + ': ' + f0(bArr[i]) + '</title></rect>';
+    const D1 = opt && opt.dd ? opt.dd(i, 0) : '', D2 = opt && opt.dd ? opt.dd(i, 1) : '';
+    s += '<rect' + D1 + (D1 ? ' class="ddbar"' : '') + ' x="' + (x - bw - 1) + '" y="' + (H - 26 - h1) + '" width="' + bw + '" height="' + h1 + '" rx="3" fill="#0E6B63"><title>' + esc(ymLabel(m)) + ': ' + f0(a[i]) + '</title></rect>';
+    s += '<rect' + D2 + (D2 ? ' class="ddbar"' : '') + ' x="' + (x + 1) + '" y="' + (H - 26 - h2) + '" width="' + bw + '" height="' + h2 + '" rx="3" fill="#E0A84E"><title>' + esc(ymLabel(m)) + ': ' + f0(bArr[i]) + '</title></rect>';
     s += '<text x="' + x + '" y="' + (H - 8) + '" font-size="11" fill="#5F6368" text-anchor="middle">' + ymShort(m) + '</text>';
   });
   return s + '</svg>';
@@ -765,6 +817,10 @@ function vDash(r) {
   const top = Object.entries(items).filter(([, v]) => v > 0).sort((x, y) => y[1] - x[1]).slice(0, 7); const topMax = top.length ? top[0][1] : 1;
   const recent = b.entries.filter((e) => e.date <= today() && (!flt || e.lines.some((l) => l.b === flt))).slice().sort((x, y) => (y.date + y.ts).localeCompare(x.date + x.ts)).slice(0, 8);
   const sym = esc(c.sym || '');
+  const bn = flt ? ' · ' + branchName(b, flt) : '';
+  const DR = (e, l, a) => (!flt || l.b === flt) && a.type === 'revenue' ? l.cr - l.dr : 0, DE = (e, l, a) => (!flt || l.b === flt) && a.type === 'expense' ? l.dr - l.cr : 0;
+  const kdd = (t, F, xv) => dd({ t: t + bn, from: PR.from, to: PR.to, x: xv, f: F });
+  const liqIds = wallets(b).map((a) => a.id);
   return layout(r, 'لوحة التحكم',
     '<div class="head"><div><div class="sub">' + esc(c.name) + ' · ' + perLabel() + '</div><h1>لوحة التحكم</h1></div></div>' + periodBar() +
     (allBranches(b).length > 1 ? tabs : '') +
@@ -772,13 +828,13 @@ function vDash(r) {
     (!b.entries.length ? '<div class="note">الشركة لا تحتوي على بيانات بعد. ابدأ من <a href="#/c/' + c.id + '/settings">الإعدادات</a> لمراجعة الفروع والحسابات، ثم سجّل <a href="#/c/' + c.id + '/journal/open">الأرصدة الافتتاحية</a> وأول <a href="#/c/' + c.id + '/expense">مصروف</a>.</div>' : '') +
     '<div class="grid g-kpi">' +
     (isMain ? '<div class="card kpi" style="border-style:dashed"><span class="sub">الرئيسي</span><b style="font-size:17px">مركز مصروفات، وليس فرع بيع</b><span class="sub">تُعرض مصروفاته منفصلة ولا تُوزَّع</span></div>' :
-      '<div class="card kpi"><span class="sub">المبيعات (بدون ضريبة)</span><span class="v num">' + f0(cur.rev) + '</span><span class="sub">' + sym + '</span></div>') +
-    '<div class="card kpi"><span class="sub">المصروفات</span><span class="v num">' + f0(cur.exp) + '</span><span class="sub">' + (flt ? 'مصروفات مباشرة' : 'شاملة كل الفروع والرئيسي') + '</span></div>' +
-    (isMain ? '' : '<div class="card kpi t"><span class="sub">الصافي</span><span class="v num">' + f0(cur.rev - cur.exp) + '</span><span class="sub">هامش ' + (cur.rev ? Math.round((cur.rev - cur.exp) / cur.rev * 100) + '%' : '—') + '</span></div>') +
-    (flt ? (brCash !== null ? '<div class="card kpi d"><span class="sub">خزينة الفرع</span><span class="v num">' + f0(brCash) + '</span><span class="sub">الرصيد الحالي</span></div>' : '') : '<div class="card kpi d"><span class="sub">رصيد الحسابات النقدية</span><span class="v num">' + f0(liq) + '</span><span class="sub">البنوك والخزائن والعُهد والتطبيقات مخصومًا منها الدائنون</span></div>') +
+      '<div class="card kpi ddk"' + kdd('المبيعات', DR, cur.rev) + '><span class="sub">المبيعات (بدون ضريبة)</span><span class="v num">' + f0(cur.rev) + '</span><span class="sub">' + sym + '</span></div>') +
+    '<div class="card kpi ddk"' + kdd('المصروفات', DE, cur.exp) + '><span class="sub">المصروفات</span><span class="v num">' + f0(cur.exp) + '</span><span class="sub">' + (flt ? 'مصروفات مباشرة' : 'شاملة كل الفروع والرئيسي') + '</span></div>' +
+    (isMain ? '' : '<div class="card kpi t ddk"' + kdd('الصافي', (e, l, a) => DR(e, l, a) - DE(e, l, a), cur.rev - cur.exp) + '><span class="sub">الصافي</span><span class="v num">' + f0(cur.rev - cur.exp) + '</span><span class="sub">هامش ' + (cur.rev ? Math.round((cur.rev - cur.exp) / cur.rev * 100) + '%' : '—') + '</span></div>') +
+    (flt ? (brCash !== null ? '<div class="card kpi d ddk"' + dd({ t: 'خزينة الفرع' + bn, sub: 'الرصيد حتى اليوم', x: brCash, acc: brObj && brObj.cash, f: ddAccs([brObj && brObj.cash], 1) }) + '><span class="sub">خزينة الفرع</span><span class="v num">' + f0(brCash) + '</span><span class="sub">الرصيد الحالي</span></div>' : '') : '<div class="card kpi d ddk"' + dd({ t: 'رصيد الحسابات النقدية', sub: 'كل حركات البنوك والخزائن والعهد والتطبيقات', x: liq, f: ddAccs(liqIds, 1) }) + '><span class="sub">رصيد الحسابات النقدية</span><span class="v num">' + f0(liq) + '</span><span class="sub">البنوك والخزائن والعُهد والتطبيقات مخصومًا منها الدائنون</span></div>') +
     '</div>' +
-    '<div class="grid g-2" style="align-items:start"><div class="card grid" style="gap:12px"><div class="row"><h2 class="sp">آخر 6 شهور</h2><span class="sub row" style="gap:12px"><span class="row" style="gap:5px"><i style="width:10px;height:10px;border-radius:3px;background:#0E6B63;display:inline-block"></i>مبيعات</span><span class="row" style="gap:5px"><i style="width:10px;height:10px;border-radius:3px;background:#E0A84E;display:inline-block"></i>مصروفات</span></span></div>' + barChart(months, revA, expA) + '</div>' +
-    '<div class="card grid" style="gap:12px"><h2>أكبر بنود المصروفات · ' + perLabel() + '</h2>' + (top.length ? top.map(([id, v]) => '<div class="grid" style="gap:6px"><div class="row"><span class="sp">' + esc(acc(b, id).name) + '</span><b class="num">' + f0(v) + '</b></div><div class="bar"><div style="width:' + Math.max(2, v / topMax * 100) + '%"></div></div></div>').join('') : '<div class="empty">لا توجد مصروفات في هذه المدة</div>') + '</div></div>' +
+    '<div class="grid g-2" style="align-items:start"><div class="card grid" style="gap:12px"><div class="row"><h2 class="sp">آخر 6 شهور</h2><span class="sub row" style="gap:12px"><span class="row" style="gap:5px"><i style="width:10px;height:10px;border-radius:3px;background:#0E6B63;display:inline-block"></i>مبيعات</span><span class="row" style="gap:5px"><i style="width:10px;height:10px;border-radius:3px;background:#E0A84E;display:inline-block"></i>مصروفات</span></span></div>' + barChart(months, revA, expA, { dd: (i, w) => dd({ t: (w ? 'المصروفات' : 'المبيعات') + ' · ' + ymLabel(months[i]) + bn, from: months[i] + '-01', to: lastDay(months[i]), x: w ? expA[i] : revA[i], f: w ? DE : DR }) }) + '</div>' +
+    '<div class="card grid" style="gap:12px"><h2>أكبر بنود المصروفات · ' + perLabel() + '</h2>' + (top.length ? top.map(([id, v]) => '<div class="grid ddi" style="gap:6px"' + dd({ t: acc(b, id).name + bn, from: PR.from, to: PR.to, x: v, acc: id, f: (e, l) => l.a === id && (!flt || l.b === flt) ? l.dr - l.cr : 0 }) + '><div class="row"><span class="sp">' + esc(acc(b, id).name) + '</span><b class="num">' + f0(v) + '</b></div><div class="bar"><div style="width:' + Math.max(2, v / topMax * 100) + '%"></div></div></div>').join('') : '<div class="empty">لا توجد مصروفات في هذه المدة</div>') + '</div></div>' +
     '<div class="grid g-2" style="align-items:start"><div class="card grid" style="gap:10px"><div class="row"><h2 class="sp">آخر الحركات</h2><a class="btn sm" href="#/c/' + c.id + '/entries">كل الحركات</a></div>' + entriesTable(b, c.id, recent) + '</div>' +
     '<div class="card"><div class="row" style="margin-bottom:6px"><h2 class="sp">الحسابات النقدية</h2><a class="btn sm" href="#/c/' + c.id + '/wallets">التفاصيل</a></div><div class="list">' + wallets(b).map((a) => { const v = walletSigned(b, a); return '<a class="it" style="text-decoration:none;color:inherit" href="#/c/' + c.id + '/wallet/' + a.id + '"><span>' + esc(a.name) + '</span><b class="num ' + (v < 0 ? 'up' : '') + '">' + f0(v) + '</b></a>'; }).join('') + '<div class="it" style="font-weight:700"><span>الإجمالي</span><span class="num" style="color:var(--acc)">' + f0(liq) + '</span></div></div></div></div>');
 }
@@ -1181,20 +1237,24 @@ function vReports(r) {
     if (dim === 'tag') return [l.tag || '_', l.tag || 'بدون صنف'];
     return ['all', 'الإجمالي'];
   };
+  const contrib = (e, l, a) => {
+    let v = 0;
+    if (P.meas === 'exp') { if (a.type !== 'expense') return []; if (P.cat && a.cat !== P.cat) return []; v = l.dr - l.cr; }
+    else if (P.meas === 'rev') { if (a.type !== 'revenue') return []; v = l.cr - l.dr; }
+    else { if (a.type === 'revenue') v = l.cr - l.dr; else if (a.type === 'expense') v = -(l.dr - l.cr); else return []; }
+    if (P.rows === 'tag' && P.meas !== 'exp') return [];
+    const parts = P.rows === 'channel' || P.cols === 'channel' ? lineParts(b, e, l, a) : [{ ch: null, f: 1 }];
+    return parts.map((pt) => [keyOf(P.rows, e, l, a, pt.ch), keyOf(P.cols, e, l, a, pt.ch), v * pt.f]);
+  };
   lines.forEach(({ e, l }) => {
     const a = acc(b, l.a); if (!a) return;
-    let v = 0;
-    if (P.meas === 'exp') { if (a.type !== 'expense') return; if (P.cat && a.cat !== P.cat) return; v = l.dr - l.cr; }
-    else if (P.meas === 'rev') { if (a.type !== 'revenue') return; v = l.cr - l.dr; }
-    else { if (a.type === 'revenue') v = l.cr - l.dr; else if (a.type === 'expense') v = -(l.dr - l.cr); else return; }
-    if (P.rows === 'tag' && P.meas !== 'exp') return;
-    const parts = P.rows === 'channel' || P.cols === 'channel' ? lineParts(b, e, l, a) : [{ ch: null, f: 1 }];
-    parts.forEach((pt) => {
-      const [rk, rl] = keyOf(P.rows, e, l, a, pt.ch), [ck, cl] = keyOf(P.cols, e, l, a, pt.ch);
+    contrib(e, l, a).forEach(([[rk, rl], [ck, cl], v]) => {
       rowKeys.add(rk); colKeys.add(ck); rowLabel[rk] = rl; colLabel[ck] = cl;
-      cell[rk + '|' + ck] = (cell[rk + '|' + ck] || 0) + v * pt.f;
+      cell[rk + '|' + ck] = (cell[rk + '|' + ck] || 0) + v;
     });
   });
+  const pdd = (rW, cW, xv) => dd({ t: (rW ? rowLabel[rW] : 'الإجمالي') + (cW && P.cols !== 'none' ? ' · ' + colLabel[cW] : ''), sub: { exp: 'المصروفات', rev: 'المبيعات', net: 'الصافي' }[P.meas], from: PR.from, to: PR.to, x: xv, acc: P.rows === 'acc' && rW ? rW : null,
+    f: (e, l, a) => contrib(e, l, a).reduce((t, [[rk], [ck], v]) => t + ((!rW || rk === rW) && (!cW || ck === cW) && rowKeys.has(rk) && colKeys.has(ck) ? v : 0), 0) });
   let rk = Array.from(rowKeys), ck = Array.from(colKeys);
   if (P.rows === 'month') rk = months.filter((m) => rowKeys.has(m));
   if (P.cols === 'month') ck = months.filter((m) => colKeys.has(m));
@@ -1223,8 +1283,8 @@ function vReports(r) {
     (P.rows === 'channel' || P.cols === 'channel' ? '<div class="note">القناة تخص المبيعات وعمولاتها فقط؛ باقي المصروفات تظهر تحت "بدون قناة".</div>' : '') +
     periodBar() + '<div class="card"><div style="border-bottom:2px solid var(--dark);padding-bottom:12px;margin-bottom:12px"><div class="sub">' + esc(c.name) + ' · ' + perLabel() + ' · ' + esc(c.currency) + '</div><h2 style="font-size:21px">' + title + '</h2></div>' +
     (rk.length ? '<div class="tw"><table><thead><tr><th></th>' + ck.map((k) => '<th class="l">' + esc(colLabel[k]) + '</th>').join('') + (P.cols !== 'none' ? '<th class="l" style="color:var(--ink)">الإجمالي</th>' : '') + '</tr></thead><tbody>' +
-      rk.map((k) => '<tr><td style="font-weight:600">' + esc(rowLabel[k]) + '</td>' + ck.map((c2) => '<td class="l num">' + f0(cell[k + '|' + c2] || 0) + '</td>').join('') + (P.cols !== 'none' ? '<td class="l num" style="font-weight:700">' + f0(rowTot(k)) + '</td>' : '') + '</tr>').join('') +
-      '<tr class="tot"><td>الإجمالي</td>' + ck.map((k) => '<td class="l num">' + f0(colTot(k)) + '</td>').join('') + (P.cols !== 'none' ? '<td class="l num" style="color:var(--acc)">' + f0(grand) + '</td>' : '') + '</tr></tbody></table></div>' : '<div class="empty">لا توجد أرقام في هذه الفترة</div>') + '</div>' + savedRepsStrip(r.cid, true));
+      rk.map((k) => '<tr><td style="font-weight:600"' + pdd(k, null, rowTot(k)) + '>' + esc(rowLabel[k]) + '</td>' + ck.map((c2) => '<td class="l num"' + (Math.abs(cell[k + '|' + c2] || 0) >= 0.005 ? pdd(k, c2, cell[k + '|' + c2] || 0) : '') + '>' + f0(cell[k + '|' + c2] || 0) + '</td>').join('') + (P.cols !== 'none' ? '<td class="l num" style="font-weight:700"' + pdd(k, null, rowTot(k)) + '>' + f0(rowTot(k)) + '</td>' : '') + '</tr>').join('') +
+      '<tr class="tot"><td' + pdd(null, null, grand) + '>الإجمالي</td>' + ck.map((k) => '<td class="l num"' + pdd(null, k, colTot(k)) + '>' + f0(colTot(k)) + '</td>').join('') + (P.cols !== 'none' ? '<td class="l num" style="color:var(--acc)"' + pdd(null, null, grand) + '>' + f0(grand) + '</td>' : '') + '</tr></tbody></table></div>' : '<div class="empty">لا توجد أرقام في هذه الفترة</div>') + '</div>' + savedRepsStrip(r.cid, true));
 }
 AFTER.reports = (r) => {
   const P = UI.rep; const m = { pM: 'meas', pR: 'rows', pC: 'cols', pF: 'from', pT: 'to', pK: 'cat' };
@@ -1248,6 +1308,9 @@ function vTrend(r) {
     else if (l.a === T.item) data[l.b][i] += l.dr - l.cr;
   });
   const tot = months.map((_, i) => act.reduce((t, x) => t + data[x.id][i], 0));
+  const actS = new Set(act.map((x) => x.id));
+  const TF = (e, l, a) => { if (!l.b || !actS.has(l.b)) return 0; if (T.item === 'rev') return a.type === 'revenue' ? l.cr - l.dr : 0; if (T.item.startsWith('tag:')) return a.type === 'expense' && l.tag === T.item.slice(4) ? l.dr - l.cr : 0; return l.a === T.item ? l.dr - l.cr : 0; };
+  const tdd = (m, br, xv) => dd({ t: (T.item === 'rev' ? 'المبيعات' : T.item.startsWith('tag:') ? T.item.slice(4) : (acc(b, T.item) || {}).name || '') + (br ? ' · ' + branchName(b, br) : '') + (m ? ' · ' + ymLabel(m) : ''), from: (m || T.from) + '-01', to: m ? lastDay(m) : lastDay(T.to), x: xv, acc: T.item !== 'rev' && !T.item.startsWith('tag:') ? T.item : null, f: (e, l, a) => (!br || l.b === br) ? TF(e, l, a) : 0 });
   const sum = tot.reduce((a, v) => a + v, 0);
   const hi = tot.indexOf(Math.max(...tot));
   const itemName = T.item === 'rev' ? 'المبيعات' : T.item.startsWith('tag:') ? T.item.slice(4) : (acc(b, T.item) || {}).name || '';
@@ -1261,9 +1324,9 @@ function vTrend(r) {
     '<div class="head"><div><div class="sub">' + esc(c.name) + ' · مقارنة</div><h1>' + esc(itemName) + ' شهر بشهر</h1></div><div class="row noprint"><button class="btn" id="trCsv">' + ic('dl', 16) + 'Excel</button><button class="btn a" onclick="window.print()">' + ic('print', 16) + 'PDF</button></div></div>' +
     '<div class="card grid noprint" style="gap:12px"><div class="row"><label class="f sp" style="min-width:220px">البند أو الصنف<select class="in" id="trI">' + opts + '</select></label><label class="f">من' + msel('trF', T.from) + '</label><label class="f">إلى' + msel('trT', T.to) + '</label></div>' +
     (brs.length > 1 ? '<div class="chips">' + brs.map((x, i) => '<button class="chip' + (!T.off[x.id] ? ' on' : '') + '" data-tb="' + x.id + '"><i style="width:10px;height:10px;border-radius:3px;background:' + SERIES_COLORS[i % 6][0] + ';display:inline-block"></i>' + esc(x.name) + '</button>').join('') + '</div>' : '') + '</div>' +
-    '<div class="grid g-kpi"><div class="card kpi"><span class="sub">إجمالي الفترة</span><span class="v num">' + f0(sum) + '</span></div><div class="card kpi"><span class="sub">متوسط الشهر</span><span class="v num">' + f0(sum / months.length) + '</span></div><div class="card kpi"><span class="sub">أعلى شهر</span><span class="v" style="font-size:20px">' + (sum ? ymLabel(months[hi]) + ' · <span class="num">' + f0(tot[hi]) + '</span>' : '—') + '</span></div><div class="card kpi"><span class="sub">آخر شهر مقارنة بالسابق</span><span class="v">' + chg(months.length - 1) + '</span></div></div>' +
+    '<div class="grid g-kpi"><div class="card kpi ddk"' + tdd(null, null, sum) + '><span class="sub">إجمالي الفترة</span><span class="v num">' + f0(sum) + '</span></div><div class="card kpi"><span class="sub">متوسط الشهر</span><span class="v num">' + f0(sum / months.length) + '</span></div><div class="card kpi"><span class="sub">أعلى شهر</span><span class="v" style="font-size:20px">' + (sum ? ymLabel(months[hi]) + ' · <span class="num">' + f0(tot[hi]) + '</span>' : '—') + '</span></div><div class="card kpi"><span class="sub">آخر شهر مقارنة بالسابق</span><span class="v">' + chg(months.length - 1) + '</span></div></div>' +
     '<div class="card">' + (sum ? lineChart(months, series) : '<div class="empty">لا توجد أرقام لهذا البند في هذه الفترة</div>') + '</div>' +
-    '<div class="card"><div class="tw"><table><thead><tr><th>الشهر</th>' + act.map((x) => '<th class="l">' + esc(x.name) + '</th>').join('') + '<th class="l" style="color:var(--ink)">الإجمالي</th><th class="l">التغيير</th></tr></thead><tbody>' + months.map((m, i) => '<tr><td style="font-weight:600">' + ymLabel(m) + '</td>' + act.map((x) => '<td class="l num">' + f0(data[x.id][i]) + '</td>').join('') + '<td class="l num" style="font-weight:700">' + f0(tot[i]) + '</td><td class="l">' + chg(i) + '</td></tr>').join('') + '</tbody></table></div></div>');
+    '<div class="card"><div class="tw"><table><thead><tr><th>الشهر</th>' + act.map((x) => '<th class="l">' + esc(x.name) + '</th>').join('') + '<th class="l" style="color:var(--ink)">الإجمالي</th><th class="l">التغيير</th></tr></thead><tbody>' + months.map((m, i) => '<tr><td style="font-weight:600"' + tdd(m, null, tot[i]) + '>' + ymLabel(m) + '</td>' + act.map((x) => '<td class="l num"' + (Math.abs(data[x.id][i]) >= 0.005 ? tdd(m, x.id, data[x.id][i]) : '') + '>' + f0(data[x.id][i]) + '</td>').join('') + '<td class="l num" style="font-weight:700"' + tdd(m, null, tot[i]) + '>' + f0(tot[i]) + '</td><td class="l">' + chg(i) + '</td></tr>').join('') + '</tbody></table></div></div>');
 }
 AFTER.trend = (r) => {
   const T = UI.trend;
@@ -1285,22 +1348,28 @@ function vPL(r) {
   const AT = {}; const secOf = (a) => a.type === 'revenue' ? 'sales' : a.sys === 'cashdiff' ? 'cd' : a.cat === 'COGS' ? 'cogs' : a.cat === 'GEN' ? 'gen' : 'op';
   iterLines(b, { from, to }).forEach(({ l }) => { const a = acc(b, l.a); if (!a || (a.type !== 'revenue' && a.type !== 'expense')) return; const k = l.b && R.sales[l.b] !== undefined ? l.b : '_'; const v = a.type === 'revenue' ? l.cr - l.dr : l.dr - l.cr; R[secOf(a)][k] += v; const t = AT[a.id] || (AT[a.id] = z()); t[k] += v; });
   const used = cols.filter((x) => x.id !== '_' || ['sales', 'cogs', 'op', 'gen', 'cd'].some((k) => Math.abs(R[k]['_']) > 0.004));
-  const row = (lab, f, strong) => '<tr' + (strong ? ' class="tot"' : '') + '><td>' + lab + '</td>' + used.map((x) => '<td class="l num">' + f0(f(x.id)) + '</td>').join('') + '<td class="l num" style="font-weight:700">' + f0(used.reduce((t, x) => t + f(x.id), 0)) + '</td></tr>';
+  const LV = (a) => a.type === 'revenue' ? 1 : a.type === 'expense' ? -1 : 0;
+  const ddC = (nm, F, k, xv, accId) => dd({ t: nm + (k === '*' ? '' : ' · ' + (k === '_' ? 'بدون فرع' : branchName(b, k))), from, to, x: xv, acc: accId || null, f: (e, l, a) => ddBr(k)(e, l) ? F(e, l, a) : 0 });
+  const row = (lab, f, strong, F) => '<tr class="' + (strong === 'gp' ? 'plgp' : strong ? 'tot' : '') + '"><td' + (F ? ddC(lab, F, '*', used.reduce((t, x) => t + f(x.id), 0)) : '') + '>' + lab + '</td>' + used.map((x) => '<td class="l num"' + (F ? ddC(lab, F, x.id, f(x.id)) : '') + '>' + f0(f(x.id)) + '</td>').join('') + '<td class="l num" style="font-weight:700"' + (F ? ddC(lab, F, '*', used.reduce((t, x) => t + f(x.id), 0)) : '') + '>' + f0(used.reduce((t, x) => t + f(x.id), 0)) + '</td></tr>';
   // expandable detail: section → account group (level 3) → account; a click on an account opens its statement for the same period
   UI.plx = UI.plx || {};
   const arrow = (k) => '<span class="plar">' + (UI.plx[k] ? '▾' : '▸') + '</span>';
-  const vrow = (lab, f, cls, key, pad, href) => '<tr class="' + (cls || '') + '"' + (key ? ' data-plx="' + key + '" style="cursor:pointer"' : '') + '><td style="padding-right:' + (12 + (pad || 0) * 18) + 'px">' + (key ? arrow(key) : '') + (href ? '<a href="' + href + '" class="placc">' + lab + '</a>' : lab) + '</td>' + used.map((x) => '<td class="l num">' + f0(f(x.id)) + '</td>').join('') + '<td class="l num" style="font-weight:700">' + f0(used.reduce((t, x) => t + f(x.id), 0)) + '</td></tr>';
+  const vrow = (lab, f, cls, key, pad, href, F, accId, anim) => '<tr class="' + (cls || '') + (anim ? ' rin' : '') + '"' + (key ? ' data-plx="' + key + '" style="cursor:pointer"' : '') + '><td style="padding-right:' + (12 + (pad || 0) * 22) + 'px">' + (key ? arrow(key) : '') + (href ? '<a href="' + href + '" class="placc">' + lab + '</a>' : lab) + '</td>' + used.map((x) => '<td class="l num"' + ddC(lab.replace(/<[^>]+>/g, ''), F, x.id, f(x.id), accId) + '>' + f0(f(x.id)) + '</td>').join('') + '<td class="l num" style="font-weight:700"' + ddC(lab.replace(/<[^>]+>/g, ''), F, '*', used.reduce((t, x) => t + f(x.id), 0), accId) + '>' + f0(used.reduce((t, x) => t + f(x.id), 0)) + '</td></tr>';
+  const FS = (ids, sg) => { const S2 = new Set(ids); return (e, l, a) => S2.has(l.a) ? sg * (a.type === 'revenue' ? l.cr - l.dr : l.dr - l.cr) : 0; };
+  const FSec = (sec, sg) => (e, l, a) => (a.type === 'revenue' || a.type === 'expense') && secOf(a) === sec ? sg * (a.type === 'revenue' ? l.cr - l.dr : l.dr - l.cr) : 0;
+  const JUST = UI.plJust; UI.plJust = null;
   const detail = (sec, sg) => {
     if (!UI.plx['s:' + sec]) return '';
     const ids = Object.keys(AT).filter((id) => secOf(acc(b, id)) === sec && used.some((x) => Math.abs(AT[id][x.id]) > 0.004));
     const byG = {}; ids.forEach((id) => { const a = acc(b, id); const g = acc(b, a.parent); const gk = g ? g.id : '_'; (byG[gk] = byG[gk] || []).push(a); });
     const gs = Object.keys(byG).sort((x, y) => String((acc(b, x) || {}).code || '').localeCompare(String((acc(b, y) || {}).code || '')));
-    const leaf = (a, pad) => vrow(esc(a.name), (k) => sg * AT[a.id][k], 'pld', null, pad, '#/c/' + r.cid + '/wallet/' + a.id);
-    if (gs.length === 1) return byG[gs[0]].sort((x, y) => String(x.code).localeCompare(String(y.code))).map((a) => leaf(a, 1)).join('');
+    const leaf = (a, pad, an) => vrow(esc(a.name), (k) => sg * AT[a.id][k], 'pld', null, pad, '#/c/' + r.cid + '/wallet/' + a.id, FS([a.id], sg), a.id, an);
+    const an1 = JUST === 's:' + sec;
+    if (gs.length === 1) return byG[gs[0]].sort((x, y) => String(x.code).localeCompare(String(y.code))).map((a) => leaf(a, 1, an1)).join('');
     return gs.map((gk) => { const g = acc(b, gk); const its = byG[gk].sort((x, y) => String(x.code).localeCompare(String(y.code))); const key = 'g:' + gk;
-      return vrow(esc(g ? g.name : 'أخرى'), (k) => sg * its.reduce((t, a) => t + AT[a.id][k], 0), 'plg', key, 1) + (UI.plx[key] ? its.map((a) => leaf(a, 2)).join('') : ''); }).join('');
+      return vrow(esc(g ? g.name : 'أخرى'), (k) => sg * its.reduce((t, a) => t + AT[a.id][k], 0), 'plg', key, 1, null, FS(its.map((a) => a.id), sg), null, an1) + (UI.plx[key] ? its.map((a) => leaf(a, 2, JUST === key || an1)).join('') : ''); }).join('');
   };
-  const sec = (lab, key, sg) => vrow(lab, (k) => sg * R[key][k], 'pls', 's:' + key, 0) + detail(key, sg);
+  const sec = (lab, key, sg) => vrow(lab, (k) => sg * R[key][k], 'pls', 's:' + key, 0, null, FSec(key, sg)) + detail(key, sg);
   const plAllKeys = () => { const ks = ['s:sales', 's:cogs', 's:op', 's:gen', 's:cd']; Object.keys(AT).forEach((id) => { const a = acc(b, id); if (a && a.parent) ks.push('g:' + a.parent); }); return ks; };
   UI.plAll = plAllKeys;
   // balance sheet as at P.to end (tree, level selectable)
@@ -1310,13 +1379,13 @@ function vPL(r) {
   const valOf = (t) => { const R = root(t); return R ? sgn(R, T[R.id] || { d: 0, c: 0 }) : 0; };
   const profit = valOf('revenue') - valOf('expense');
   const sA = valOf('asset'), sL = valOf('liability'), sE = valOf('equity') + profit;
-  const bsList = (type) => { const R = root(type); if (!R) return ''; const out = []; const walk = (x) => { const v = T[x.id] || { d: 0, c: 0 }; const val = sgn(x, v); if (Math.abs(val) < 0.005 && !(v.d || v.c)) return; if (x.level > 1 && x.level <= UI.bsLvl) out.push('<div class="it" style="padding-right:' + ((x.level - 2) * 16) + 'px;' + (x.group ? 'font-weight:600' : '') + '"><span>' + esc(x.name) + '</span><span class="num">' + f2(val) + '</span></div>'); if (x.group && x.level < UI.bsLvl) kids(b, x.id).forEach(walk); }; walk(R); return out.join(''); };
+  const bsList = (type) => { const R = root(type); if (!R) return ''; const out = []; const walk = (x) => { const v = T[x.id] || { d: 0, c: 0 }; const val = sgn(x, v); if (Math.abs(val) < 0.005 && !(v.d || v.c)) return; if (x.level > 1 && x.level <= UI.bsLvl) out.push('<div class="it ddi"' + dd({ t: x.name, sub: 'الرصيد في ' + asAt, to: asAt, x: val, acc: x.group ? null : x.id, f: ddAccs(ddLeaves(b, x.id), (x.type === 'asset' || x.type === 'expense') ? 1 : -1) }) + ' style="padding-right:' + ((x.level - 2) * 16) + 'px;' + (x.group ? 'font-weight:600' : '') + '"><span>' + esc(x.name) + '</span><span class="num">' + f2(val) + '</span></div>'); if (x.group && x.level < UI.bsLvl) kids(b, x.id).forEach(walk); }; walk(R); return out.join(''); };
   const mo = monthRange(firstMonth(b) < addMonths(last, -11) ? firstMonth(b) : addMonths(last, -11), last);
   const msel = (id, v) => '<select class="in" id="' + id + '" style="width:auto">' + mo.map((k) => '<option value="' + k + '"' + (k === v ? ' selected' : '') + '>' + ymLabel(k) + '</option>').join('') + '</select>';
   return layout(r, 'قائمة الدخل',
     '<div class="head"><div><div class="sub">' + esc(c.name) + '</div><h1>قائمة الدخل والميزانية</h1></div><div class="row noprint"><button class="btn a" onclick="window.print()">' + ic('print', 16) + 'PDF</button></div></div>' + periodBar() +
     '<div class="card"><div class="row" style="margin-bottom:10px;flex-wrap:wrap"><h2 class="sp">قائمة الدخل حسب الفرع · ' + perLabel() + '</h2><div class="row noprint" style="gap:8px"><button class="btn sm" id="plOpen">فتح الكل</button><button class="btn sm" id="plClose">قفل الكل</button></div></div><div class="sub noprint" style="margin:-4px 0 10px">اضغط على أي بند ▸ لعرض تفاصيله، واضغط على اسم الحساب لفتح كشف حسابه.</div><div class="tw plt"><table><thead><tr><th></th>' + used.map((x) => '<th class="l">' + esc(x.n) + '</th>').join('') + '<th class="l" style="color:var(--ink)">الإجمالي</th></tr></thead><tbody>' +
-    sec('المبيعات (بدون ضريبة)', 'sales', 1) + sec('مشتريات خامات (تكلفة مبيعات مبدئية)', 'cogs', -1) + row('مجمل الربح (مبدئي)', (k) => R.sales[k] - R.cogs[k], true) + sec('مصروفات تشغيل', 'op', -1) + sec('مصروفات عمومية', 'gen', -1) + (used.some((x) => Math.abs(R.cd[x.id]) > 0.004) ? sec('عجز وزيادة الخزينة', 'cd', -1) : '') + row('صافي الربح', (k) => R.sales[k] - R.cogs[k] - R.op[k] - R.gen[k] - R.cd[k], true) +
+    sec('المبيعات (بدون ضريبة)', 'sales', 1) + sec('مشتريات خامات (تكلفة مبيعات مبدئية)', 'cogs', -1) + row('مجمل الربح (مبدئي)', (k) => R.sales[k] - R.cogs[k], 'gp', (e, l, a) => FSec('sales', 1)(e, l, a) + FSec('cogs', -1)(e, l, a)) + sec('مصروفات تشغيل', 'op', -1) + sec('مصروفات عمومية', 'gen', -1) + (used.some((x) => Math.abs(R.cd[x.id]) > 0.004) ? sec('عجز وزيادة الخزينة', 'cd', -1) : '') + row('صافي الربح', (k) => R.sales[k] - R.cogs[k] - R.op[k] - R.gen[k] - R.cd[k], true, (e, l, a) => a.type === 'revenue' ? l.cr - l.dr : a.type === 'expense' ? -(l.dr - l.cr) : 0) +
     '</tbody></table></div><p class="sub" style="margin:10px 0 0">تظهر مصروفات "الرئيسي" في عمود مستقل ولا تُوزَّع على الفروع، والإجمالي يشملها. تكلفة المبيعات حاليًا = المشتريات المسجلة في الفترة، لأنه لا يوجد جرد للمخزون بعد.</p></div>' +
     '<div class="row noprint"><h2 class="sp">الميزانية في ' + to + '</h2><div class="chips">' + [2, 3, 4].map((n) => '<button class="chip' + (n === UI.bsLvl ? ' on' : '') + '" data-bsl="' + n + '">حتى مستوى ' + n + '</button>').join('') + '</div></div>' +
     '<div class="grid g-2"><div class="card"><h2>الأصول</h2><div class="list">' + bsList('asset') + '<div class="it" style="font-weight:700"><span>إجمالي الأصول</span><span class="num">' + f2(sA) + '</span></div></div></div>' +
@@ -1324,7 +1393,7 @@ function vPL(r) {
 }
 AFTER.pl = () => {
   $$('[data-bsl]').forEach((x) => x.onclick = () => { UI.bsLvl = +x.dataset.bsl; render(); });
-  $$('[data-plx]').forEach((x) => x.onclick = (ev) => { if (ev.target.closest('a')) return; const k = x.dataset.plx; UI.plx[k] = !UI.plx[k]; render(); });
+  $$('[data-plx]').forEach((x) => x.onclick = (ev) => { if (ev.target.closest('a')) return; const k = x.dataset.plx; UI.plx[k] = !UI.plx[k]; UI.plJust = UI.plx[k] ? k : null; render(); });
   const o = $('#plOpen'), c = $('#plClose');
   if (o) o.onclick = () => { (UI.plAll ? UI.plAll() : []).forEach((k) => { UI.plx[k] = true; }); render(); };
   if (c) c.onclick = () => { UI.plx = {}; render(); };
@@ -1347,7 +1416,7 @@ function vTB(r) {
   const T = {}; b.accounts.forEach((a) => { const o = O[a.id] || { d: 0, c: 0 }, m = M[a.id] || { d: 0, c: 0 }; T[a.id] = { d: o.d + m.d, c: o.c + m.c, o: o.d - o.c, md: m.d, mc: m.c }; });
   let MD = 0, MC = 0, CL = 0; b.accounts.filter((a) => a.level === 1).forEach((a) => { MD += T[a.id].md; MC += T[a.id].mc; CL += T[a.id].d - T[a.id].c; });
   const bf = (v) => Math.abs(v) < 0.005 ? '—' : (v > 0 ? f2(v) + ' م' : f2(-v) + ' د');
-  const rows = treeRows(b, T, UI.tbLvl, (a, v) => { const st = a.group ? 'font-weight:' + (a.level === 1 ? 800 : 700) + ';background:' + (a.level === 1 ? '#EEECE6' : a.level === 2 ? '#F4F3EE' : '#FAFAF7') : ''; return '<tr' + (a.group ? '' : ' class="click" data-go="#/c/' + c.id + '/wallet/' + a.id + '"') + ' style="' + st + '"><td class="num" style="color:var(--mute)">' + esc(a.code) + '</td><td style="padding-right:' + (12 + (a.level - 1) * 18) + 'px">' + esc(a.name) + '</td><td class="l num">' + bf(v.o) + '</td><td class="l num">' + f2(v.md) + '</td><td class="l num">' + f2(v.mc) + '</td><td class="l num">' + bf(v.d - v.c) + '</td></tr>'; });
+  const rows = treeRows(b, T, UI.tbLvl, (a, v) => { const st = a.group ? 'font-weight:' + (a.level === 1 ? 800 : 700) + ';background:' + (a.level === 1 ? '#EEECE6' : a.level === 2 ? '#F4F3EE' : '#FAFAF7') : ''; return '<tr' + (a.group ? dd({ t: a.name, sub: 'حركة الفترة لكل الحسابات تحته', from: PR.from, to: PR.to, x: v.md - v.mc, f: ddAccs(ddLeaves(b, a.id), 1) }) + ' class="click"' : ' class="click" data-go="#/c/' + c.id + '/wallet/' + a.id + '"') + ' style="' + st + '"><td class="num" style="color:var(--mute)">' + esc(a.code) + '</td><td style="padding-right:' + (12 + (a.level - 1) * 18) + 'px">' + esc(a.name) + '</td><td class="l num">' + bf(v.o) + '</td><td class="l num">' + f2(v.md) + '</td><td class="l num">' + f2(v.mc) + '</td><td class="l num">' + bf(v.d - v.c) + '</td></tr>'; });
   UI._tbExport = () => { const out = [['الكود', 'الحساب', 'المستوى', 'رصيد أول المدة', 'حركة مدين', 'حركة دائن', 'رصيد آخر المدة']]; const walk = (x) => { const v = T[x.id]; if (!v.d && !v.c) return; if (x.level <= UI.tbLvl) out.push([x.code, x.name, x.level, r2(v.o), r2(v.md), r2(v.mc), r2(v.d - v.c)]); if (x.group && x.level < UI.tbLvl) kids(b, x.id).forEach(walk); }; b.accounts.filter((a) => a.level === 1).sort((x, y) => x.code.localeCompare(y.code)).forEach(walk); return out; };
   return layout(r, 'ميزان المراجعة',
     '<div class="head"><div><div class="sub">' + esc(c.name) + ' · ' + perLabel() + '</div><h1>ميزان المراجعة</h1></div><div class="row noprint"><button class="btn" id="tbCsv">' + ic('dl', 16) + 'Excel</button><button class="btn a" onclick="window.print()">' + ic('print', 16) + 'PDF</button></div></div>' + periodBar() + lvlChips(UI.tbLvl) +
@@ -1869,7 +1938,14 @@ function empLines(b, empId, accSys, upto, excludePayM) {
 }
 const empAdvance = (b, id, upto, exM) => empLines(b, id, 'advances', upto, exM); // debit balance = owed by employee
 const empPayable = (b, id, upto) => -empLines(b, id, 'salPay', upto); // credit balance = owed to employee
-function empInMonth(e, m) { const s = m + '-01', t = lastDay(m); return (!e.start || e.start <= t) && (!e.end || e.end >= s) && e.active !== false; }
+function empInMonth(e, m) { const s = m + '-01', t = lastDay(m); if (e.start && e.start > t) return false; if (e.end && e.end < s) return false; return e.active !== false || !!(e.end && e.end >= s); } // a stopped employee still appears in the months he worked
+// a stopped employee stays in the list while he is owed money or his last month isn't posted yet
+function empStillOpen(b, e) {
+  if (e.active !== false) return true;
+  if (Math.abs(empPayable(b, e.id)) > 0.004 || Math.abs(empAdvance(b, e.id)) > 0.004) return true;
+  if (e.end) { const P = b.payrolls[ym(e.end)]; if (!(P && P.posted && b.entries.find((x) => x.id === P.posted))) return true; }
+  return false;
+}
 function defaultDays(e, m) {
   const s = m + '-01', t = lastDay(m); const a = e.start && e.start > s ? e.start : s, z = e.end && e.end < t ? e.end : t;
   if (a === s && z === t) return 30;
@@ -1893,9 +1969,12 @@ function vPayroll(r) {
   const tabs = [['emps', 'الموظفون'], ['sheet', 'شيت المرتبات'], ['pay', 'صرف الرواتب']];
   let body = '';
   if (UI.payTab === 'emps') {
-    body = '<div class="card grid" style="gap:12px"><div class="row"><h2 class="sp">الموظفون (' + b.employees.length + ')</h2><button class="btn p" id="eAdd">' + ic('plus', 16) + 'موظف جديد</button></div>' +
+    const hid = b.employees.filter((e) => !empStillOpen(b, e)); const EL = UI.empAll ? b.employees : b.employees.filter((e) => empStillOpen(b, e));
+    const owe = EL.reduce((t, e) => t + Math.max(0, empPayable(b, e.id)), 0);
+    body = '<div class="card grid" style="gap:12px"><div class="row" style="flex-wrap:wrap"><h2 class="sp">الموظفون (' + EL.length + ')</h2>' + (hid.length ? '<button class="btn sm" id="eAll">' + (UI.empAll ? 'إخفاء المتوقفين المسدَّدين' : 'إظهار المتوقفين المسدَّدين (' + hid.length + ')') + '</button>' : '') + '<button class="btn p" id="eAdd">' + ic('plus', 16) + 'موظف جديد</button></div>' +
+      (owe > 0.004 ? '<div class="note">إجمالي المستحق للموظفين ولم يُصرف: <b class="num">' + f2(owe) + '</b></div>' : '') +
       (b.employees.length ? '<div class="tw"><table><thead><tr><th>الاسم</th><th>الوظيفة</th><th>الفرع</th><th class="l">الراتب الأساسي</th><th>تاريخ التعيين</th><th>الحالة</th><th class="l">سلف قائمة</th><th class="l">مستحق له</th><th></th></tr></thead><tbody>' +
-        b.employees.map((e) => '<tr' + (e.active === false ? ' style="opacity:.55"' : '') + '><td style="font-weight:600">' + esc(e.name) + '</td><td>' + esc(e.role || '') + '</td><td>' + esc(branchName(b, e.branch)) + '</td><td class="l num">' + f2(e.basic) + '</td><td class="num">' + esc(e.start || '—') + '</td><td>' + (e.active === false ? '<span class="tag">متوقف' + (e.end ? ' من ' + esc(e.end) : '') + '</span>' : '<span class="tag a">نشط</span>') + '</td><td class="l num">' + f2(empAdvance(b, e.id)) + '</td><td class="l num">' + f2(empPayable(b, e.id)) + '</td><td class="l"><button class="btn sm" data-estm="' + e.id + '">كشف حساب</button> <button class="btn sm" data-eed="' + e.id + '">تعديل</button></td></tr>').join('') + '</tbody></table></div>' : '<div class="empty">لا يوجد موظفون بعد. أضف الموظفين ليظهروا في شاشة المصروف عند تسجيل السلف، وفي شيت المرتبات.</div>') + '</div>';
+        EL.map((e) => '<tr' + (e.active === false ? ' style="opacity:' + (empStillOpen(b, e) ? '.8' : '.5') + '"' : '') + '><td style="font-weight:600">' + esc(e.name) + '</td><td>' + esc(e.role || '') + '</td><td>' + esc(branchName(b, e.branch)) + '</td><td class="l num">' + f2(e.basic) + '</td><td class="num">' + esc(e.start || '—') + '</td><td>' + (e.active === false ? '<span class="tag">متوقف' + (e.end ? ' من ' + esc(e.end) : '') + '</span>' + (empStillOpen(b, e) ? ' <span class="tag w">لم يُسوَّ بعد</span>' : '') : '<span class="tag a">نشط</span>') + '</td><td class="l num"' + (Math.abs(empAdvance(b, e.id)) >= 0.005 ? dd({ t: 'سلف ' + e.name, sub: 'كل حركات السلف حتى اليوم', x: empAdvance(b, e.id), f: (ee, l) => l.a === (sysAcc(b, 'advances') || {}).id && l.emp === e.id ? l.dr - l.cr : 0 }) : '') + '>' + f2(empAdvance(b, e.id)) + '</td><td class="l num">' + f2(empPayable(b, e.id)) + '</td><td class="l"><button class="btn sm" data-estm="' + e.id + '">كشف حساب</button> <button class="btn sm" data-eed="' + e.id + '">تعديل</button></td></tr>').join('') + '</tbody></table></div>' : '<div class="empty">لا يوجد موظفون بعد. أضف الموظفين ليظهروا في شاشة المصروف عند تسجيل السلف، وفي شيت المرتبات.</div>') + '</div>';
   } else if (UI.payTab === 'sheet') {
     const m = UI.payM; const rows = payrollRows(b, m); const P = b.payrolls[m]; const posted = P.posted && b.entries.find((e) => e.id === P.posted);
     const T = (k) => r2(rows.reduce((t, x) => t + x[k], 0));
@@ -1947,6 +2026,7 @@ AFTER.payroll = (r) => {
   const b = book(r.cid);
   $$('[data-ptab]').forEach((x) => x.onclick = () => { UI.payTab = x.dataset.ptab; render(); });
   const ea = $('#eAdd'); if (ea) ea.onclick = () => empDialog(r.cid);
+  const eal = $('#eAll'); if (eal) eal.onclick = () => { UI.empAll = !UI.empAll; render(); };
   $$('[data-eed]').forEach((x) => x.onclick = () => empDialog(r.cid, x.dataset.eed));
   $$('[data-estm]').forEach((x) => x.onclick = () => empStatement(r.cid, x.dataset.estm));
   const pm = $('#pM'); if (pm) pm.onchange = () => { UI.payM = pm.value; render(); };
@@ -2094,7 +2174,7 @@ function rTable(head, rows, opt) { // rows: [{l, v:[...], cls, ind, pct}]
   const o = opt || {};
   const fmt = (r, v, i) => v === '' || v === null || (r.cls !== 'tot' && !r.pct && Math.abs(v) < 0.5) ? '' : (r.pct || (o.pct && o.pct(i))) ? (+v).toFixed(r.pct ? 0 : 1) + '%' : f0(v);
   return '<div class="tw"><table><thead><tr>' + head.map((h, i) => '<th' + (i ? ' class="l"' : '') + '>' + esc(h) + '</th>').join('') + '</tr></thead><tbody>' +
-    rows.map((r) => '<tr' + (r.cls === 'tot' ? ' class="tot"' : '') + (r.cls === 'grp' ? ' style="background:var(--bg)"' : '') + '><td style="white-space:normal;' + (r.ind ? 'padding-right:24px' : r.pct ? 'color:var(--mute)' : 'font-weight:' + (r.cls === 'grp' ? 700 : 600)) + '">' + esc(r.l) + '</td>' + r.v.map((v, i) => '<td class="l num" style="' + (r.pct ? 'color:var(--mute);' : '') + (i === r.v.length - 1 && o.boldLast || r.cls === 'grp' ? 'font-weight:700' : '') + '">' + fmt(r, v, i) + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>';
+    rows.map((r) => '<tr class="' + (r.cls === 'tot' ? 'tot' : r.cls === 'grp' ? 'rgrp' : r.ind ? 'rdet' : '') + '"><td' + (r.dd && r.dd[r.v.length - 1] ? dd(r.dd[r.v.length - 1]) : '') + ' style="white-space:normal;' + (r.ind ? 'padding-right:24px' : r.pct ? 'color:var(--mute)' : 'font-weight:' + (r.cls === 'grp' ? 700 : 600)) + '">' + esc(r.l) + '</td>' + r.v.map((v, i) => '<td' + (r.dd && r.dd[i] && Math.abs(v) >= 0.005 ? dd(r.dd[i]) : '') + ' class="l num" style="' + (r.pct ? 'color:var(--mute);' : '') + (i === r.v.length - 1 && o.boldLast || r.cls === 'grp' ? 'font-weight:700' : '') + '">' + fmt(r, v, i) + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>';
 }
 const brOrder = (b) => allBranches(b).map((x) => x.id).concat(['_']);
 const brLbl = (b, k) => k === '_' ? 'بدون فرع' : branchName(b, k);
@@ -2104,20 +2184,22 @@ function readyData(b, tab, PR) {
   const add = (title, head, rows, opt) => { out.tables.push({ title, head, rows, opt }); out.sheets.push({ name: title.slice(0, 30).replace(/[\\\/\?\*\[\]:]/g, ' '), rows: [head].concat(rows.map((r) => [r.l].concat(r.v.map((v) => v === '' ? '' : r2(v))))), widths: [28].concat(head.slice(1).map(() => 15)) }); };
   const sumBy = (keyFn, valFn) => { const m = {}; lines.forEach(({ e, l }) => { const a = acc(b, l.a); if (!a) return; const v = valFn(e, l, a); if (!v) return; const k = keyFn(e, l, a); if (k === null) return; m[k] = (m[k] || 0) + v; }); return m; };
   const brs = (m) => ord.filter((k) => Object.keys(m).some((x) => x.split('|')[1] === k));
+  const RV = (e, l, a) => a.type === 'revenue' ? l.cr - l.dr : 0, EX = (e, l, a) => a.type === 'expense' ? l.dr - l.cr : 0, NT = (e, l, a) => RV(e, l, a) - EX(e, l, a);
+  const S = (t, f, x, m, br) => ({ t, from: PR.from, to: PR.to, x: x, f: (e, l, a) => (ddMonth(m)(e) && ddBr(br)(e, l)) ? f(e, l, a) : 0 });
   if (tab === 'a') {
     const months = monthRange(ym(PR.from), ym(PR.to));
     const rev = sumBy((e, l) => ym(e.date) + '|' + (l.b || '_'), (e, l, a) => a.type === 'revenue' ? l.cr - l.dr : 0);
     const exp = sumBy((e, l) => ym(e.date) + '|' + (l.b || '_'), (e, l, a) => a.type === 'expense' ? l.dr - l.cr : 0);
-    const mk = (m, cols) => { const rows = months.map((k) => { const v = cols.map((c) => m[k + '|' + c] || 0); return { l: ymLabel(k), v: v.concat([v.reduce((x, y) => x + y, 0)]) }; }); const t = cols.map((c) => months.reduce((x, k) => x + (m[k + '|' + c] || 0), 0)); rows.push({ l: 'الإجمالي', v: t.concat([t.reduce((x, y) => x + y, 0)]), cls: 'tot' }); return rows; };
+    const mk = (m, cols, F, nm) => { const rows = months.map((k) => { const v = cols.map((c) => m[k + '|' + c] || 0); const tv = v.reduce((x, y) => x + y, 0); return { l: ymLabel(k), v: v.concat([tv]), dd: cols.map((c, i) => S(nm + ' · ' + brLbl(b, c) + ' · ' + ymLabel(k), F, v[i], k, c)).concat([S(nm + ' · ' + ymLabel(k), F, tv, k, '*')]) }; }); const t = cols.map((c) => months.reduce((x, k) => x + (m[k + '|' + c] || 0), 0)); const g = t.reduce((x, y) => x + y, 0); rows.push({ l: 'الإجمالي', v: t.concat([g]), cls: 'tot', dd: cols.map((c, i) => S(nm + ' · ' + brLbl(b, c), F, t[i], null, c)).concat([S(nm + ' · كل الفروع', F, g, null, '*')]) }); return rows; };
     const rc = brs(rev), ec = brs(exp);
     const allB = ord.filter((k) => rc.includes(k) || ec.includes(k));
     const tr = (k) => months.reduce((x, m) => x + (rev[m + '|' + k] || 0), 0), te = (k) => months.reduce((x, m) => x + (exp[m + '|' + k] || 0), 0);
-    const sRows = allB.map((k) => ({ l: brLbl(b, k), v: [tr(k), te(k), tr(k) - te(k)] }));
-    const T = [sRows.reduce((x, r) => x + r.v[0], 0), sRows.reduce((x, r) => x + r.v[1], 0)]; sRows.push({ l: 'الإجمالي', v: [T[0], T[1], T[0] - T[1]], cls: 'tot' });
-    out.kpis = [['المبيعات', T[0]], ['المصروفات', T[1]], ['الصافي', T[0] - T[1]]];
+    const sRows = allB.map((k) => ({ l: brLbl(b, k), v: [tr(k), te(k), tr(k) - te(k)], dd: [S('المبيعات · ' + brLbl(b, k), RV, tr(k), null, k), S('المصروفات · ' + brLbl(b, k), EX, te(k), null, k), S('الصافي · ' + brLbl(b, k), NT, tr(k) - te(k), null, k)] }));
+    const T = [sRows.reduce((x, r) => x + r.v[0], 0), sRows.reduce((x, r) => x + r.v[1], 0)]; sRows.push({ l: 'الإجمالي', v: [T[0], T[1], T[0] - T[1]], cls: 'tot', dd: [S('المبيعات · كل الفروع', RV, T[0], null, '*'), S('المصروفات · كل الفروع', EX, T[1], null, '*'), S('الصافي · كل الفروع', NT, T[0] - T[1], null, '*')] });
+    out.kpis = [['المبيعات', T[0], S('المبيعات · كل الفروع', RV, T[0], null, '*')], ['المصروفات', T[1], S('المصروفات · كل الفروع', EX, T[1], null, '*')], ['الصافي', T[0] - T[1], S('الصافي · كل الفروع', NT, T[0] - T[1], null, '*')]];
     add('ملخص الفروع', ['الفرع', 'المبيعات', 'المصروفات', 'الصافي'], sRows, { boldLast: true });
-    add('المبيعات حسب الشهر والفرع', ['الشهر'].concat(rc.map((k) => brLbl(b, k)), ['الإجمالي']), mk(rev, rc), { boldLast: true });
-    add('المصروفات حسب الشهر والفرع', ['الشهر'].concat(ec.map((k) => brLbl(b, k)), ['الإجمالي']), mk(exp, ec), { boldLast: true });
+    add('المبيعات حسب الشهر والفرع', ['الشهر'].concat(rc.map((k) => brLbl(b, k)), ['الإجمالي']), mk(rev, rc, RV, 'المبيعات'), { boldLast: true });
+    add('المصروفات حسب الشهر والفرع', ['الشهر'].concat(ec.map((k) => brLbl(b, k)), ['الإجمالي']), mk(exp, ec, EX, 'المصروفات'), { boldLast: true });
     out.note = 'المبيعات بدون ضريبة. مصروفات "الرئيسي" تظهر وحدها ولا توزَّع على الفروع.';
   }
   if (tab === 'b' || tab === 'c') {
@@ -2134,38 +2216,45 @@ function readyData(b, tab, PR) {
     });
     const cols = b.channels.map((x) => x.id).filter((k) => chs.has(k)).concat(chs.has('_') ? ['_'] : [], chs.has('fee') ? ['fee'] : []);
     const rowsB = ord.filter((br) => cols.some((k) => m[br + '|' + k]));
-    const rows = rowsB.map((br) => { const v = cols.map((k) => m[br + '|' + k] || 0); return { l: brLbl(b, br), v: v.concat([v.reduce((x, y) => x + y, 0)]) }; });
+    const FK = (k) => tab === 'b' ? ((e, l, a) => e.kind === 'rev' && l.dr > 0 && l.a !== com && (k === '*' ? cols.includes(lineCh(b, l)) : lineCh(b, l) === k) ? l.dr : 0)
+      : ((e, l, a) => { if (a.type !== 'expense') return 0; const v = l.dr - l.cr; const kk = l.a === com ? (lineCh(b, l) || '_') : (comA && a.parent === comA.parent ? 'fee' : null); return kk && (k === '*' || kk === k) ? v : 0; });
+    const nmK = (k) => k === '*' ? 'كل القنوات' : k === 'fee' ? 'رسوم بنكية وأخرى' : chName(b, k); const ttl = tab === 'b' ? 'المبيعات' : 'العمولات';
+    const rows = rowsB.map((br) => { const v = cols.map((k) => m[br + '|' + k] || 0); const tv = v.reduce((x, y) => x + y, 0); return { l: brLbl(b, br), v: v.concat([tv]), dd: cols.map((k, i) => S(ttl + ' · ' + nmK(k) + ' · ' + brLbl(b, br), FK(k), v[i], null, br)).concat([S(ttl + ' · ' + brLbl(b, br), FK('*'), tv, null, br)]) }; });
     const t = cols.map((k) => rowsB.reduce((x, br) => x + (m[br + '|' + k] || 0), 0)); const g = t.reduce((x, y) => x + y, 0);
-    rows.push({ l: 'الإجمالي', v: t.concat([g]), cls: 'tot' });
+    rows.push({ l: 'الإجمالي', v: t.concat([g]), cls: 'tot', dd: cols.map((k, i) => S(ttl + ' · ' + nmK(k), FK(k), t[i], null, '*')).concat([S(ttl + ' · الكل', FK('*'), g, null, '*')]) });
     const head = [tab === 'b' ? 'الفرع' : 'الفرع'].concat(cols.map((k) => k === 'fee' ? 'رسوم بنكية وأخرى' : chName(b, k)), ['الإجمالي']);
     if (tab === 'b') {
       rows.push({ l: 'نسبة كل قناة', v: t.map((x) => g ? x / g * 100 : 0).concat([100]), pct: true });
       add('الإيرادات حسب الفرع والقناة', head, rows, { boldLast: true });
-      out.kpis = cols.slice(0, 4).map((k, i) => [chName(b, k), t[i]]);
+      out.kpis = cols.slice(0, 4).map((k, i) => [chName(b, k), t[i], S('المبيعات · ' + chName(b, k), FK(k), t[i], null, '*')]);
       out.note = 'المبالغ إجمالية كما دخلت في كل قناة (قبل خصم العمولة). صافي ما يصل للبنك = الإجمالي − العمولة.';
     } else {
       add('العمولات والرسوم حسب الفرع والقناة', head, rows, { boldLast: true });
       // effective commission rate per channel
       const gross = {}; lines.forEach(({ e, l }) => { if (e.kind === 'rev' && l.dr > 0 && l.a !== com) { const k = lineCh(b, l); if (k) gross[k] = (gross[k] || 0) + l.dr; } });
       const rc = cols.filter((k) => k !== 'fee' && k !== '_');
-      if (rc.length) add('نسبة العمولة الفعلية', ['القناة', 'المبيعات', 'العمولة', 'النسبة %'], rc.map((k, i) => ({ l: chName(b, k), v: [gross[k] || 0, t[cols.indexOf(k)], gross[k] ? t[cols.indexOf(k)] / gross[k] * 100 : 0] })), { pct: (i) => i === 2 });
-      out.kpis = [['إجمالي العمولات والرسوم', g]];
+      if (rc.length) add('نسبة العمولة الفعلية', ['القناة', 'المبيعات', 'العمولة', 'النسبة %'], rc.map((k, i) => ({ l: chName(b, k), v: [gross[k] || 0, t[cols.indexOf(k)], gross[k] ? t[cols.indexOf(k)] / gross[k] * 100 : 0], dd: [S('مبيعات ' + chName(b, k), (e, l, a) => e.kind === 'rev' && l.dr > 0 && l.a !== com && lineCh(b, l) === k ? l.dr : 0, gross[k] || 0, null, '*'), S('عمولة ' + chName(b, k), FK(k), t[cols.indexOf(k)], null, '*'), null] })), { pct: (i) => i === 2 });
+      out.kpis = [['إجمالي العمولات والرسوم', g, S('العمولات والرسوم', FK('*'), g, null, '*')]];
       out.note = 'العمولات تُخصم تلقائيًا من قيد الإيراد اليومي. "رسوم بنكية وأخرى" = باقي بنود مجموعة العمولات والرسوم.';
     }
   }
   if (tab === 'd') {
     const TYP = [['paid', 'مدفوع'], ['accrued', 'مستحق'], ['prepaid', 'مقدم (استهلاك الفترة)'], ['payroll', 'مرتبات مُرحّلة'], ['rev', 'من قيد الإيراد'], ['other', 'قيود أخرى']];
-    const cls = (e) => e.kind === 'exp' ? ((e.meta && e.meta.etype) || 'paid') : e.kind === 'amort' ? 'prepaid' : e.kind === 'payroll' ? 'payroll' : e.kind === 'rev' ? 'rev' : 'other';
+    const cls = (e) => { if (e.kind === 'exp') return (e.meta && e.meta.etype) || 'paid'; if (e.kind === 'amort') return 'prepaid'; if (e.kind === 'payroll') return 'payroll'; if (e.kind === 'rev') return 'rev';
+      if (e.meta && e.meta.imp) { const mm = e.memo || ''; if (e.meta.src || /^مصروفات اليوم/.test(mm)) return 'paid'; if (/^مصروف مستحق|^عكس مستحق/.test(mm)) return 'accrued'; if (/^من المدفوع مقدمًا/.test(mm)) return 'prepaid'; if (/^قفل السلف/.test(mm)) return 'payroll'; if (/الخزينة/.test(mm) && /^(زيادة|عجز)/.test(mm)) return 'rev'; }
+      return 'other'; };
     const m = {}; const used = new Set(), accs = new Set();
     lines.forEach(({ e, l }) => { const a = acc(b, l.a); if (!a || a.type !== 'expense') return; const v = l.dr - l.cr; if (!v) return; const t = cls(e); m[a.id + '|' + t] = (m[a.id + '|' + t] || 0) + v; used.add(t); accs.add(a.id); });
     const cols = TYP.filter(([k]) => used.has(k));
     const tot = (id) => cols.reduce((x, [k]) => x + (m[id + '|' + k] || 0), 0);
     const ids = Array.from(accs).sort((x, y) => tot(y) - tot(x));
-    const rows = ids.map((id) => { const v = cols.map(([k]) => m[id + '|' + k] || 0); return { l: acc(b, id).name, v: v.concat([v.reduce((x, y) => x + y, 0)]) }; });
-    const t = cols.map(([k]) => ids.reduce((x, id) => x + (m[id + '|' + k] || 0), 0)); rows.push({ l: 'الإجمالي', v: t.concat([t.reduce((x, y) => x + y, 0)]), cls: 'tot' });
+    const FD = (id, k) => (e, l, a) => a.type === 'expense' && (id === '*' || l.a === id) && (k === '*' || cls(e) === k) ? l.dr - l.cr : 0;
+    const rows = ids.map((id) => { const v = cols.map(([k]) => m[id + '|' + k] || 0); const tv = v.reduce((x, y) => x + y, 0); return { l: acc(b, id).name, v: v.concat([tv]), dd: cols.map(([k, lb], i) => Object.assign(S(acc(b, id).name + ' · ' + lb, FD(id, k), v[i]), { acc: id })).concat([Object.assign(S(acc(b, id).name, FD(id, '*'), tv), { acc: id })]) }; });
+    const t = cols.map(([k]) => ids.reduce((x, id) => x + (m[id + '|' + k] || 0), 0)); rows.push({ l: 'الإجمالي', v: t.concat([t.reduce((x, y) => x + y, 0)]), cls: 'tot', dd: cols.map(([k, lb], i) => S('المصروفات · ' + lb, FD('*', k), t[i])).concat([S('كل المصروفات', FD('*', '*'), t.reduce((x, y) => x + y, 0))]) });
     add('المصروفات حسب النوع', ['البند'].concat(cols.map((x) => x[1]), ['الإجمالي']), rows, { boldLast: true });
     const bal = (s) => { const A = sysAcc(b, s); return A ? accBalance(b, A.id, PR.to) : 0; };
-    out.kpis = cols.slice(0, 3).map(([k, l], i) => [l, t[i]]).concat([['مستحق لم يُسدَّد حتى ' + PR.to, bal('accrued') + bal('salPay')], ['مقدم لم يُستهلك بعد', bal('prepaid')]]);
+    const BAL = (keys) => { const ids = keys.map((s2) => (sysAcc(b, s2) || {}).id).filter(Boolean); return { t: keys.length > 1 ? 'المستحق غير المسدَّد' : 'المدفوع مقدمًا غير المستهلك', to: PR.to, f: ddAccs(ids, keys[0] === 'prepaid' ? 1 : -1), x: keys.reduce((x2, s2) => x2 + bal(s2), 0), acc: ids.length === 1 ? ids[0] : null }; };
+    out.kpis = cols.slice(0, 3).map(([k, l], i) => [l, t[i], S('المصروفات · ' + l, FD('*', k), t[i])]).concat([['مستحق لم يُسدَّد حتى ' + PR.to, bal('accrued') + bal('salPay'), BAL(['accrued', 'salPay'])], ['مقدم لم يُستهلك بعد', bal('prepaid'), BAL(['prepaid'])]]);
     out.note = '"مستحق" = مصروف سُجّل ولم يُدفع وقتها. "مقدم" = نصيب الفترة من مصروف دُفع مقدمًا (مثل الإيجار السنوي). "من قيد الإيراد" = العمولات وعجز الخزينة.';
   }
   if (tab === 'e') {
@@ -2177,13 +2266,14 @@ function readyData(b, tab, PR) {
     Object.keys(CATS).concat(['_']).forEach((cat) => {
       const ids = Array.from(accs).filter((id) => (acc(b, id).cat || '_') === cat).sort((x, y) => rt(y) - rt(x)); if (!ids.length) return;
       const sub = cols.map((k) => ids.reduce((x, id) => x + (m[id + '|' + k] || 0), 0));
-      rows.push({ l: CATS[cat] || 'أخرى', v: sub.concat([sub.reduce((x, y) => x + y, 0)]), cls: 'grp' });
-      ids.forEach((id) => { const v = cols.map((k) => m[id + '|' + k] || 0); rows.push({ l: acc(b, id).name, v: v.concat([rt(id)]), ind: true }); });
+      const FC = (e, l, a) => a.type === 'expense' && (a.cat || '_') === cat ? l.dr - l.cr : 0, FA = (id) => (e, l, a) => l.a === id ? l.dr - l.cr : 0;
+      rows.push({ l: CATS[cat] || 'أخرى', v: sub.concat([sub.reduce((x, y) => x + y, 0)]), cls: 'grp', dd: cols.map((k, i) => S((CATS[cat] || 'أخرى') + ' · ' + brLbl(b, k), FC, sub[i], null, k)).concat([S(CATS[cat] || 'أخرى', FC, sub.reduce((x, y) => x + y, 0), null, '*')]) });
+      ids.forEach((id) => { const v = cols.map((k) => m[id + '|' + k] || 0); rows.push({ l: acc(b, id).name, v: v.concat([rt(id)]), ind: true, dd: cols.map((k, i) => Object.assign(S(acc(b, id).name + ' · ' + brLbl(b, k), FA(id), v[i], null, k), { acc: id })).concat([Object.assign(S(acc(b, id).name, FA(id), rt(id), null, '*'), { acc: id })]) }); });
       sub.forEach((v, i) => grand[i] += v);
     });
-    rows.push({ l: 'الإجمالي العام', v: grand.concat([grand.reduce((x, y) => x + y, 0)]), cls: 'tot' });
+    rows.push({ l: 'الإجمالي العام', v: grand.concat([grand.reduce((x, y) => x + y, 0)]), cls: 'tot', dd: cols.map((k, i) => S('المصروفات · ' + brLbl(b, k), EX, grand[i], null, k)).concat([S('كل المصروفات', EX, grand.reduce((x, y) => x + y, 0), null, '*')]) });
     add('المصروفات حسب الفرع والبند', ['البند'].concat(cols.map((k) => brLbl(b, k)), ['الإجمالي']), rows, { boldLast: true });
-    out.kpis = cols.map((k, i) => [brLbl(b, k), grand[i]]);
+    out.kpis = cols.map((k, i) => [brLbl(b, k), grand[i], S('المصروفات · ' + brLbl(b, k), EX, grand[i], null, k)]);
   }
   return out;
 }
@@ -2198,7 +2288,7 @@ function vReady(r) {
     '<div class="card noprint" style="padding:12px 14px"><div class="chips">' + READY.map(([k, l]) => '<button class="chip' + (k === tab ? ' on' : '') + '" data-rd="' + k + '">' + l + '</button>').join('') + '</div></div>' +
     periodBar() +
     (empty ? '<div class="card"><div class="empty">لا توجد أرقام في هذه الفترة</div></div>' :
-      (D.kpis.length ? '<div class="grid g-kpi">' + D.kpis.map(([l, v]) => '<div class="card kpi"><span class="sub">' + esc(l) + '</span><span class="v num"' + (v < 0 ? ' style="color:var(--bad)"' : '') + '>' + f0(v) + '</span></div>').join('') + '</div>' : '') +
+      (D.kpis.length ? '<div class="grid g-kpi">' + D.kpis.map(([l, v, sp]) => '<div class="card kpi' + (sp ? ' ddk' : '') + '"' + (sp ? dd(sp) : '') + '><span class="sub">' + esc(l) + '</span><span class="v num"' + (v < 0 ? ' style="color:var(--bad)"' : '') + '>' + f0(v) + '</span></div>').join('') + '</div>' : '') +
       D.tables.map((t) => '<div class="card"><div style="border-bottom:2px solid var(--dark);padding-bottom:10px;margin-bottom:10px"><div class="sub">' + esc(c.name) + ' · ' + perLabel() + ' · ' + esc(c.currency) + '</div><h2 style="font-size:19px">' + esc(t.title) + '</h2></div>' +
         rTable(t.head, t.rows, t.opt) + '</div>').join('') +
       (D.note ? '<div class="note">' + esc(D.note) + '</div>' : '')) +
@@ -2673,6 +2763,203 @@ AFTER.expense = (r) => {
       } catch (err) { toast(err.message); }
     });
   };
+};
+
+// ---------- drill-down: any number in any report opens a side panel with the lines that make it up
+// A report cell gets dd({t, sub, from, to, f, x, acc}) → data-dd attribute.
+//   f(e, l, a) returns this line's share of the number (0/null = not part of it); x = the number shown (for the "matches" check).
+let DDR = [];
+function dd(spec) { DDR.push(spec); return ' data-dd="' + (DDR.length - 1) + '"'; }
+const ddSgn = (a) => (a.type === 'asset' || a.type === 'expense') ? 1 : -1;
+function ddLeaves(b, id) { const a = acc(b, id); if (!a) return []; return a.group ? kids(b, id).reduce((t, k) => t.concat(ddLeaves(b, k.id)), []) : [id]; }
+// common builders
+const ddAccs = (ids, sgn) => { const S = new Set(ids); return (e, l, a) => S.has(l.a) ? (sgn || ddSgn(a)) * (l.dr - l.cr) : 0; };
+const ddAnd = (f, g) => (e, l, a) => g(e, l, a) ? f(e, l, a) : 0;
+const ddBr = (br) => (e, l) => br === undefined || br === null || br === '*' ? true : br === '_' ? !l.b : l.b === br;
+const ddMonth = (m) => (e) => !m || ym(e.date) === m;
+
+let DD_CUR = null;
+function closeDD() { const o = $('#ddOv'); if (!o) return; o.classList.add('out'); setTimeout(() => o.remove(), 180); DD_CUR = null; document.body.classList.remove('ddlock'); }
+function openDD(cid, spec) {
+  const b = book(cid); if (!b || !spec) return;
+  const rows = [];
+  iterLines(b, { from: spec.from, to: spec.to }).forEach(({ e, l }) => { const a = acc(b, l.a); if (!a) return; const v = spec.f(e, l, a); if (!v || Math.abs(v) < 0.0005) return; rows.push({ e, l, a, v }); });
+  rows.sort((x, y) => (x.e.date + String(x.e.no || 0).padStart(6, '0')).localeCompare(y.e.date + String(y.e.no || 0).padStart(6, '0')));
+  const tot = r2(rows.reduce((t, x) => t + x.v, 0));
+  const hasX = typeof spec.x === 'number'; const diff = hasX ? r2(tot - spec.x) : 0;
+  const multiA = new Set(rows.map((x) => x.l.a)).size > 1, multiB = new Set(rows.map((x) => x.l.b || '_')).size > 1;
+  const MAX = 400; const shown = rows.slice(0, MAX);
+  const per = spec.from || spec.to ? '<span class="num">' + esc(spec.from || '…') + '</span> ← <span class="num">' + esc(spec.to || '…') + '</span>' : '';
+  DD_CUR = { cid, spec, rows };
+  const html = '<div class="ddov" id="ddOv"><div class="ddbg" data-ddx="1"></div><aside class="ddp" role="dialog" aria-label="تفاصيل الرقم">' +
+    '<div class="row" style="align-items:flex-start"><div class="sp"><div class="sub">تفاصيل الرقم' + (per ? ' · ' + per : '') + '</div><h2 style="margin:4px 0 0;font-size:20px">' + esc(spec.t || '') + '</h2>' + (spec.sub ? '<div class="sub" style="margin-top:2px">' + esc(spec.sub) + '</div>' : '') + '</div><button class="iconbtn" data-ddx="1" style="background:var(--line2);color:var(--ink)" aria-label="إغلاق">' + ic('x') + '</button></div>' +
+    '<div class="row" style="gap:8px;flex-wrap:wrap;margin:14px 0"><span class="ddpill">' + rows.length + ' حركة</span><span class="ddpill">الإجمالي <span class="num">' + f2(tot) + '</span></span>' +
+    (hasX ? (Math.abs(diff) < 0.02 ? '<span class="ddpill ok">✓ مطابق للرقم</span>' : '<span class="ddpill bad">فرق <span class="num">' + f2(diff) + '</span></span>') : '') + '</div>' +
+    (rows.length ? '<div class="ddtw"><table class="ddt"><thead><tr><th>التاريخ</th><th>قيد</th><th>البيان</th>' + (multiA ? '<th>الحساب</th>' : '') + (multiB ? '<th>الفرع</th>' : '') + '<th class="l">المبلغ</th><th></th></tr></thead><tbody>' +
+      shown.map((x, i) => { const k = KIND[x.e.kind] || ['', '']; const memo = x.e.memo || ''; const note = x.l.n && x.l.n !== memo ? x.l.n : '';
+        return '<tr><td class="num" style="white-space:nowrap">' + esc(x.e.date.slice(8, 10) + '/' + x.e.date.slice(5, 7)) + '<div class="sub">' + esc(x.e.date.slice(0, 4)) + '</div></td><td class="num sub">' + (x.e.no || '') + '</td><td style="white-space:normal;min-width:140px">' + (memo ? esc(memo) : '<span class="sub">' + esc(k[0]) + '</span>') + (note ? '<div class="sub">' + esc(note) + (x.l.tag ? ' · ' + esc(x.l.tag) : '') + '</div>' : (x.l.tag ? '<div class="sub">' + esc(x.l.tag) + '</div>' : '')) + '</td>' +
+          (multiA ? '<td style="white-space:normal">' + esc(x.a.name) + '</td>' : '') + (multiB ? '<td>' + esc(branchName(b, x.l.b)) + '</td>' : '') +
+          '<td class="l num" style="font-weight:600' + (x.v < 0 ? ';color:var(--bad)' : '') + '">' + f2(x.v) + '</td><td class="l"><button class="ddopen" data-dde="' + x.e.id + '">فتح القيد</button></td></tr>'; }).join('') +
+      '<tr class="tot"><td colspan="' + (3 + (multiA ? 1 : 0) + (multiB ? 1 : 0)) + '">الإجمالي</td><td class="l num">' + f2(tot) + '</td><td></td></tr></tbody></table></div>' +
+      (rows.length > MAX ? '<div class="note" style="margin-top:10px">ظاهر أول ' + MAX + ' حركة من ' + rows.length + '. نزّل Excel للكل.</div>' : '') :
+      '<div class="empty">لا توجد حركات وراء هذا الرقم</div>') +
+    '<div class="row" style="gap:8px;margin-top:16px;flex-wrap:wrap">' + (spec.acc && acc(b, spec.acc) && !acc(b, spec.acc).group ? '<button class="btn" id="ddSt">' + ic('list', 16) + 'كشف حساب ' + esc(acc(b, spec.acc).name) + '</button>' : '') + (rows.length ? '<button class="btn" id="ddXl">' + ic('dl', 16) + 'تنزيل Excel</button>' : '') + '</div>' +
+    '</aside></div>';
+  const old = $('#ddOv'); if (old) old.remove();
+  document.body.insertAdjacentHTML('beforeend', html); document.body.classList.add('ddlock');
+  const ov = $('#ddOv');
+  $$('[data-ddx]', ov).forEach((x) => x.onclick = closeDD);
+  $$('[data-dde]', ov).forEach((x) => x.onclick = () => { const id = x.dataset.dde; closeDD(); editEntry(cid, id); });
+  const st = $('#ddSt'); if (st) st.onclick = () => { closeDD(); go('#/c/' + cid + '/wallet/' + spec.acc); };
+  const xl = $('#ddXl'); if (xl) xl.onclick = () => {
+    const out = [['التاريخ', 'رقم القيد', 'النوع', 'البيان', 'تفاصيل السطر', 'الحساب', 'الفرع', 'المبلغ']].concat(rows.map((x) => [x.e.date, x.e.no || '', (KIND[x.e.kind] || [''])[0], x.e.memo || '', x.l.n || '', x.a.name, branchName(b, x.l.b), r2(x.v)]), [['الإجمالي', '', '', '', '', '', '', tot]]);
+    saveBytes(company(cid).name + ' - تفاصيل - ' + String(spec.t || '').slice(0, 40).replace(/[\\\/\?\*\[\]:]/g, ' ') + '.xlsx', buildXlsx([{ name: 'التفاصيل', rows: out, widths: [12, 9, 12, 34, 30, 24, 12, 14] }]), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  };
+}
+document.addEventListener('click', (ev) => {
+  const t = ev.target.closest('[data-dd]'); if (!t || t.closest('#ddOv')) return;
+  const ia = ev.target.closest('a,button,input,select,textarea'); if (ia && ia !== t && t.contains(ia)) return;
+  const sp = DDR[+t.dataset.dd]; const r = route(); if (!sp || !r.cid) return;
+  ev.preventDefault(); ev.stopPropagation(); openDD(r.cid, sp);
+}, true);
+document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape' && DD_CUR) closeDD(); });
+window.addEventListener('hashchange', () => { if (DD_CUR) closeDD(); });
+
+// ---------- page-enter animation only when the page changes (not on every re-render while typing)
+let _lastHash15 = '';
+const _render15 = render;
+render = function () {
+  DDR = [];
+  const out = _render15.apply(this, arguments);
+  const h = location.hash.split('?')[0];
+  if (h !== _lastHash15) { _lastHash15 = h; const m = $('#root main'); if (m) { m.classList.remove('enter'); void m.offsetWidth; m.classList.add('enter'); setTimeout(() => m.classList.remove('enter'), 600); } }
+  return out;
+};
+
+// ---------- activity log (cloud only): who signed in, what they opened, downloaded, printed, and the editor's changes.
+// Stored at activity/{id}. Rules: anyone signed in may CREATE their own lines; only the editor may read/delete.
+const ACT_KEEP_DAYS = 90;
+const ACT_NAMES = { login: 'دخول', logout: 'خروج', view: 'فتح شاشة', dl: 'تنزيل ملف', print: 'طباعة / PDF', drill: 'تفاصيل رقم', add: 'إضافة قيد', edit: 'تعديل قيد', del: 'حذف قيد', imp: 'استيراد', other: 'أخرى' };
+const PAGE_NAMES = { home: 'الرئيسية', data: 'البيانات', dash: 'لوحة التحكم', expense: 'مصروف', revenue: 'إيراد يومي', transfer: 'تحويل / سداد', collect: 'تحصيل المالك', close: 'إقفال الشهور', payroll: 'الموظفون والمرتبات', journal: 'قيد يدوي', entries: 'كل الحركات', wallets: 'البنوك والخزائن والعهد', wallet: 'كشف حساب', reports: 'صمّم تقريرك', ready: 'تقارير جاهزة', trend: 'مقارنة شهر بشهر', pl: 'قائمة الدخل والميزانية', tb: 'ميزان المراجعة', settings: 'الإعدادات' };
+function actDevice() {
+  const u = navigator.userAgent || '';
+  const dev = /iPhone|iPad/.test(u) ? 'آيفون/آيباد' : /Android/.test(u) ? 'أندرويد' : /Windows/.test(u) ? 'ويندوز' : /Mac OS/.test(u) ? 'ماك' : 'جهاز آخر';
+  const br = /Edg\//.test(u) ? 'Edge' : /Chrome\//.test(u) ? 'Chrome' : /Safari\//.test(u) ? 'Safari' : /Firefox\//.test(u) ? 'Firefox' : '';
+  return dev + (br ? ' · ' + br : '');
+}
+const ACTQ = [];
+function logAct(act, detail, cid) {
+  try {
+    if (!Cloud.on || !Cloud.user || !Cloud.FB || Cloud.state === 'login') return;
+    if (Cloud.role === 'editor' && (act === 'view' || act === 'drill')) return; // your own browsing would only drown the log
+    const now = new Date();
+    ACTQ.push({ email: Cloud.user.email, name: Cloud.user.name || '', role: Cloud.role || '', act, detail: String(detail || '').slice(0, 280), cid: cid || '', co: cid ? ((company(cid) || {}).name || '') : '', at: now.toISOString(), dev: actDevice() });
+    clearTimeout(logAct.t); logAct.t = setTimeout(actFlush, 1200);
+  } catch (e) { }
+}
+let _actBusy = false;
+async function actFlush() {
+  if (_actBusy) return; _actBusy = true;
+  try {
+    while (ACTQ.length) {
+      const x = ACTQ.shift();
+      if (!Cloud.user || x.email !== Cloud.user.email) continue; // signed out / someone else now: drop
+      const id = x.at.replace(/[^0-9]/g, '') + '-' + Math.random().toString(36).slice(2, 7);
+      try { await Cloud.FB.set('activity/' + id, x); } catch (e) { ERRORS.push({ t: new Date().toISOString(), m: 'activity: ' + (e && (e.code || e.message)) }); }
+    }
+  } finally { _actBusy = false; }
+}
+window.addEventListener('pagehide', () => { if (ACTQ.length) actFlush(); });
+// sign-in once per browser session, sign-out
+const _onUser16 = Cloud.onUser.bind(Cloud);
+Cloud.onUser = async function (u) {
+  await _onUser16(u);
+  try { if (u && !sessionStorage.getItem('act-in-' + u.email)) { sessionStorage.setItem('act-in-' + u.email, '1'); logAct('login', 'تسجيل الدخول'); actFlush(); } } catch (e) { }
+};
+const _signOut16 = Cloud.signOut.bind(Cloud);
+Cloud.signOut = async function () { logAct('logout', 'تسجيل الخروج'); try { await actFlush(); } catch (e) { } try { sessionStorage.clear(); } catch (e) { } return _signOut16(); };
+// screens opened (only when the page changes)
+let _actLast = '';
+window.addEventListener('hashchange', () => setTimeout(() => {
+  const r = route(); const key = (r.cid || '') + '|' + r.page + '|' + (r.arg || '');
+  if (key === _actLast) return; _actLast = key;
+  let d = PAGE_NAMES[r.page] || r.page;
+  if (r.page === 'wallet' && r.cid) { const a = acc(book(r.cid) || { accounts: [] }, r.arg); if (a) d += ': ' + a.name; }
+  if (r.page === 'ready' && typeof READY !== 'undefined') { const x = READY.find((y) => y[0] === (UI.readyTab || 'a')); if (x) d += ': ' + x[1]; }
+  logAct('view', d, r.cid);
+}, 50));
+// downloads, print, drill-down
+const _offer16 = offerFile;
+offerFile = function (name, blob) { logAct('dl', name, route().cid); return _offer16.apply(this, arguments); };
+window.addEventListener('beforeprint', () => { const r = route(); logAct('print', PAGE_NAMES[r.page] || r.page, r.cid); });
+const _openDD16 = openDD;
+openDD = function (cid, spec) { logAct('drill', (spec && spec.t || '') + (spec && spec.from ? ' (' + spec.from + ' → ' + (spec.to || '') + ')' : ''), cid); return _openDD16.apply(this, arguments); };
+// the editor's own changes
+const _addEntry16 = addEntry;
+addEntry = function (cid, e) {
+  const isEdit = !!(e && e.id && (book(cid) || { entries: [] }).entries.some((x) => x.id === e.id));
+  const out = _addEntry16.apply(this, arguments);
+  try {
+    const k = (KIND[e.kind] || [e.kind])[0]; const amt = (e.lines || []).reduce((t, l) => t + (+l.dr || 0), 0);
+    if (isEdit) logAct('edit', k + ' · ' + (e.date || '') + (e.memo ? ' · ' + e.memo : '') + ' · ' + f2(amt), cid);
+    else {
+      const B = addEntry._b = addEntry._b || { cid, n: 0, first: '', sum: 0, dates: [] };
+      B.cid = cid; B.n++; B.sum += amt; B.dates.push(e.date || ''); if (B.n === 1) B.first = k + ' · ' + (e.date || '') + (e.memo ? ' · ' + e.memo : '') + ' · ' + f2(amt);
+      clearTimeout(addEntry._t); addEntry._t = setTimeout(() => { const b2 = addEntry._b; addEntry._b = null; if (!b2) return; const ds = b2.dates.filter(Boolean).sort();
+        logAct(b2.n === 1 ? 'add' : 'imp', b2.n === 1 ? b2.first : 'إضافة ' + b2.n + ' قيد مرة واحدة (من ' + ds[0] + ' إلى ' + ds[ds.length - 1] + ') · إجمالي ' + f2(b2.sum), b2.cid); }, 700);
+    }
+  } catch (er) { }
+  return out;
+};
+const _delLinks16 = deleteWithLinks;
+deleteWithLinks = function (cid, id) {
+  try { const e = book(cid).entries.find((x) => x.id === id); if (e) logAct('del', (KIND[e.kind] || [e.kind])[0] + ' رقم ' + (e.no || '') + ' · ' + e.date + (e.memo ? ' · ' + e.memo : '') + ' · ' + f2(e.lines.reduce((t, l) => t + (+l.dr || 0), 0)), cid); } catch (er) { }
+  return _delLinks16.apply(this, arguments);
+};
+// ---------- the log viewer (editor only, on the data page)
+async function actLoad() {
+  const L = await Cloud.FB.list('activity');
+  const cut = new Date(Date.now() - ACT_KEEP_DAYS * 86400000).toISOString();
+  const old = L.filter((x) => (x.data.at || '') < cut);
+  old.slice(0, 400).forEach((x) => { Cloud.FB.del('activity/' + x.id).catch(() => { }); });
+  return L.filter((x) => (x.data.at || '') >= cut).map((x) => x.data).sort((a, b) => (b.at || '').localeCompare(a.at || ''));
+}
+function actTime(iso) { try { const d = new Date(iso); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()); } catch (e) { return iso; } }
+async function showActivity() {
+  modal('<div class="row"><h2 class="sp">سجل النشاط</h2><button class="iconbtn" data-close="1" style="background:var(--line2);color:var(--ink)" aria-label="إغلاق">' + ic('x') + '</button></div><div class="empty" id="actBody">جارٍ التحميل…</div>', (m) => {
+    $$('.box [data-close]', m).forEach((x) => x.onclick = closeModal); m.querySelector('.box').style.width = 'min(1100px,100%)';
+  });
+  let L; try { L = await actLoad(); } catch (e) { const el = $('#actBody'); if (el) el.innerHTML = 'تعذّر تحميل السجل. لو دي أول مرة: حدّث قواعد الأمان في Firebase (ملف قواعد-الأمان.txt).<div class="sub" dir="ltr">' + esc(e && (e.code || e.message) || '') + '</div>'; return; }
+  const F = UI.actF = UI.actF || { who: '', act: '', from: '', to: '' };
+  const people = Array.from(new Set(L.map((x) => x.email))).sort();
+  const draw = () => {
+    const rows = L.filter((x) => (!F.who || x.email === F.who) && (!F.act || x.act === F.act) && (!F.from || x.at.slice(0, 10) >= F.from) && (!F.to || x.at.slice(0, 10) <= F.to));
+    const lastIn = {}; L.forEach((x) => { if (x.act === 'login' && !lastIn[x.email]) lastIn[x.email] = x.at; });
+    const el = $('#actBody'); if (!el) return; el.className = '';
+    el.innerHTML = '<div class="grid" style="gap:12px">' +
+      (people.length ? '<div class="row" style="gap:8px;flex-wrap:wrap">' + people.map((p) => '<span class="ddpill" style="background:' + (p === EDITOR_EMAIL ? 'var(--line2);color:var(--ink)' : 'var(--accs)') + '" dir="ltr">' + esc(p) + (lastIn[p] ? ' · آخر دخول ' + esc(actTime(lastIn[p])) : '') + '</span>').join('') + '</div>' : '') +
+      '<div class="row noprint" style="gap:8px;flex-wrap:wrap"><select class="in" id="afW" style="width:auto"><option value="">كل الأشخاص</option>' + people.map((p) => '<option' + (p === F.who ? ' selected' : '') + '>' + esc(p) + '</option>').join('') + '</select>' +
+      '<select class="in" id="afA" style="width:auto"><option value="">كل الأنشطة</option>' + Object.keys(ACT_NAMES).map((k) => '<option value="' + k + '"' + (k === F.act ? ' selected' : '') + '>' + ACT_NAMES[k] + '</option>').join('') + '</select>' +
+      '<label class="row" style="gap:6px">من<input type="date" class="in" id="afF" value="' + esc(F.from) + '" style="width:auto"></label><label class="row" style="gap:6px">إلى<input type="date" class="in" id="afT" value="' + esc(F.to) + '" style="width:auto"></label>' +
+      '<button class="btn sm" id="afX">' + ic('dl', 14) + 'Excel</button><span class="sub sp" style="text-align:left">' + rows.length + ' نشاط · يُحذف تلقائيًا بعد ' + ACT_KEEP_DAYS + ' يوم</span></div>' +
+      (rows.length ? '<div class="ddtw" style="max-height:60vh;overflow:auto"><table class="ddt"><thead><tr><th>الوقت</th><th>الشخص</th><th>النشاط</th><th>التفاصيل</th><th>الشركة</th><th>الجهاز</th></tr></thead><tbody>' +
+        rows.slice(0, 1500).map((x) => '<tr><td class="num" style="white-space:nowrap">' + esc(actTime(x.at)) + '</td><td dir="ltr" style="text-align:right">' + esc(x.email) + '</td><td><span class="tag' + (x.act === 'login' ? ' a' : x.act === 'dl' || x.act === 'print' ? ' w' : x.act === 'del' ? ' r' : '') + '">' + esc(ACT_NAMES[x.act] || x.act) + '</span></td><td style="white-space:normal">' + esc(x.detail || '') + '</td><td>' + esc(x.co || '') + '</td><td class="sub">' + esc(x.dev || '') + '</td></tr>').join('') + '</tbody></table></div>' : '<div class="empty">لا يوجد نشاط بهذه الفلاتر</div>') + '</div>';
+    $('#afW').onchange = (e) => { F.who = e.target.value; draw(); };
+    $('#afA').onchange = (e) => { F.act = e.target.value; draw(); };
+    $('#afF').onchange = (e) => { F.from = e.target.value; draw(); };
+    $('#afT').onchange = (e) => { F.to = e.target.value; draw(); };
+    $('#afX').onclick = () => _offer16('سجل النشاط.xlsx', new Blob([buildXlsx([{ name: 'سجل النشاط', rows: [['الوقت', 'الإيميل', 'الاسم', 'النشاط', 'التفاصيل', 'الشركة', 'الجهاز']].concat(rows.map((x) => [actTime(x.at), x.email, x.name || '', ACT_NAMES[x.act] || x.act, x.detail || '', x.co || '', x.dev || ''])), widths: [17, 28, 18, 14, 50, 14, 18] }])], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+  };
+  draw();
+}
+const _cloudData16 = cloudDataSection;
+cloudDataSection = async function () {
+  const w = $('#root .homewrap') || $('#root');
+  if (w && !Cloud.ro && Cloud.state === 'ready' && !$('#actCard')) {
+    w.insertAdjacentHTML('beforeend', '<div class="card row" id="actCard" style="gap:12px;flex-wrap:wrap"><div class="sp"><h2>سجل النشاط</h2><div class="sub" style="line-height:1.8">مين دخل والساعة كام، فتح أنهي شاشات، نزّل أو طبع إيه، وتعديلاتك على القيود. ظاهر ليك إنت بس.</div></div><button class="btn p" id="actOpen">' + ic('list', 16) + 'عرض السجل</button></div>');
+    $('#actOpen').onclick = showActivity;
+  }
+  return _cloudData16.apply(this, arguments);
 };
 </script>
 </body></html>
