@@ -133,14 +133,16 @@ body.ro #mEdit,body.ro #mDel,body.ro [data-del],body.ro [data-edit],body.ro .coc
 <div id="modal"></div>
 <script>
 'use strict';
-const APP_VERSION = '3.1.0';
+const APP_VERSION = '3.3.0';
 // ---------- helpers
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const uid = () => Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-5);
 const r2 = (n) => Math.round((+n + Number.EPSILON) * 100) / 100;
-const f0 = (n) => Math.round(+n || 0).toLocaleString('en-US');
+const SHOWDEC = () => { try { return localStorage.getItem('hesabat-dec') !== '0'; } catch (e) { return true; } };
+const f0 = (n) => SHOWDEC() ? (+n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : Math.round(+n || 0).toLocaleString('en-US');
+const fk = (n) => Math.round(+n || 0).toLocaleString('en-US'); // whole numbers (chart axes)
 const f2 = (n) => (+n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const pad = (n) => String(n).padStart(2, '0');
 const today = () => { const d = new Date(); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); };
@@ -157,6 +159,7 @@ window.addEventListener('error', (e) => { ERRORS.push({ t: new Date().toISOStrin
 window.addEventListener('unhandledrejection', (e) => { ERRORS.push({ t: new Date().toISOString(), m: String(e.reason && e.reason.message || e.reason) }); });
 
 const ICON = {
+  up: '<path d="M12 20V8M6 14l6-6 6 6M4 4h16"/>',
   dash: '<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',
   rev: '<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
   exp: '<path d="M3 7l6 6 4-4 8 8"/><path d="M15 17h6v-6"/>',
@@ -1278,9 +1281,9 @@ function vPL(r) {
   const P = UI.pl; const PR = perRange(); const from = PR.from, to = PR.to; P.from = ym(from); P.to = ym(to);
   const cols = allBranches(b).map((x) => ({ id: x.id, n: x.name })).concat([{ id: '_', n: 'بدون فرع' }]);
   const z = () => Object.fromEntries(cols.map((x) => [x.id, 0]));
-  const R = { sales: z(), cogs: z(), op: z(), gen: z() };
-  iterLines(b, { from, to }).forEach(({ l }) => { const a = acc(b, l.a); if (!a) return; const k = l.b && R.sales[l.b] !== undefined ? l.b : '_'; if (a.type === 'revenue') R.sales[k] += l.cr - l.dr; else if (a.type === 'expense') { const g = a.cat === 'COGS' ? 'cogs' : a.cat === 'GEN' ? 'gen' : 'op'; R[g][k] += l.dr - l.cr; } });
-  const used = cols.filter((x) => x.id !== '_' || ['sales', 'cogs', 'op', 'gen'].some((k) => Math.abs(R[k]['_']) > 0.004));
+  const R = { sales: z(), cogs: z(), op: z(), gen: z(), cd: z() };
+  iterLines(b, { from, to }).forEach(({ l }) => { const a = acc(b, l.a); if (!a) return; const k = l.b && R.sales[l.b] !== undefined ? l.b : '_'; if (a.type === 'revenue') R.sales[k] += l.cr - l.dr; else if (a.type === 'expense') { const g = a.sys === 'cashdiff' ? 'cd' : a.cat === 'COGS' ? 'cogs' : a.cat === 'GEN' ? 'gen' : 'op'; R[g][k] += l.dr - l.cr; } });
+  const used = cols.filter((x) => x.id !== '_' || ['sales', 'cogs', 'op', 'gen', 'cd'].some((k) => Math.abs(R[k]['_']) > 0.004));
   const row = (lab, f, strong) => '<tr' + (strong ? ' class="tot"' : '') + '><td>' + lab + '</td>' + used.map((x) => '<td class="l num">' + f0(f(x.id)) + '</td>').join('') + '<td class="l num" style="font-weight:700">' + f0(used.reduce((t, x) => t + f(x.id), 0)) + '</td></tr>';
   // balance sheet as at P.to end (tree, level selectable)
   const asAt = to; const T = totalsByAcc(b, asAt); UI.bsLvl = UI.bsLvl || 3;
@@ -1295,7 +1298,7 @@ function vPL(r) {
   return layout(r, 'قائمة الدخل',
     '<div class="head"><div><div class="sub">' + esc(c.name) + '</div><h1>قائمة الدخل والميزانية</h1></div><div class="row noprint"><button class="btn a" onclick="window.print()">' + ic('print', 16) + 'PDF</button></div></div>' + periodBar() +
     '<div class="card"><h2 style="margin-bottom:10px">قائمة الدخل حسب الفرع · ' + perLabel() + '</h2><div class="tw"><table><thead><tr><th></th>' + used.map((x) => '<th class="l">' + esc(x.n) + '</th>').join('') + '<th class="l" style="color:var(--ink)">الإجمالي</th></tr></thead><tbody>' +
-    row('المبيعات (بدون ضريبة)', (k) => R.sales[k]) + row('مشتريات خامات (تكلفة مبيعات مبدئية)', (k) => -R.cogs[k]) + row('مجمل الربح (مبدئي)', (k) => R.sales[k] - R.cogs[k], true) + row('مصروفات تشغيل', (k) => -R.op[k]) + row('مصروفات عمومية', (k) => -R.gen[k]) + row('صافي الربح', (k) => R.sales[k] - R.cogs[k] - R.op[k] - R.gen[k], true) +
+    row('المبيعات (بدون ضريبة)', (k) => R.sales[k]) + row('مشتريات خامات (تكلفة مبيعات مبدئية)', (k) => -R.cogs[k]) + row('مجمل الربح (مبدئي)', (k) => R.sales[k] - R.cogs[k], true) + row('مصروفات تشغيل', (k) => -R.op[k]) + row('مصروفات عمومية', (k) => -R.gen[k]) + (used.some((x) => Math.abs(R.cd[x.id]) > 0.004) ? row('عجز وزيادة الخزينة', (k) => -R.cd[k]) : '') + row('صافي الربح', (k) => R.sales[k] - R.cogs[k] - R.op[k] - R.gen[k] - R.cd[k], true) +
     '</tbody></table></div><p class="sub" style="margin:10px 0 0">تظهر مصروفات "الرئيسي" في عمود مستقل ولا تُوزَّع على الفروع، والإجمالي يشملها. تكلفة المبيعات حاليًا = المشتريات المسجلة في الفترة، لأنه لا يوجد جرد للمخزون بعد.</p></div>' +
     '<div class="row noprint"><h2 class="sp">الميزانية في ' + to + '</h2><div class="chips">' + [2, 3, 4].map((n) => '<button class="chip' + (n === UI.bsLvl ? ' on' : '') + '" data-bsl="' + n + '">حتى مستوى ' + n + '</button>').join('') + '</div></div>' +
     '<div class="grid g-2"><div class="card"><h2>الأصول</h2><div class="list">' + bsList('asset') + '<div class="it" style="font-weight:700"><span>إجمالي الأصول</span><span class="num">' + f2(sA) + '</span></div></div></div>' +
@@ -1853,7 +1856,7 @@ function payrollRows(b, m) {
   return b.employees.filter((e) => empInMonth(e, m)).map((e) => {
     const o = P.rows[e.id] || {}; const daily = r2((+e.basic || 0) / 30);
     const days = o.days !== undefined && o.days !== '' ? num(o.days) : defaultDays(e, m);
-    const dRaw = (+e.basic || 0) / 30; const due = days >= 30 ? r2(+e.basic || 0) : r2(dRaw * days), ot = num(o.ot), otAmt = r2(ot * dRaw * 1.5), bonus = num(o.bonus), allow = num(o.allow), ded = num(o.ded);
+    const dRaw = (+e.basic || 0) / 30; const due = days >= 30 ? r2(+e.basic || 0) : r2(dRaw * days), ot = num(o.ot), otAmt = r2(ot * dRaw * 1.5), bonus = num(o.bonus), allow = o.allow !== undefined && o.allow !== '' ? num(o.allow) : num(e.allow), ded = num(o.ded);
     const gross = r2(due + otAmt + bonus + allow - ded);
     const outAdv = Math.max(0, empAdvance(b, e.id, end, m));
     const adv = o.adv !== undefined && o.adv !== '' ? num(o.adv) : Math.min(outAdv, Math.max(0, gross));
@@ -1873,7 +1876,8 @@ function vPayroll(r) {
     const m = UI.payM; const rows = payrollRows(b, m); const P = b.payrolls[m]; const posted = P.posted && b.entries.find((e) => e.id === P.posted);
     const T = (k) => r2(rows.reduce((t, x) => t + x[k], 0));
     const inp = (x, k, v) => '<input class="in num" data-pr="' + x.e.id + '" data-k="' + k + '" value="' + esc(v) + '" inputmode="decimal" style="width:84px;height:38px;text-align:right">';
-    body = '<div class="card grid" style="gap:12px"><div class="row"><h2 class="sp">شيت مرتبات ' + ymLabel(m) + '</h2><select class="in" id="pM" style="width:auto">' + monthRange(addMonths(ym(today()), -12), addMonths(ym(today()), 1)).reverse().map((k) => '<option value="' + k + '"' + (k === m ? ' selected' : '') + '>' + ymLabel(k) + '</option>').join('') + '</select><button class="btn" id="pCsv">' + ic('dl', 16) + 'Excel</button></div>' +
+    body = '<div class="card grid" style="gap:12px"><div class="row"><h2 class="sp">شيت مرتبات ' + ymLabel(m) + '</h2><select class="in" id="pM" style="width:auto">' + monthRange(addMonths(ym(today()), -12), addMonths(ym(today()), 1)).reverse().map((k) => '<option value="' + k + '"' + (k === m ? ' selected' : '') + '>' + ymLabel(k) + '</option>').join('') + '</select><button class="btn" id="pCsv">' + ic('dl', 16) + 'Excel</button><button class="btn" id="pTpl">' + ic('dl', 16) + 'قالب المرتبات</button><label class="btn a">' + ic('up', 16) + 'رفع القالب<input type="file" id="pUp" accept=".xlsx" hidden></label></div>' +
+      '<div class="note">الأوفرتايم = أيام الأوفرتايم × (الأساسي ÷ 30) × 1.5 — على الأساسي بس، والبدلات والحوافز مش داخلة فيه.</div>' +
       (posted ? '<div class="note">✓ تم ترحيل مرتبات هذا الشهر (الحركة رقم ' + posted.no + '). أي تعديل بعد ذلك يحتاج إعادة الترحيل.</div>' : '<div class="note w">لم تُرحَّل مرتبات هذا الشهر بعد.</div>') +
       (rows.length ? '<div class="tw"><table><thead><tr><th>الموظف</th><th>الفرع</th><th class="l">الأساسي</th><th class="l">اليومية</th><th class="l">أيام العمل</th><th class="l">المستحق</th><th class="l">أيام أوفرتايم</th><th class="l">الأوفرتايم</th><th class="l">حوافز</th><th class="l">بدلات</th><th class="l">خصومات</th><th class="l">الإجمالي</th><th class="l">خصم السلف</th><th class="l">الصافي</th></tr></thead><tbody>' +
         rows.map((x) => { const C = (k, st) => '<td class="l num" data-c="' + x.e.id + ':' + k + '"' + (st ? ' style="' + st + '"' : '') + '>' + f2(x[k]) + '</td>'; return '<tr><td style="font-weight:600">' + esc(x.e.name) + '<div class="sub">' + esc(x.e.role || '') + '</div></td><td>' + esc(branchName(b, x.e.branch)) + '</td><td class="l num">' + f0(x.e.basic) + '</td><td class="l num">' + f2(x.daily) + '</td><td class="l">' + inp(x, 'days', x.days) + '</td>' + C('due') + '<td class="l">' + inp(x, 'ot', x.o.ot || '') + '</td>' + C('otAmt') + '<td class="l">' + inp(x, 'bonus', x.o.bonus || '') + '</td><td class="l">' + inp(x, 'allow', x.o.allow || '') + '</td><td class="l">' + inp(x, 'ded', x.o.ded || '') + '</td>' + C('gross', 'font-weight:600') + '<td class="l">' + inp(x, 'adv', x.adv) + (x.outAdv ? '<div class="sub num">من ' + f2(x.outAdv) + '</div>' : '') + '</td>' + C('net', 'font-weight:700;' + (x.net < 0 ? 'color:var(--bad)' : '')) + '</tr>'; }).join('') +
@@ -1896,9 +1900,9 @@ function vPayroll(r) {
 }
 function empDialog(cid, id) {
   const b = book(cid); const e = id ? empOf(b, id) : { id: '', name: '', role: '', branch: (allBranches(b)[0] || {}).id, basic: '', start: today(), end: '', active: true };
-  modal('<h2>' + (id ? 'تعديل موظف' : 'موظف جديد') + '</h2><div class="grid g-f2"><label class="f">الاسم<input class="in" id="emN" value="' + esc(e.name) + '"></label><label class="f">الوظيفة<input class="in" id="emR" value="' + esc(e.role || '') + '"></label><label class="f">الفرع<select class="in" id="emB">' + brOptions(b, e.branch) + '</select></label><label class="f">الراتب الأساسي<input class="in num" id="emS" value="' + esc(e.basic) + '" inputmode="decimal"></label><label class="f">تاريخ التعيين<input type="date" class="in" id="emD" value="' + esc(e.start || '') + '"></label><label class="f">تاريخ ترك العمل (اختياري)<input type="date" class="in" id="emE" value="' + esc(e.end || '') + '"></label></div><button class="toggle' + (e.active !== false ? ' on' : '') + '" id="emA" style="align-self:flex-start"><i></i>نشط</button><div class="row"><button class="btn p" id="emOk">حفظ</button><button class="btn" data-close="1">إلغاء</button></div>', (m) => {
+  modal('<h2>' + (id ? 'تعديل موظف' : 'موظف جديد') + '</h2><div class="grid g-f2"><label class="f">الاسم<input class="in" id="emN" value="' + esc(e.name) + '"></label><label class="f">الوظيفة<input class="in" id="emR" value="' + esc(e.role || '') + '"></label><label class="f">الفرع<select class="in" id="emB">' + brOptions(b, e.branch) + '</select></label><label class="f">الراتب الأساسي<input class="in num" id="emS" value="' + esc(e.basic) + '" inputmode="decimal"></label><label class="f">بدل ثابت شهري (خارج حساب الأوفرتايم)<input class="in num" id="emL" value="' + esc(e.allow || '') + '" inputmode="decimal"></label><label class="f">تاريخ التعيين<input type="date" class="in" id="emD" value="' + esc(e.start || '') + '"></label><label class="f">تاريخ ترك العمل (اختياري)<input type="date" class="in" id="emE" value="' + esc(e.end || '') + '"></label></div><button class="toggle' + (e.active !== false ? ' on' : '') + '" id="emA" style="align-self:flex-start"><i></i>نشط</button><div class="row"><button class="btn p" id="emOk">حفظ</button><button class="btn" data-close="1">إلغاء</button></div>', (m) => {
     $('.box [data-close]', m).onclick = closeModal; $('#emA', m).onclick = (ev) => ev.currentTarget.classList.toggle('on');
-    $('#emOk', m).onclick = () => { const n = $('#emN', m).value.trim(); if (!n) return toast('اكتب الاسم'); const x = id ? e : { id: uid() }; Object.assign(x, { name: n, role: $('#emR', m).value.trim(), branch: $('#emB', m).value, basic: num($('#emS', m).value), start: $('#emD', m).value, end: $('#emE', m).value, active: $('#emA', m).classList.contains('on') }); if (!id) b.employees.push(x); save(); closeModal(); toast('تم الحفظ'); render(); };
+    $('#emOk', m).onclick = () => { const n = $('#emN', m).value.trim(); if (!n) return toast('اكتب الاسم'); const x = id ? e : { id: uid() }; Object.assign(x, { name: n, role: $('#emR', m).value.trim(), branch: $('#emB', m).value, basic: num($('#emS', m).value), allow: num($('#emL', m).value), start: $('#emD', m).value, end: $('#emE', m).value, active: $('#emA', m).classList.contains('on') }); if (!id) b.employees.push(x); save(); closeModal(); toast('تم الحفظ'); render(); };
   });
 }
 function empStatement(cid, id) {
@@ -1922,6 +1926,8 @@ AFTER.payroll = (r) => {
   $$('[data-eed]').forEach((x) => x.onclick = () => empDialog(r.cid, x.dataset.eed));
   $$('[data-estm]').forEach((x) => x.onclick = () => empStatement(r.cid, x.dataset.estm));
   const pm = $('#pM'); if (pm) pm.onchange = () => { UI.payM = pm.value; render(); };
+  const pt = $('#pTpl'); if (pt) pt.onclick = () => payrollTemplate(r.cid, UI.payM);
+  const pu = $('#pUp'); if (pu) pu.onchange = async (ev) => { const f = ev.target.files[0]; ev.target.value = ''; if (f) payrollImport(r.cid, UI.payM, f); };
   // update numbers in place (no full re-render, so clicks on buttons right after editing are not lost)
   $$('[data-pr]').forEach((el) => el.addEventListener('input', () => {
     const m = UI.payM; const P = b.payrolls[m] = b.payrolls[m] || { rows: {} }; const o = P.rows[el.dataset.pr] = P.rows[el.dataset.pr] || {}; o[el.dataset.k] = el.value; save();
@@ -1957,6 +1963,46 @@ AFTER.payroll = (r) => {
     });
   };
 };
+
+// ---------- payroll Excel template (employees + this month's sheet in one file)
+const PT_HEAD = ['الفرع', 'الاسم', 'الوظيفة', 'الأساسي', 'بدل ثابت', 'تاريخ التعيين', 'آخر يوم عمل', 'نشط (نعم/لا)', 'أيام العمل', 'أيام أوفرتايم', 'حوافز', 'بدلات الشهر', 'خصومات'];
+function payrollTemplate(cid, m) {
+  const b = book(cid); const P = (b.payrolls[m] = b.payrolls[m] || { rows: {} });
+  const rows = [PT_HEAD].concat(b.employees.map((e) => { const o = P.rows[e.id] || {}; return [branchName(b, e.branch), e.name, e.role || '', +e.basic || 0, +e.allow || '', e.start || '', e.end || '', e.active === false ? 'لا' : 'نعم', o.days !== undefined && o.days !== '' ? +o.days : '', o.ot || '', o.bonus || '', o.allow || '', o.ded || '']; }));
+  const brs = allBranches(b).map((x) => x.name);
+  saveBytes(company(cid).name + ' - قالب مرتبات ' + ymLabel(m) + '.xlsx', buildXlsx([{ name: 'المرتبات', rows, widths: [12, 18, 14, 11, 10, 13, 13, 11, 10, 11, 9, 11, 9], validations: [{ col: 'A', rows: 500, ref: 'Lists!$A$1:$A$' + brs.length }, { col: 'H', rows: 500, ref: 'Lists!$B$1:$B$2' }] }, { name: 'Lists', rows: brs.map((x, i) => [x, i === 0 ? 'نعم' : i === 1 ? 'لا' : '']) }]), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  toast('اتحمّل القالب — املاه وارفعه من "رفع القالب"');
+}
+async function payrollImport(cid, m, file) {
+  const b = book(cid); let R;
+  try { R = await readXlsxRows(file); } catch (e) { return toast('تعذّرت قراءة الملف'); }
+  const head = (R[0] || []).map((x) => String(x || '').trim()); const ix = (n) => head.indexOf(n);
+  if (ix('الاسم') < 0 || ix('الأساسي') < 0) return toast('ده مش قالب المرتبات — نزّل القالب من الزرار');
+  const brBy = {}; allBranches(b).forEach((x) => brBy[x.name.trim()] = x.id);
+  const plan = []; const errs = [];
+  R.slice(1).forEach((row, i) => {
+    const g = (n) => { const k = ix(n); const v = k < 0 ? '' : row[k]; return v == null ? '' : v; }; const name = String(g('الاسم') || '').trim(); if (!name) return;
+    const bn = String(g('الفرع') || '').trim(); const br = brBy[bn];
+    if (!br) { errs.push('صف ' + (i + 2) + ': الفرع "' + bn + '" مش موجود'); return; }
+    const basic = num(g('الأساسي')); if (!(basic > 0)) { errs.push('صف ' + (i + 2) + ' (' + name + '): الأساسي فاضي'); return; }
+    const ex = b.employees.find((e) => e.name.trim() === name && e.branch === br) || b.employees.find((e) => e.name.trim() === name);
+    const d = (v) => v === '' || v == null ? '' : (xlDate(v) || '');
+    plan.push({ ex, emp: { name, role: String(g('الوظيفة') || '').trim(), branch: br, basic, allow: num(g('بدل ثابت')), start: d(g('تاريخ التعيين')) || (ex && ex.start) || m + '-01', end: d(g('آخر يوم عمل')), active: String(g('نشط (نعم/لا)') || 'نعم').trim() !== 'لا' },
+      mon: { days: g('أيام العمل') === '' ? '' : String(g('أيام العمل')), ot: String(g('أيام أوفرتايم') || ''), bonus: String(g('حوافز') || ''), allow: String(g('بدلات الشهر') || ''), ded: String(g('خصومات') || '') } });
+  });
+  const nNew = plan.filter((p) => !p.ex).length, nUp = plan.length - nNew;
+  modal('<h2>مراجعة قالب المرتبات — ' + ymLabel(m) + '</h2><div class="grid g-kpi"><div class="card kpi"><span class="sub">موظفين جدد</span><span class="v num">' + nNew + '</span></div><div class="card kpi"><span class="sub">موظفين هيتحدّثوا</span><span class="v num">' + nUp + '</span></div></div>' +
+    (errs.length ? '<div class="note r">' + errs.map(esc).join('<br>') + '<br>الصفوف دي مش هتترفع.</div>' : '') +
+    '<div class="tw" style="max-height:280px"><table><thead><tr><th>الموظف</th><th>الفرع</th><th class="l">الأساسي</th><th class="l">أيام</th><th class="l">أوفرتايم</th><th class="l">حوافز</th><th></th></tr></thead><tbody>' + plan.map((p) => '<tr><td>' + esc(p.emp.name) + '</td><td>' + esc(branchName(b, p.emp.branch)) + '</td><td class="l num">' + f2(p.emp.basic) + '</td><td class="l num">' + esc(p.mon.days) + '</td><td class="l num">' + esc(p.mon.ot) + '</td><td class="l num">' + esc(p.mon.bonus) + '</td><td><span class="tag">' + (p.ex ? 'تحديث' : 'جديد') + '</span></td></tr>').join('') + '</tbody></table></div>' +
+    '<div class="row"><button class="btn p" id="ptOk">حفظ</button><button class="btn" data-close="1">إلغاء</button></div>', (md) => {
+    $('[data-close]', md).onclick = closeModal;
+    $('#ptOk', md).onclick = () => {
+      const P = (b.payrolls[m] = b.payrolls[m] || { rows: {} });
+      plan.forEach((p) => { let e = p.ex; if (!e) { e = { id: uid() }; b.employees.push(e); } Object.assign(e, p.emp); P.rows[e.id] = Object.assign({}, P.rows[e.id] || {}, p.mon); });
+      save(); closeModal(); toast('تم — ' + plan.length + ' موظف ✓' + (P.posted ? ' · المرتبات متّرحلة قبل كده: اعمل "ترحيل" تاني عشان تتحدث' : '')); render();
+    };
+  });
+}
 
 // ---------- sales channels on journal lines (new entries carry l.ch; older ones are read from the line text)
 function chByName(b, n) {
@@ -2470,5 +2516,36 @@ async function cloudDataSection() {
 }
 // offline app shell (published site only)
 if (CLOUD_MODE && 'serviceWorker' in navigator && location.protocol === 'https:') { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => { }); }); }
+
+// ---------- search box above every table + halalas display switch
+function tableSearch() {
+  $$('#root .tw').forEach((tw, i) => {
+    if (tw.dataset.srch || tw.closest('.box')) return;
+    const tb = tw.querySelector('tbody'); if (!tb || tb.rows.length < 6) return;
+    tw.dataset.srch = '1';
+    const key = route().page + ':' + i; UI.tq = UI.tq || {};
+    const box = document.createElement('div'); box.className = 'noprint'; box.style.cssText = 'margin-bottom:10px';
+    box.innerHTML = '<input class="in" type="search" placeholder="بحث في الجدول…" style="max-width:340px" aria-label="بحث في الجدول">';
+    tw.parentNode.insertBefore(box, tw);
+    const inp = box.firstChild; inp.value = UI.tq[key] || '';
+    const norm = (s) => String(s).toLowerCase().replace(/[أإآ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه').replace(/[,\s]+/g, ' ');
+    const run = () => {
+      const q = norm(inp.value.trim()); UI.tq[key] = inp.value;
+      Array.from(tb.rows).forEach((tr) => {
+        if (tr.classList.contains('tot')) return;
+        const txt = norm(tr.innerText + ' ' + Array.from(tr.querySelectorAll('input,select')).map((x) => x.value).join(' '));
+        tr.style.display = !q || q.split(' ').every((w) => txt.includes(w)) ? '' : 'none';
+      });
+    };
+    inp.oninput = run; if (inp.value) run();
+  });
+}
+function decSwitch() {
+  const w = $('#root .homewrap') || $('#root main'); if (!w || $('#decCard')) return;
+  w.insertAdjacentHTML('beforeend', '<div class="card row" id="decCard" style="justify-content:space-between;gap:10px"><div><b>إظهار الهللات</b><div class="sub">عرض كل الأرقام بكسرين عشريين في كل الشاشات (الحسابات نفسها دايمًا بالهللة)</div></div><button class="chip' + (SHOWDEC() ? ' on' : '') + '" id="decT">' + (SHOWDEC() ? 'مفعّل' : 'مقفول') + '</button></div>');
+  $('#decT').onclick = () => { try { localStorage.setItem('hesabat-dec', SHOWDEC() ? '0' : '1'); } catch (e) { } render(); };
+}
+const _render13 = render;
+render = function () { _render13(); try { tableSearch(); if (route().page === 'data') decSwitch(); } catch (e) { ERRORS.push({ t: new Date().toISOString(), m: 'ui: ' + e.message }); } };
 </script>
 </body></html>
