@@ -126,14 +126,14 @@ svg text{font-family:inherit}
  th{position:static}
 }
 body.ro #mEdit,body.ro #mDel,body.ro [data-del],body.ro [data-edit],body.ro .cocard.add,body.ro #demoBtn,body.ro #srSave,body.ro [data-srdel],body.ro #bkUp,body.ro label:has(#bkUp),body.ro [data-snap],body.ro #fhNew,body.ro label:has(#coUp),body.ro #fhRe,body.ro .mtop a.iconbtn,body.ro .homehead a[href="#/data"]{display:none!important}
-.bulk td{padding:5px 4px;vertical-align:top}.bulk .in{padding:8px 10px;font-size:14px}.bulk tr.bad td{background:var(--bads)}.sum{display:flex;gap:10px;flex-wrap:wrap}.pill{background:var(--accs);color:var(--acc);border-radius:12px;padding:9px 14px;font-weight:600}.pill.dk{background:var(--dark);color:#fff}</style>
+.bulk td{padding:5px 4px;vertical-align:top}.bulk .in{padding:8px 10px;font-size:14px}.bulk tr.bad td{background:var(--bads)}.sum{display:flex;gap:10px;flex-wrap:wrap}.pill{background:var(--accs);color:var(--acc);border-radius:12px;padding:9px 14px;font-weight:600}.pill.dk{background:var(--dark);color:#fff}.plar{display:inline-block;width:16px;color:var(--mute);font-size:12px}.plt tr.pls td:first-child{font-weight:600}.plt tr.plg td{background:#FBFAF6;font-size:14px}.plt tr.pld td{font-size:13.5px;color:#3A3D44}.plt a.placc{color:inherit;text-decoration:none;border-bottom:1px dashed var(--line)}.plt a.placc:hover{color:var(--acc)}</style>
 </head>
 <body>
 <div id="root"></div>
 <div id="modal"></div>
 <script>
 'use strict';
-const APP_VERSION = '3.4.0';
+const APP_VERSION = '3.5.0';
 // ---------- helpers
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -1282,9 +1282,27 @@ function vPL(r) {
   const cols = allBranches(b).map((x) => ({ id: x.id, n: x.name })).concat([{ id: '_', n: 'بدون فرع' }]);
   const z = () => Object.fromEntries(cols.map((x) => [x.id, 0]));
   const R = { sales: z(), cogs: z(), op: z(), gen: z(), cd: z() };
-  iterLines(b, { from, to }).forEach(({ l }) => { const a = acc(b, l.a); if (!a) return; const k = l.b && R.sales[l.b] !== undefined ? l.b : '_'; if (a.type === 'revenue') R.sales[k] += l.cr - l.dr; else if (a.type === 'expense') { const g = a.sys === 'cashdiff' ? 'cd' : a.cat === 'COGS' ? 'cogs' : a.cat === 'GEN' ? 'gen' : 'op'; R[g][k] += l.dr - l.cr; } });
+  const AT = {}; const secOf = (a) => a.type === 'revenue' ? 'sales' : a.sys === 'cashdiff' ? 'cd' : a.cat === 'COGS' ? 'cogs' : a.cat === 'GEN' ? 'gen' : 'op';
+  iterLines(b, { from, to }).forEach(({ l }) => { const a = acc(b, l.a); if (!a || (a.type !== 'revenue' && a.type !== 'expense')) return; const k = l.b && R.sales[l.b] !== undefined ? l.b : '_'; const v = a.type === 'revenue' ? l.cr - l.dr : l.dr - l.cr; R[secOf(a)][k] += v; const t = AT[a.id] || (AT[a.id] = z()); t[k] += v; });
   const used = cols.filter((x) => x.id !== '_' || ['sales', 'cogs', 'op', 'gen', 'cd'].some((k) => Math.abs(R[k]['_']) > 0.004));
   const row = (lab, f, strong) => '<tr' + (strong ? ' class="tot"' : '') + '><td>' + lab + '</td>' + used.map((x) => '<td class="l num">' + f0(f(x.id)) + '</td>').join('') + '<td class="l num" style="font-weight:700">' + f0(used.reduce((t, x) => t + f(x.id), 0)) + '</td></tr>';
+  // expandable detail: section → account group (level 3) → account; a click on an account opens its statement for the same period
+  UI.plx = UI.plx || {};
+  const arrow = (k) => '<span class="plar">' + (UI.plx[k] ? '▾' : '▸') + '</span>';
+  const vrow = (lab, f, cls, key, pad, href) => '<tr class="' + (cls || '') + '"' + (key ? ' data-plx="' + key + '" style="cursor:pointer"' : '') + '><td style="padding-right:' + (12 + (pad || 0) * 18) + 'px">' + (key ? arrow(key) : '') + (href ? '<a href="' + href + '" class="placc">' + lab + '</a>' : lab) + '</td>' + used.map((x) => '<td class="l num">' + f0(f(x.id)) + '</td>').join('') + '<td class="l num" style="font-weight:700">' + f0(used.reduce((t, x) => t + f(x.id), 0)) + '</td></tr>';
+  const detail = (sec, sg) => {
+    if (!UI.plx['s:' + sec]) return '';
+    const ids = Object.keys(AT).filter((id) => secOf(acc(b, id)) === sec && used.some((x) => Math.abs(AT[id][x.id]) > 0.004));
+    const byG = {}; ids.forEach((id) => { const a = acc(b, id); const g = acc(b, a.parent); const gk = g ? g.id : '_'; (byG[gk] = byG[gk] || []).push(a); });
+    const gs = Object.keys(byG).sort((x, y) => String((acc(b, x) || {}).code || '').localeCompare(String((acc(b, y) || {}).code || '')));
+    const leaf = (a, pad) => vrow(esc(a.name), (k) => sg * AT[a.id][k], 'pld', null, pad, '#/c/' + r.cid + '/wallet/' + a.id);
+    if (gs.length === 1) return byG[gs[0]].sort((x, y) => String(x.code).localeCompare(String(y.code))).map((a) => leaf(a, 1)).join('');
+    return gs.map((gk) => { const g = acc(b, gk); const its = byG[gk].sort((x, y) => String(x.code).localeCompare(String(y.code))); const key = 'g:' + gk;
+      return vrow(esc(g ? g.name : 'أخرى'), (k) => sg * its.reduce((t, a) => t + AT[a.id][k], 0), 'plg', key, 1) + (UI.plx[key] ? its.map((a) => leaf(a, 2)).join('') : ''); }).join('');
+  };
+  const sec = (lab, key, sg) => vrow(lab, (k) => sg * R[key][k], 'pls', 's:' + key, 0) + detail(key, sg);
+  const plAllKeys = () => { const ks = ['s:sales', 's:cogs', 's:op', 's:gen', 's:cd']; Object.keys(AT).forEach((id) => { const a = acc(b, id); if (a && a.parent) ks.push('g:' + a.parent); }); return ks; };
+  UI.plAll = plAllKeys;
   // balance sheet as at P.to end (tree, level selectable)
   const asAt = to; const T = totalsByAcc(b, asAt); UI.bsLvl = UI.bsLvl || 3;
   const sgn = (a, v) => (a.type === 'asset' || a.type === 'expense') ? v.d - v.c : v.c - v.d;
@@ -1297,14 +1315,20 @@ function vPL(r) {
   const msel = (id, v) => '<select class="in" id="' + id + '" style="width:auto">' + mo.map((k) => '<option value="' + k + '"' + (k === v ? ' selected' : '') + '>' + ymLabel(k) + '</option>').join('') + '</select>';
   return layout(r, 'قائمة الدخل',
     '<div class="head"><div><div class="sub">' + esc(c.name) + '</div><h1>قائمة الدخل والميزانية</h1></div><div class="row noprint"><button class="btn a" onclick="window.print()">' + ic('print', 16) + 'PDF</button></div></div>' + periodBar() +
-    '<div class="card"><h2 style="margin-bottom:10px">قائمة الدخل حسب الفرع · ' + perLabel() + '</h2><div class="tw"><table><thead><tr><th></th>' + used.map((x) => '<th class="l">' + esc(x.n) + '</th>').join('') + '<th class="l" style="color:var(--ink)">الإجمالي</th></tr></thead><tbody>' +
-    row('المبيعات (بدون ضريبة)', (k) => R.sales[k]) + row('مشتريات خامات (تكلفة مبيعات مبدئية)', (k) => -R.cogs[k]) + row('مجمل الربح (مبدئي)', (k) => R.sales[k] - R.cogs[k], true) + row('مصروفات تشغيل', (k) => -R.op[k]) + row('مصروفات عمومية', (k) => -R.gen[k]) + (used.some((x) => Math.abs(R.cd[x.id]) > 0.004) ? row('عجز وزيادة الخزينة', (k) => -R.cd[k]) : '') + row('صافي الربح', (k) => R.sales[k] - R.cogs[k] - R.op[k] - R.gen[k] - R.cd[k], true) +
+    '<div class="card"><div class="row" style="margin-bottom:10px;flex-wrap:wrap"><h2 class="sp">قائمة الدخل حسب الفرع · ' + perLabel() + '</h2><div class="row noprint" style="gap:8px"><button class="btn sm" id="plOpen">فتح الكل</button><button class="btn sm" id="plClose">قفل الكل</button></div></div><div class="sub noprint" style="margin:-4px 0 10px">اضغط على أي بند ▸ لعرض تفاصيله، واضغط على اسم الحساب لفتح كشف حسابه.</div><div class="tw plt"><table><thead><tr><th></th>' + used.map((x) => '<th class="l">' + esc(x.n) + '</th>').join('') + '<th class="l" style="color:var(--ink)">الإجمالي</th></tr></thead><tbody>' +
+    sec('المبيعات (بدون ضريبة)', 'sales', 1) + sec('مشتريات خامات (تكلفة مبيعات مبدئية)', 'cogs', -1) + row('مجمل الربح (مبدئي)', (k) => R.sales[k] - R.cogs[k], true) + sec('مصروفات تشغيل', 'op', -1) + sec('مصروفات عمومية', 'gen', -1) + (used.some((x) => Math.abs(R.cd[x.id]) > 0.004) ? sec('عجز وزيادة الخزينة', 'cd', -1) : '') + row('صافي الربح', (k) => R.sales[k] - R.cogs[k] - R.op[k] - R.gen[k] - R.cd[k], true) +
     '</tbody></table></div><p class="sub" style="margin:10px 0 0">تظهر مصروفات "الرئيسي" في عمود مستقل ولا تُوزَّع على الفروع، والإجمالي يشملها. تكلفة المبيعات حاليًا = المشتريات المسجلة في الفترة، لأنه لا يوجد جرد للمخزون بعد.</p></div>' +
     '<div class="row noprint"><h2 class="sp">الميزانية في ' + to + '</h2><div class="chips">' + [2, 3, 4].map((n) => '<button class="chip' + (n === UI.bsLvl ? ' on' : '') + '" data-bsl="' + n + '">حتى مستوى ' + n + '</button>').join('') + '</div></div>' +
     '<div class="grid g-2"><div class="card"><h2>الأصول</h2><div class="list">' + bsList('asset') + '<div class="it" style="font-weight:700"><span>إجمالي الأصول</span><span class="num">' + f2(sA) + '</span></div></div></div>' +
     '<div class="card"><h2>الخصوم وحقوق الملكية</h2><div class="list">' + bsList('liability') + '<div class="it" style="font-weight:700"><span>إجمالي الخصوم</span><span class="num">' + f2(sL) + '</span></div>' + bsList('equity') + '<div class="it"><span>صافي الربح المتراكم</span><span class="num">' + f2(profit) + '</span></div><div class="it" style="font-weight:700"><span>الخصوم + حقوق الملكية</span><span class="num">' + f2(sL + sE) + '</span></div></div>' + (Math.abs(sA - sL - sE) < 0.01 ? '<div class="tag a" style="margin-top:8px">✓ الميزانية متوازنة</div>' : '<div class="note r" style="margin-top:8px">الميزانية غير متوازنة بفرق ' + f2(sA - sL - sE) + ' — افتح صفحة البيانات وأجرِ الفحص.</div>') + '</div></div>');
 }
-AFTER.pl = () => { $$('[data-bsl]').forEach((x) => x.onclick = () => { UI.bsLvl = +x.dataset.bsl; render(); }); };
+AFTER.pl = () => {
+  $$('[data-bsl]').forEach((x) => x.onclick = () => { UI.bsLvl = +x.dataset.bsl; render(); });
+  $$('[data-plx]').forEach((x) => x.onclick = (ev) => { if (ev.target.closest('a')) return; const k = x.dataset.plx; UI.plx[k] = !UI.plx[k]; render(); });
+  const o = $('#plOpen'), c = $('#plClose');
+  if (o) o.onclick = () => { (UI.plAll ? UI.plAll() : []).forEach((k) => { UI.plx[k] = true; }); render(); };
+  if (c) c.onclick = () => { UI.plx = {}; render(); };
+};
 
 // ---------- trial balance (tree)
 function treeRows(b, t, maxLvl, rowFn) {
