@@ -125,7 +125,7 @@ svg text{font-family:inherit}
  body{background:#fff}
  th{position:static}
 }
-body.ro #mEdit,body.ro #mDel,body.ro [data-del],body.ro [data-edit],body.ro .cocard.add,body.ro #demoBtn,body.ro #srSave,body.ro [data-srdel],body.ro #bkUp,body.ro label:has(#bkUp),body.ro [data-snap],body.ro #fhNew,body.ro #fhRe,body.ro .mtop a.iconbtn,body.ro .homehead a[href="#/data"]{display:none!important}
+body.ro #mEdit,body.ro #mDel,body.ro [data-del],body.ro [data-edit],body.ro .cocard.add,body.ro #demoBtn,body.ro #srSave,body.ro [data-srdel],body.ro #bkUp,body.ro label:has(#bkUp),body.ro [data-snap],body.ro #fhNew,body.ro label:has(#coUp),body.ro #fhRe,body.ro .mtop a.iconbtn,body.ro .homehead a[href="#/data"]{display:none!important}
 </style>
 </head>
 <body>
@@ -133,7 +133,7 @@ body.ro #mEdit,body.ro #mDel,body.ro [data-del],body.ro [data-edit],body.ro .coc
 <div id="modal"></div>
 <script>
 'use strict';
-const APP_VERSION = '3.0.0';
+const APP_VERSION = '3.1.0';
 // ---------- helpers
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -935,14 +935,16 @@ function chanAcc(b, ch, brId) { if (ch.acc === '@cash') { const x = b.branches.f
 function revCompute(cid, R) {
   const b = book(cid), c = company(cid); if (!R.br) return { err: 'اختر الفرع' };
   let total = 0, netT = 0, vatT = 0; const rate = vatActive(c, R.date) ? c.vatRate : 0; const rows = [];
-  const dr = [], com = [];
+  const dr = [], com = [], sales = {}, used = {};
   b.channels.forEach((ch) => {
     const g = r2(num(R.amts[ch.id])); if (!g) return; total += g;
-    const net = r2(g / (1 + rate / 100)), vat = r2(g - net), cm = r2(g * (ch.rate || 0) / 100);
+    const cr = R.rates && R.rates[ch.id] != null ? +R.rates[ch.id] : (ch.rate || 0); used[ch.id] = cr; // keep the rate the entry was recorded with
+    const net = r2(g / (1 + rate / 100)), vat = r2(g - net), cm = r2(g * cr / 100);
+    const sa = ch.sales && acc(b, ch.sales) ? ch.sales : sysAcc(b, 'sales').id; sales[sa] = r2((sales[sa] || 0) + net);
     const wa = chanAcc(b, ch, R.br); if (!wa || !acc(b, wa)) { rows.push({ ch, err: true }); return; }
     netT += net; vatT += vat;
     dr.push({ a: wa, b: R.br, dr: g, cr: 0, n: 'إيراد ' + ch.name, ch: ch.id });
-    if (cm) com.push({ ch, wa, cm });
+    if (cm) com.push({ ch, wa, cm, cr });
     rows.push({ ch, g, net, vat, com: cm, rec: r2(g - cm) });
   });
   if (rows.some((x) => x.err)) return { err: 'توجد قناة بيع غير مرتبطة بحساب — راجع الإعدادات' };
@@ -950,16 +952,16 @@ function revCompute(cid, R) {
   const diff = r2(num(R.diff)); const cashA = chanAcc(b, { acc: '@cash' }, R.br);
   // part 1: all channels → sales (one line), part 2: each channel's commission
   const lines = dr.slice();
-  lines.push({ a: sysAcc(b, 'sales').id, b: R.br, dr: 0, cr: r2(netT), n: 'إجمالي مبيعات اليوم' });
+  const sk = Object.keys(sales); sk.forEach((a) => lines.push({ a, b: R.br, dr: 0, cr: sales[a], n: sk.length === 1 ? 'إجمالي مبيعات اليوم' : acc(b, a).name }));
   if (r2(vatT)) lines.push({ a: sysAcc(b, 'vatOut').id, b: null, dr: 0, cr: r2(vatT) });
-  com.forEach((x, i) => lines.push({ a: sysAcc(b, 'commission').id, b: R.br, dr: x.cm, cr: 0, n: 'عمولة ' + x.ch.name + ' ' + (x.ch.rate) + '%', sec: i === 0 ? 'com' : undefined, ch: x.ch.id }));
+  com.forEach((x, i) => lines.push({ a: x.ch.com && acc(b, x.ch.com) ? x.ch.com : sysAcc(b, 'commission').id, b: R.br, dr: x.cm, cr: 0, n: 'عمولة ' + x.ch.name + ' ' + x.cr + '%', sec: i === 0 ? 'com' : undefined, ch: x.ch.id }));
   com.forEach((x) => lines.push({ a: x.wa, b: R.br, dr: 0, cr: x.cm, n: 'عمولة ' + x.ch.name, ch: x.ch.id }));
   if (diff) {
     const cd = sysAcc(b, 'cashdiff').id;
     if (diff > 0) { lines.push({ a: cashA, b: R.br, dr: diff, cr: 0, n: 'زيادة في الكاش', sec: 'diff' }); lines.push({ a: cd, b: R.br, dr: 0, cr: diff, n: 'زيادة في الكاش' }); }
     else { lines.push({ a: cd, b: R.br, dr: -diff, cr: 0, n: 'عجز في الكاش', sec: 'diff' }); lines.push({ a: cashA, b: R.br, dr: 0, cr: -diff, n: 'عجز في الكاش' }); }
   }
-  return { lines, rows, total: r2(total), rate, diff };
+  return { lines, rows, total: r2(total), rate, diff, used };
 }
 function vRevenue(r) {
   const c = company(r.cid), b = book(r.cid);
@@ -986,7 +988,7 @@ AFTER.revenue = (r) => {
     const res = revCompute(r.cid, R); if (res.err) { toast(res.err); return; }
     const b = book(r.cid); const old = R.editId ? b.entries.find((x) => x.id === R.editId) : null;
     guarded(r.cid, [R.date].concat(old ? [old.date] : []), R.editId ? 'تعديل' : 'إضافة', 'إيراد ' + branchName(b, R.br), () => {
-      try { const meta = JSON.parse(JSON.stringify(R)); delete meta.editId; delete meta.cid; addEntry(r.cid, { id: R.editId, kind: 'rev', date: R.date, memo: R.memo, lines: res.lines, meta }); toast(R.editId ? 'تم التعديل' : 'تم التسجيل ✓'); const keep = R.editId ? null : { date: R.date }; REV = freshRev(r.cid); if (keep) { REV.date = keep.date; const brs = sellBranches(book(r.cid)); const i = brs.findIndex((x) => x.id === R.br); REV.br = (brs[i + 1] || brs[0]).id; render(); } else go('#/c/' + r.cid + '/entries'); return res.total; } catch (err) { toast(err.message); return false; }
+      try { const meta = JSON.parse(JSON.stringify(R)); delete meta.editId; delete meta.cid; meta.rates = res.used; addEntry(r.cid, { id: R.editId, kind: 'rev', date: R.date, memo: R.memo, lines: res.lines, meta }); toast(R.editId ? 'تم التعديل' : 'تم التسجيل ✓'); const keep = R.editId ? null : { date: R.date }; REV = freshRev(r.cid); if (keep) { REV.date = keep.date; const brs = sellBranches(book(r.cid)); const i = brs.findIndex((x) => x.id === R.br); REV.br = (brs[i + 1] || brs[0]).id; render(); } else go('#/c/' + r.cid + '/entries'); return res.total; } catch (err) { toast(err.message); return false; }
     });
   };
   const ca = $('#rCancel'); if (ca) ca.onclick = () => { REV = null; go('#/c/' + r.cid + '/entries'); };
@@ -1487,6 +1489,7 @@ function vData() {
   return '<header class="homehead"><a class="btn sm" href="#/">' + ic('home', 16) + 'كل الشركات</a><b>البيانات والنسخ الاحتياطي</b></header><div class="homewrap" style="max-width:860px">' +
     '<div class="card grid" style="gap:12px"><h2>الحفظ</h2><div class="list"><div class="it"><span>الحفظ التلقائي على الجهاز (المتصفح)</span>' + (Store.ok ? '<span class="tag a">مفعّل</span>' : '<span class="tag r">غير مفعّل</span>') + '</div><div class="it"><span>نسخة يومية تلقائية (آخر 14 يومًا)</span>' + (Store.ok ? '<span class="tag a">مفعّل</span>' : '<span class="tag r">—</span>') + '</div><div class="it"><span>الحفظ في ملف على جهازك (مثل مجلد Google Drive)</span>' + (Store.fh && Store.fileOk ? '<span class="tag a">' + esc(Store.fh.name) + '</span>' : Store.fh ? '<span class="tag w">يحتاج إلى تفعيل</span>' : '<span class="tag">غير مرتبط</span>') + '</div><div class="it"><span>حجم البيانات</span><span class="num">' + size + ' KB</span></div></div>' +
     (fsOk ? '<div class="row">' + (Store.fh && !Store.fileOk ? '<button class="btn a" id="fhRe">تفعيل الحفظ في ' + esc(Store.fh.name) + '</button>' : '') + '<button class="btn p" id="fhNew">' + (Store.fh ? 'اختر ملفًا آخر' : 'ربط ملف حفظ') + '</button></div><div class="sub" style="line-height:1.8">اختر موضع الملف داخل مجلد Google Drive على جهازك، ليُحفظ فيه كل تعديل ويُرفع إلى Drive تلقائيًا. عند تغيير نظام التشغيل: افتح البرنامج واضغط "استرجاع من ملف" واختر الملف نفسه.</div>' : '<div class="note w">هذا المتصفح لا يدعم الحفظ المباشر في ملف (وهذا طبيعي على الهاتف). احفظ نسخة احتياطية بالزر أدناه.</div>') + '</div>' +
+    '<div class="card grid" style="gap:12px"><h2>إضافة شركة من ملف</h2><p class="sub" style="margin:0;line-height:1.8">لإضافة شركة جاهزة ببياناتها (مثل ملف كومبير). لا يمسح أي شركة موجودة؛ ولو الشركة نفسها موجودة يسألك قبل الاستبدال.</p><label class="btn p" style="align-self:flex-start">' + ic('plus', 16) + 'اختيار ملف الشركة<input type="file" id="coUp" accept=".json,application/json" hidden></label></div>' +
     '<div class="card grid" style="gap:12px"><h2>نسخة احتياطية</h2><div class="row"><button class="btn p" id="bkDl">' + ic('dl', 16) + 'تحميل نسخة احتياطية</button><label class="btn">استرجاع من ملف<input type="file" id="bkUp" accept=".json,application/json" style="display:none"></label></div><div class="sub">يستبدل الاسترجاع جميع البيانات الحالية بمحتوى الملف، مع حفظ نسخة من البيانات الحالية قبله.</div><div id="snaps" class="list"></div></div>' +
     '<div class="card grid" style="gap:12px"><h2>فحص البيانات</h2>' + (issues.length ? '<div class="note r">' + issues.map(esc).join('<br>') + '</div>' : '<div class="note">✓ جميع الحركات متوازنة ولا توجد مشكلات.</div>') + '</div>' +
     '<div class="card grid" style="gap:12px"><h2>عند ظهور مشكلة</h2><div class="sub">اضغط الزر، ثم الصق النص المنسوخ في المحادثة.</div><button class="btn" id="errCp" style="align-self:flex-start">نسخ تقرير المشكلة</button><div class="sub">إصدار البرنامج ' + APP_VERSION + ' · أخطاء مسجلة: ' + ERRORS.length + '</div></div></div>';
@@ -1494,6 +1497,22 @@ function vData() {
 AFTER.data = async () => {
   const dl = () => offerFile('نسخة-احتياطية-' + today() + '.json', new Blob([JSON.stringify(DB, null, 1)], { type: 'application/json' }));
   $('#bkDl').onclick = dl;
+  $('#coUp').onchange = async (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    try {
+      const d = JSON.parse(await f.text());
+      if (!d || !d.hesabatCompany || !d.company || !d.book || !Array.isArray(d.book.entries)) throw new Error('الملف ده مش ملف شركة');
+      const c = d.company, ex = DB.companies.find((x) => x.id === c.id);
+      const doIt = () => {
+        if (ex) DB.companies = DB.companies.filter((x) => x.id !== c.id);
+        DB.companies.push(c); DB.books[c.id] = d.book;
+        try { migrateTree(d.book); ensureSys2(d.book); } catch (err) { }
+        save(); toast('تمت إضافة ' + c.name + ' — ' + d.book.entries.length + ' قيد ✓'); go('#/c/' + c.id + '/dash'); render();
+      };
+      if (ex) confirmBox('شركة "' + esc(c.name) + '" موجودة بالفعل. استبدالها ببيانات الملف؟ (باقي الشركات لن تتأثر)', 'استبدال', doIt, true); else doIt();
+    } catch (err) { toast('تعذّرت الإضافة: ' + err.message); }
+    e.target.value = '';
+  };
   $('#bkUp').onchange = async (e) => {
     const f = e.target.files[0]; if (!f) return;
     try { const d = JSON.parse(await f.text()); if (!d || !Array.isArray(d.companies) || typeof d.books !== 'object') throw new Error('هذا الملف ليس نسخة احتياطية من البرنامج');
