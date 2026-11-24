@@ -177,14 +177,14 @@ tbody tr td{transition:background .15s}
 .click:hover td{background:#F7F5EF}
 @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
 @media print{.ddov{display:none !important}*{animation:none !important}.plt tr.tot td{background:#eee !important;color:#000 !important}}
-</style>
+.drc.bad{border-color:#E8C4BC}.drt td{padding:5px 4px;vertical-align:top}.drt .in{padding:8px 10px;font-size:14px}.drt tr.bad td{background:var(--bads)}.drt tfoot td{font-weight:700}.pager .btn.p{pointer-events:none}.tagin{min-width:120px}</style>
 </head>
 <body>
 <div id="root"></div>
 <div id="modal"></div>
 <script>
 'use strict';
-const APP_VERSION = '3.7.1';
+const APP_VERSION = '3.8.1';
 // ---------- helpers
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -586,6 +586,7 @@ const NAV = [
   ['payroll', 'users', 'الموظفون والمرتبات'],
   ['§', '', 'متابعة'],
   ['entries', 'list', 'كل الحركات'],
+  ['statement', 'book', 'كشف حساب'],
   ['wallets', 'cash', 'البنوك والخزائن والعُهد'],
   ['§', '', 'تقارير'],
   ['ready', 'list', 'تقارير جاهزة'],
@@ -638,7 +639,7 @@ function render() {
     else if (r.page === 'new') html = vNew();
     else if (r.page === 'data') html = vData();
     else {
-      const V = { dash: vDash, expense: vExpense, revenue: vRevenue, transfer: vTransfer, collect: vTransfer, close: vClose, payroll: vPayroll, journal: vJournal, entries: vEntries, wallets: vWallets, wallet: vWallet, reports: vReports, ready: vReady, trend: vTrend, pl: vPL, tb: vTB, settings: vSettings }[r.page] || vDash;
+      const V = { dash: vDash, expense: vExpense, revenue: vRevenue, transfer: vTransfer, collect: vTransfer, close: vClose, payroll: vPayroll, journal: vJournal, entries: vEntries, wallets: vWallets, wallet: vWallet, statement: vStatement, drafts: vDrafts, reports: vReports, ready: vReady, trend: vTrend, pl: vPL, tb: vTB, settings: vSettings }[r.page] || vDash;
       html = V(r);
     }
   } catch (err) { ERRORS.push({ t: new Date().toISOString(), m: err.message, s: err.stack }); html = '<div class="homewrap"><div class="note r">حدثت مشكلة في عرض هذه الصفحة. افتح <a href="#/data">صفحة البيانات</a> واضغط "نسخ تقرير المشكلة" وأرسله إليّ.</div></div>'; }
@@ -1149,13 +1150,13 @@ AFTER.journal = (r) => {
 function vEntries(r) {
   const c = company(r.cid), b = book(r.cid), F = UI.entF;
   if (UI.entCid !== r.cid) { UI.entCid = r.cid; Object.assign(F, { q: '', kind: '', br: '', m: '' }); }
-  let list = b.entries.slice();
+  let list = (UI._entShown || b.entries).slice();
   if (F.kind) list = list.filter((e) => e.kind === F.kind);
   if (F.br) list = list.filter((e) => e.lines.some((l) => l.b === F.br));
   const PR = perRange(); list = list.filter((e) => e.date >= PR.from && e.date <= PR.to);
   if (F.q) { const q = F.q.toLowerCase(); list = list.filter((e) => (entryDesc(b, e) + ' ' + e.no + ' ' + e.lines.map((l) => (acc(b, l.a) || {}).name + ' ' + (l.tag || '')).join(' ')).toLowerCase().includes(q)); }
   list.sort((x, y) => (y.date + y.ts).localeCompare(x.date + x.ts));
-  const shown = list.slice(0, 300);
+  const shown = UI.entSig2 ? list : list.slice(0, 300); UI.entSig2 = 0;
   return layout(r, 'كل الحركات',
     '<div class="head"><div><div class="sub">' + esc(c.name) + '</div><h1>كل الحركات</h1></div><div class="row noprint"><a class="btn a" href="#/c/' + c.id + '/expense">' + ic('plus', 16) + 'مصروف</a><a class="btn" href="#/c/' + c.id + '/revenue">إيراد</a><button class="btn" id="enCsv">' + ic('dl', 16) + 'Excel</button></div></div>' +
     '<div class="card row noprint" style="gap:10px"><input class="in sp" id="fQ" placeholder="بحث: بند، صنف، ملاحظة، رقم…" value="' + esc(F.q) + '" style="min-width:200px"><select class="in" id="fK" style="width:auto"><option value="">كل الأنواع</option>' + Object.keys(KIND).map((k) => '<option value="' + k + '"' + (F.kind === k ? ' selected' : '') + '>' + KIND[k][0] + '</option>').join('') + '</select><select class="in" id="fB" style="width:auto">' + brOptions(b, F.br, 'كل الفروع') + '</select></div>' + periodBar() +
@@ -1778,7 +1779,7 @@ function buildXlsx(sheets, names) { // sheets: [{name, rows:[[...]], widths:[], 
   const ws = sheets.map((sh) => {
     const rows = sh.rows.map((r, ri) => '<row r="' + (ri + 1) + '">' + r.map((v, ci) => v === '' || v === null || v === undefined ? '' : (typeof v === 'number' ? '<c r="' + colL(ci) + (ri + 1) + '"' + (ri === 0 ? ' s="1"' : '') + '><v>' + v + '</v></c>' : '<c r="' + colL(ci) + (ri + 1) + '" t="inlineStr"' + (ri === 0 ? ' s="1"' : '') + '><is><t>' + xesc(v) + '</t></is></c>')).join('') + '</row>').join('');
     const cols = sh.widths ? '<cols>' + sh.widths.map((w, i) => '<col min="' + (i + 1) + '" max="' + (i + 1) + '" width="' + w + '" customWidth="1"/>').join('') + '</cols>' : '';
-    const dvs = sh.validations && sh.validations.length ? '<dataValidations count="' + sh.validations.length + '">' + sh.validations.map((v) => '<dataValidation type="list" allowBlank="1" showErrorMessage="1" errorTitle="قيمة غير موجودة" error="اختر من القائمة" sqref="' + v.col + '2:' + v.col + v.rows + '"><formula1>' + v.ref + '</formula1></dataValidation>').join('') + '</dataValidations>' : '';
+    const dvs = sh.validations && sh.validations.length ? '<dataValidations count="' + sh.validations.length + '">' + sh.validations.map((v) => '<dataValidation type="list" allowBlank="1" showErrorMessage="1"' + (v.soft ? ' errorStyle="information" errorTitle="صنف جديد" error="الصنف ده مش في القائمة — هيتضاف لما ترحّل القيد. دوس OK للتأكيد."' : ' errorTitle="قيمة غير موجودة" error="اختر من القائمة"') + ' sqref="' + v.col + '2:' + v.col + v.rows + '"><formula1>' + v.ref + '</formula1></dataValidation>').join('') + '</dataValidations>' : '';
     return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetViews><sheetView rightToLeft="1" workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>' + cols + '<sheetData>' + rows + '</sheetData>' + dvs + '</worksheet>';
   });
   const files = [
@@ -1825,7 +1826,7 @@ function downloadJournalTemplate(cid) {
   const sample = [JCOLS, [t, (expAccs(b).find((a) => a.tags) || {}).name || '', (sellBranches(b)[0] || {}).name || '', b.tags[0] || '', 100, '', 'مثال — امسح الأسطر دي'], [t, (wallets(b)[0] || {}).name || '', '', '', '', 100, 'مثال']];
   const R = 500;
   const bytes = buildXlsx([
-    { name: 'القيد', rows: sample, widths: [14, 30, 16, 16, 14, 14, 34], validations: [{ col: 'B', rows: R, ref: 'qAccounts' }, { col: 'C', rows: R, ref: 'qBranches' }, { col: 'D', rows: R, ref: 'qTags' }] },
+    { name: 'القيد', rows: sample, widths: [14, 30, 16, 16, 14, 14, 34], validations: [{ col: 'B', rows: R, ref: 'qAccounts' }, { col: 'C', rows: R, ref: 'qBranches' }, { col: 'D', rows: R, ref: 'qTags', soft: 1 }] },
     { name: 'القوائم', rows: lists, widths: [34, 18, 18] }
   ], [{ name: 'qAccounts', ref: "'القوائم'!$A$2:$A$" + Math.max(2, accs.length + 1) }, { name: 'qBranches', ref: "'القوائم'!$B$2:$B$" + Math.max(2, brs.length + 1) }, { name: 'qTags', ref: "'القوائم'!$C$2:$C$" + Math.max(2, tags.length + 1) }]);
   saveBytes('نموذج قيد — ' + c.name + '.xlsx', bytes, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -2321,7 +2322,7 @@ const FB_CONFIG = {
 };
 const FB_VER = '10.14.1';
 const CLOUD_MODE = /\.github\.io$/i.test(location.hostname) || !!window.FB_MOCK;
-const RO_PAGES = ['expense', 'revenue', 'transfer', 'collect', 'journal', 'payroll', 'close', 'settings'];
+const RO_PAGES = ['drafts', 'expense', 'revenue', 'transfer', 'collect', 'journal', 'payroll', 'close', 'settings'];
 
 // ---------- thin adapter over the Firebase compat SDK (a test mock can replace it)
 function loadScript(src) { return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('load ' + src)); document.head.appendChild(s); }); }
@@ -2963,5 +2964,273 @@ cloudDataSection = async function () {
   }
   return _cloudData16.apply(this, arguments);
 };
+
+// ======================================================================
+// v3.8 — grocery items: type-to-search + add new + "did you mean"; merge items;
+//        journal Excel → editable drafts; paged "all entries"; account-statement screen
+// ======================================================================
+
+// ---------- grocery items (tags)
+const tagNorm = (s) => String(s || '').trim().replace(/[إأآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي').replace(/\s+/g, ' ').toLowerCase();
+function lev(a, b) { const m = a.length, n = b.length; if (!m) return n; if (!n) return m; let p = Array.from({ length: n + 1 }, (_, j) => j); for (let i = 1; i <= m; i++) { const c = [i]; for (let j = 1; j <= n; j++) c[j] = Math.min(p[j] + 1, c[j - 1] + 1, p[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); p = c; } return p[n]; }
+function tagSimilar(b, v) {
+  const x = tagNorm(v); if (!x) return [];
+  return b.tags.filter((t) => { const y = tagNorm(t); if (y === x) return true; const d = lev(x, y); return d <= (Math.min(x.length, y.length) > 4 ? 2 : 1) || (x.length >= 3 && y.length >= 3 && (y.includes(x) || x.includes(y))); }).slice(0, 4);
+}
+function tagExact(b, v) { const x = tagNorm(v); return b.tags.find((t) => tagNorm(t) === x); }
+function tagField(b, val, target, extra) {
+  return '<input class="in tagin" list="tagDL" data-tagt="' + esc(target) + '" value="' + esc(val || '') + '" placeholder="اكتب أو اختر الصنف…" autocomplete="off"' + (extra || '') + '>';
+}
+function tagSet(target, v) {
+  const p = String(target).split(':');
+  if (p[0] === 'E' && EXP) EXP.tag = v;
+  else if (p[0] === 'J' && JR && JR.lines[+p[1]]) JR.lines[+p[1]].tag = v;
+  else if (p[0] === 'B' && BULK && BULK.rows[+p[1]]) BULK.rows[+p[1]].tag = v;
+  else if (p[0] === 'D') { const b = book(route().cid); const d = (b.jdrafts || []).find((x) => x.id === p[1]); if (d && d.lines[+p[2]]) { d.lines[+p[2]].tag = v; save(); } }
+}
+function tagAdd(b, v) { v = String(v).trim().replace(/\s+/g, ' '); if (!v || b.tags.includes(v)) return v; b.tags.push(v); b.tags.sort((x, y) => x.localeCompare(y, 'ar')); save(); try { logAct('other', 'صنف جديد: ' + v, route().cid); } catch (e) { } return v; }
+function tagResolve(cid, raw, target) {
+  const b = book(cid); const v = String(raw || '').trim().replace(/\s+/g, ' ');
+  if (!v) { tagSet(target, ''); render(); return; }
+  const ex = tagExact(b, v); if (ex) { tagSet(target, ex); render(); return; }
+  const sim = tagSimilar(b, v);
+  modal('<h2>صنف جديد؟</h2><p style="margin:0;line-height:1.8">الصنف <b>«' + esc(v) + '»</b> مش موجود في القائمة.' + (sim.length ? '<br>فيه أصناف قريبة منه — <b>تقصد واحد منهم؟</b>' : '') + '</p>' +
+    (sim.length ? '<div class="row" style="gap:8px;flex-wrap:wrap">' + sim.map((s, i) => '<button class="btn" data-tsim="' + i + '">استخدم «' + esc(s) + '»</button>').join('') + '</div>' : '') +
+    '<div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn p" id="tNew">+ إضافة «' + esc(v) + '» كصنف جديد</button><button class="btn" id="tNo">إلغاء</button></div>', (m) => {
+    $$('[data-tsim]', m).forEach((x) => x.onclick = () => { closeModal(); tagSet(target, sim[+x.dataset.tsim]); render(); });
+    $('#tNew', m).onclick = () => { closeModal(); tagSet(target, tagAdd(b, v)); render(); toast('اتضاف الصنف «' + v + '» ✓'); };
+    $('#tNo', m).onclick = () => { closeModal(); render(); };
+  });
+}
+document.addEventListener('change', (ev) => { const el = ev.target; if (!el.classList || !el.classList.contains('tagin') || el.dataset.done) return; el.dataset.done = '1'; const r = route(); if (r.cid) setTimeout(() => tagResolve(r.cid, el.value, el.dataset.tagt), 0); });
+document.addEventListener('keydown', (ev) => { const el = ev.target; if (ev.key === 'Enter' && el.classList && el.classList.contains('tagin')) { ev.preventDefault(); if (el.dataset.done) return; el.dataset.done = '1'; const r = route(); if (r.cid) setTimeout(() => tagResolve(r.cid, el.value, el.dataset.tagt), 0); } });
+function ensureTagDL() {
+  const r = route(); const b = r.cid ? book(r.cid) : null; if (!b || !$('.tagin')) return;
+  let dl = $('#tagDL'); if (!dl) { dl = document.createElement('datalist'); dl.id = 'tagDL'; document.body.appendChild(dl); }
+  const h = b.tags.map((t) => '<option value="' + esc(t) + '">').join(''); if (dl.innerHTML !== h) dl.innerHTML = h;
+}
+// a typed item that was never confirmed blocks saving
+const _expCompute17 = expCompute;
+expCompute = function (cid, E) { const res = _expCompute17.apply(this, arguments); if (!res.err && E && E.tag && !book(cid).tags.includes(E.tag)) res.err = 'الصنف «' + E.tag + '» مش في القائمة — اختاره أو أضفه'; return res; };
+
+// merge two items: every line moves to the kept item, the other disappears
+function tagMergeDialog(cid) {
+  const b = book(cid); const cnt = (t) => b.entries.reduce((n, e) => n + e.lines.filter((l) => l.tag === t).length, 0);
+  const opt = (sel) => b.tags.map((t) => '<option' + (t === sel ? ' selected' : '') + '>' + esc(t) + '</option>').join('');
+  modal('<h2>دمج صنفين</h2><div class="sub" style="line-height:1.8">كل الحركات المسجّلة على الصنف الأول هتتنقل للصنف التاني، والأول هيختفي من القائمة. المبالغ والأرصدة مش بتتغيّر.</div>' +
+    '<label class="f">الصنف اللي هيختفي<select class="in" id="tmA"><option value="">— اختر —</option>' + opt('') + '</select></label><label class="f">يتدمج في (اللي هيفضل)<select class="in" id="tmB"><option value="">— اختر —</option>' + opt('') + '</select></label>' +
+    '<div class="note" id="tmInfo" style="display:none"></div><div class="row"><button class="btn p" id="tmOk" disabled>دمج</button><button class="btn" id="tmNo">إلغاء</button></div>', (m) => {
+    const upd = () => { const a = $('#tmA', m).value, c = $('#tmB', m).value; const ok = a && c && a !== c; $('#tmOk', m).disabled = !ok; const inf = $('#tmInfo', m); inf.style.display = ok ? '' : 'none'; if (ok) inf.innerHTML = 'هيتنقل <b class="num">' + cnt(a) + '</b> حركة من «' + esc(a) + '» إلى «' + esc(c) + '» (اللي فيه حاليًا <span class="num">' + cnt(c) + '</span> حركة).'; };
+    $('#tmA', m).onchange = upd; $('#tmB', m).onchange = upd; $('#tmNo', m).onclick = closeModal;
+    $('#tmOk', m).onclick = () => {
+      const a = $('#tmA', m).value, c = $('#tmB', m).value; let n = 0;
+      b.entries.forEach((e) => e.lines.forEach((l) => { if (l.tag === a) { l.tag = c; n++; } }));
+      (b.jdrafts || []).forEach((d) => d.lines.forEach((l) => { if (l.tag === a) l.tag = c; }));
+      [EXP, JR].forEach((X) => { if (X && X.tag === a) X.tag = c; if (X && X.lines) X.lines.forEach((l) => { if (l.tag === a) l.tag = c; }); });
+      b.tags = b.tags.filter((t) => t !== a); save(); closeModal(); try { logAct('edit', 'دمج صنف «' + a + '» في «' + c + '» (' + n + ' حركة)', cid); } catch (e) { } toast('تم الدمج: ' + n + ' حركة بقت «' + c + '» ✓'); render();
+    };
+  });
+}
+
+// swap the old item dropdowns for the searchable field (expense, bulk expenses, manual entry)
+const _vExpense17 = vExpense;
+vExpense = function (r) {
+  let h = _vExpense17(r); const b = book(r.cid);
+  h = h.replace(/<select class="in" data-f="tag">[\s\S]*?<\/select>/, () => tagField(b, EXP && EXP.tag, 'E'));
+  h = h.replace(/<select class="in" data-r="(\d+)" data-k="tag">[\s\S]*?<\/select>/g, (_, i) => tagField(b, BULK && BULK.rows[+i] && BULK.rows[+i].tag, 'B:' + i));
+  return h;
+};
+const _vJournal17 = vJournal;
+vJournal = function (r) {
+  let h = _vJournal17(r); const b = book(r.cid);
+  h = h.replace(/<select class="in" data-l="(\d+)" data-k="tag">[\s\S]*?<\/select>/g, (_, i) => tagField(b, JR && JR.lines[+i] && JR.lines[+i].tag, 'J:' + i));
+  const n = (b.jdrafts || []).length;
+  if (n) h = h.replace('<div class="card', '<a class="note w" href="#/c/' + r.cid + '/drafts" style="display:block;text-decoration:none;margin-bottom:12px">عندك <b>' + n + '</b> قيد في المسودات من ملف Excel — اضغط هنا لمراجعتها وترحيلها.</a><div class="card');
+  return h;
+};
+// manual entry: a typed item that was never confirmed blocks saving
+const _afterJr17 = AFTER.journal;
+AFTER.journal = (r) => {
+  _afterJr17(r);
+  const s = $('#jSave'); if (!s) return; const orig = s.onclick;
+  s.onclick = (ev) => { const b = book(r.cid); const bad = (JR ? JR.lines : []).find((l) => l.tag && !b.tags.includes(l.tag)); if (bad) { toast('الصنف «' + bad.tag + '» مش في القائمة — اختاره أو أضفه'); return; } return orig && orig.call(s, ev); };
+};
+// settings: merge button on the items card
+const _vSettings17 = vSettings;
+vSettings = function (r) { return _vSettings17(r).replace('<h2 class="sp">أصناف البقالة</h2></div>', '<h2 class="sp">أصناف البقالة (' + book(r.cid).tags.length + ')</h2><button class="btn sm" id="tgMerge">دمج صنفين</button></div>'); };
+const _afterSet17 = AFTER.settings;
+AFTER.settings = (r) => { _afterSet17(r); const m = $('#tgMerge'); if (m) m.onclick = () => tagMergeDialog(r.cid); };
+
+// ---------- journal Excel → editable drafts
+function accOptsAll(b, sel) {
+  const groups = {}; leafAccs(b).forEach((a) => { (groups[a.parent] = groups[a.parent] || []).push(a); });
+  return '<option value="">— اختر الحساب —</option>' + Object.keys(groups).sort((x, y) => String((acc(b, x) || {}).code || '').localeCompare(String((acc(b, y) || {}).code || ''))).map((g) =>
+    '<optgroup label="' + esc((acc(b, g) || {}).name || '') + '">' + groups[g].sort((x, y) => String(x.code).localeCompare(String(y.code))).map((a) => '<option value="' + a.id + '"' + (a.id === sel ? ' selected' : '') + '>' + esc(a.name) + '</option>').join('') + '</optgroup>').join('');
+}
+// replace the read-only review with drafts
+showImport = function () {
+  const I = JIMP, b = book(I.cid); b.jdrafts = b.jdrafts || [];
+  I.groups.forEach((g) => {
+    b.jdrafts.push({ id: uid(), src: I.name, date: g.date === 'بدون تاريخ' ? '' : g.date, memo: (g.lines.find((l) => l.note) || {}).note || 'من ملف Excel',
+      lines: g.lines.map((l) => { if (!l.b && l.brN) { const x = allBranches(b).find((y) => tagNorm(y.name) === tagNorm(l.brN)); if (x) l.b = x.id; } if (!l.a && l.accN) { const xs = leafAccs(b).filter((y) => tagNorm(y.name) === tagNorm(l.accN)); if (xs.length === 1) l.a = xs[0].id; } return l; }).map((l) => ({ a: l.a || '', aN: l.a ? '' : l.accN, b: l.b || '', bN: l.b || !l.brN ? '' : l.brN, tag: l.tag || '', dr: l.dr ? String(l.dr) : '', cr: l.cr ? String(l.cr) : '', n: l.note || '', row: l.row })) });
+  });
+  save(); try { logAct('imp', 'رفع ملف قيود «' + I.name + '» → ' + I.groups.length + ' مسودة', I.cid); } catch (e) { }
+  toast('نزل ' + I.groups.length + ' قيد في المسودات — راجعها وعدّل اللي محتاج قبل الترحيل');
+  JIMP = null; go('#/c/' + I.cid + '/drafts');
+};
+function draftCheck(b, d) {
+  const errs = []; const lerr = {};
+  if (!d.date) errs.push('التاريخ فارغ');
+  let D = 0, C = 0, n = 0;
+  d.lines.forEach((l, i) => {
+    const E = []; const dr = num(l.dr), cr = num(l.cr);
+    if (!l.a && !dr && !cr && !l.aN) return;
+    n++;
+    if (!l.a) E.push(l.aN ? '«' + l.aN + '» مش موجود في الشجرة — اختار الحساب' : 'اختار الحساب');
+    if (l.bN) E.push('الفرع «' + l.bN + '» مش موجود — اختار الفرع');
+    if (dr && cr) E.push('مدين ودائن في نفس السطر'); if (!dr && !cr) E.push('مفيش مبلغ'); if (dr < 0 || cr < 0) E.push('مبلغ بالسالب');
+    if (l.tag && l.a && !(acc(b, l.a) || {}).tags) E.push('الحساب ده ملوش أصناف');
+    D += dr; C += cr; if (E.length) lerr[i] = E;
+  });
+  if (n < 2) errs.push('القيد محتاج سطرين على الأقل');
+  D = r2(D); C = r2(C); if (Math.abs(D - C) >= 0.005) errs.push('غير متوازن — الفرق ' + f2(D - C));
+  return { ok: !errs.length && !Object.keys(lerr).length, errs, lerr, D, C, n };
+}
+function vDrafts(r) {
+  const c = company(r.cid), b = book(r.cid); const L = b.jdrafts || [];
+  const chk = L.map((d) => draftCheck(b, d)); const nOk = chk.filter((x) => x.ok).length;
+  const newTags = Array.from(new Set(L.reduce((t, d) => t.concat(d.lines.map((l) => l.tag).filter((x) => x && !b.tags.includes(x))), [])));
+  const card = (d, i) => { const k = chk[i];
+    return '<div class="card grid drc' + (k.ok ? '' : ' bad') + '" style="gap:10px" id="dr-' + d.id + '"><div class="row" style="gap:10px;flex-wrap:wrap"><b class="num">' + (i + 1) + '</b><input type="date" class="in" data-dd2="' + d.id + '" data-dk="date" value="' + esc(d.date) + '" style="width:auto"><input class="in sp" data-dd2="' + d.id + '" data-dk="memo" value="' + esc(d.memo) + '" placeholder="البيان" style="min-width:180px">' +
+      (k.ok ? '<span class="tag a">✓ متوازن · <span class="num">' + f2(k.D) + '</span></span>' : '<span class="tag r">' + esc(k.errs[0] || 'فيه سطور محتاجة تصليح') + '</span>') + (lockedFor(r.cid, d.date) ? '<span class="tag w">شهر مقفل</span>' : '') + '</div>' +
+      '<div class="tw"><table class="drt"><thead><tr><th style="width:34px">صف</th><th style="min-width:170px">الحساب</th><th style="min-width:110px">الفرع</th><th style="min-width:130px">صنف البقالة</th><th style="min-width:100px">مدين</th><th style="min-width:100px">دائن</th><th style="min-width:140px">ملاحظة</th><th></th></tr></thead><tbody>' +
+      d.lines.map((l, j) => { const A = acc(b, l.a) || {}; const er = k.lerr[j];
+        return '<tr' + (er ? ' class="bad"' : '') + '><td class="sub num">' + (l.row || '') + '</td><td><select class="in" data-dl="' + d.id + ':' + j + '" data-k="a">' + accOptsAll(b, l.a) + '</select></td><td><select class="in" data-dl="' + d.id + ':' + j + '" data-k="b">' + brOptions(b, l.b, '—') + '</select></td>' +
+          '<td>' + (A.tags || l.tag ? tagField(b, l.tag, 'D:' + d.id + ':' + j) + (l.tag && !b.tags.includes(l.tag) ? '<span class="tag w" style="margin-top:4px">جديد</span>' : '') : '<span class="sub">—</span>') + '</td>' +
+          '<td><input class="in num" data-dl="' + d.id + ':' + j + '" data-k="dr" value="' + esc(l.dr) + '" inputmode="decimal"></td><td><input class="in num" data-dl="' + d.id + ':' + j + '" data-k="cr" value="' + esc(l.cr) + '" inputmode="decimal"></td>' +
+          '<td><input class="in" data-dl="' + d.id + ':' + j + '" data-k="n" value="' + esc(l.n) + '"></td><td><button class="btn" style="padding:6px 10px;color:var(--bad)" data-dlx="' + d.id + ':' + j + '" aria-label="حذف السطر">×</button></td></tr>' +
+          (er ? '<tr class="bad"><td></td><td colspan="7" style="color:var(--bad);font-size:13px">' + er.map(esc).join(' · ') + '</td></tr>' : ''); }).join('') +
+      '</tbody><tfoot><tr class="tot"><td></td><td colspan="3">الإجمالي</td><td class="num">' + f2(k.D) + '</td><td class="num">' + f2(k.C) + '</td><td colspan="2"></td></tr></tfoot></table></div>' +
+      '<div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn sm" data-dadd="' + d.id + '">+ سطر</button><span class="sp"></span><button class="btn sm r" data-ddel="' + d.id + '">حذف القيد</button><button class="btn sm p" data-dpost="' + d.id + '"' + (k.ok ? '' : ' disabled') + '>ترحيل القيد ده</button></div></div>'; };
+  const TD = chk.reduce((t, x) => t + x.D, 0), TC = chk.reduce((t, x) => t + x.C, 0);
+  return layout(r, 'مسودات القيود',
+    '<div class="head"><div><div class="sub">' + esc(c.name) + ' · من ملفات Excel</div><h1>مسودات القيود</h1></div><div class="row noprint"><a class="btn" href="#/c/' + c.id + '/journal">قيد يدوي</a></div></div>' +
+    (L.length ? '<div class="grid g-kpi"><div class="card kpi"><span class="sub">عدد القيود</span><span class="v num">' + L.length + '</span></div><div class="card kpi"><span class="sub">سليمة / محتاجة تصليح</span><span class="v num">' + nOk + ' / ' + (L.length - nOk) + '</span></div><div class="card kpi"><span class="sub">إجمالي المدين / الدائن</span><span class="v num" style="font-size:20px">' + f2(TD) + ' / ' + f2(TC) + '</span></div></div>' +
+      (newTags.length ? '<div class="note w">أصناف جديدة هتتضاف للقائمة مع الترحيل: <b>' + newTags.map(esc).join('، ') + '</b>' + newTags.map((t) => { const s = tagSimilar(b, t); return s.length ? '<div class="sub">«' + esc(t) + '» قريب من: ' + s.map(esc).join('، ') + ' — لو هو نفسه، غيّره في السطر.</div>' : ''; }).join('') + '</div>' : '') +
+      '<div class="note">المسودات مش بتأثر على أي رصيد أو تقرير لحد ما ترحّلها، وبتفضل محفوظة لو قفلت البرنامج. عدّل أي خانة، وبعدين رحّل.</div>' +
+      '<div class="row noprint" style="gap:8px"><button class="btn p" id="drAll"' + (nOk ? '' : ' disabled') + '>ترحيل كل السليم (' + nOk + ')</button><button class="btn r" id="drClr">حذف كل المسودات</button></div>' +
+      L.map(card).join('') : '<div class="card"><div class="empty">مفيش مسودات. ارفع ملف Excel من شاشة <a href="#/c/' + c.id + '/journal">القيد اليدوي</a> وهتنزل القيود هنا تراجعها وتعدّلها قبل الترحيل.</div></div>'));
+}
+function draftPost(cid, ids) {
+  const b = book(cid); const L = (b.jdrafts || []).filter((d) => ids.includes(d.id) && draftCheck(b, d).ok);
+  if (!L.length) return;
+  guarded(cid, L.map((d) => d.date), 'إضافة', 'ترحيل ' + L.length + ' قيد من المسودات', () => {
+    let tot = 0;
+    try {
+      L.forEach((d) => {
+        d.lines.forEach((l) => { if (l.tag && !b.tags.includes(l.tag)) tagAdd(b, l.tag); });
+        const lines = d.lines.filter((l) => l.a && (num(l.dr) || num(l.cr))).map((l) => { const o = { a: l.a, b: l.b || null, dr: r2(num(l.dr)), cr: r2(num(l.cr)) }; if (l.tag) o.tag = l.tag; if (l.n) o.n = l.n; return o; });
+        addEntry(cid, { kind: 'jr', date: d.date, memo: d.memo || 'من ملف Excel', lines, src: d.src }); tot += r2(lines.reduce((t, l) => t + l.dr, 0));
+        b.jdrafts = b.jdrafts.filter((x) => x.id !== d.id);
+      });
+    } catch (e) { toast(e.message); save(); render(); return false; }
+    save(); toast('تم ترحيل ' + L.length + ' قيد ✓'); custodyWarn(cid); render(); return tot;
+  });
+}
+AFTER.drafts = (r) => {
+  const b = book(r.cid); const D = (id) => (b.jdrafts || []).find((x) => x.id === id);
+  const soft = () => { clearTimeout(AFTER.drafts.t); AFTER.drafts.t = setTimeout(() => { save(); const y = window.scrollY; render(); window.scrollTo(0, y); }, 600); };
+  $$('[data-dd2]').forEach((el) => el.addEventListener(el.type === 'date' ? 'change' : 'input', () => { const d = D(el.dataset.dd2); if (!d) return; d[el.dataset.dk] = el.value; if (el.type === 'date') { save(); render(); } else save(); }));
+  $$('[data-dl]').forEach((el) => {
+    const [id, j] = el.dataset.dl.split(':'); const k = el.dataset.k;
+    el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', () => { const d = D(id); if (!d) return; const l = d.lines[+j]; l[k] = el.value; if (k === 'a') { l.aN = ''; if (!(acc(b, l.a) || {}).tags) l.tag = ''; } if (k === 'b') l.bN = ''; if (el.tagName === 'SELECT') { save(); const y = window.scrollY; render(); window.scrollTo(0, y); } else if (k === 'dr' || k === 'cr') soft(); else save(); });
+  });
+  $$('[data-dlx]').forEach((x) => x.onclick = () => { const [id, j] = x.dataset.dlx.split(':'); const d = D(id); d.lines.splice(+j, 1); save(); const y = window.scrollY; render(); window.scrollTo(0, y); });
+  $$('[data-dadd]').forEach((x) => x.onclick = () => { const d = D(x.dataset.dadd); d.lines.push({ a: '', b: '', tag: '', dr: '', cr: '', n: '' }); save(); const y = window.scrollY; render(); window.scrollTo(0, y); });
+  $$('[data-ddel]').forEach((x) => x.onclick = () => confirmBox('حذف المسودة دي؟ (مش متسجّلة في الدفاتر أصلًا)', 'حذف', () => { b.jdrafts = b.jdrafts.filter((d) => d.id !== x.dataset.ddel); save(); render(); }, true));
+  $$('[data-dpost]').forEach((x) => x.onclick = () => draftPost(r.cid, [x.dataset.dpost]));
+  const all = $('#drAll'); if (all) all.onclick = () => draftPost(r.cid, (b.jdrafts || []).map((d) => d.id));
+  const clr = $('#drClr'); if (clr) clr.onclick = () => confirmBox('حذف كل المسودات (' + (b.jdrafts || []).length + ')؟ مش هيأثر على أي قيد مترحّل.', 'حذف الكل', () => { b.jdrafts = []; save(); render(); }, true);
+};
+
+// ---------- "all entries": pages instead of the 300 cap
+const _vEntries17 = vEntries;
+vEntries = function (r) {
+  const b = book(r.cid), F = UI.entF; const PR = perRange();
+  const sig = JSON.stringify([r.cid, F.q, F.kind, F.br, PR.from, PR.to, UI.entPer]);
+  if (UI.entSig !== sig) { UI.entSig = sig; UI.entPage = 1; }
+  // reproduce the filter to know the full list (same rules as the screen)
+  let list = b.entries.slice();
+  if (F.kind) list = list.filter((e) => e.kind === F.kind);
+  if (F.br) list = list.filter((e) => e.lines.some((l) => l.b === F.br));
+  list = list.filter((e) => e.date >= PR.from && e.date <= PR.to);
+  if (F.q) { const q = F.q.toLowerCase(); list = list.filter((e) => (entryDesc(b, e) + ' ' + e.no + ' ' + e.lines.map((l) => (acc(b, l.a) || {}).name + ' ' + (l.tag || '')).join(' ')).toLowerCase().includes(q)); }
+  list.sort((x, y) => (y.date + y.ts).localeCompare(x.date + x.ts));
+  UI._entList = list;
+  const per = UI.entPer === 'all' ? Math.max(1, list.length) : (+UI.entPer || 100); const pages = Math.max(1, Math.ceil(list.length / per));
+  if (UI.entPage > pages) UI.entPage = pages; const p = UI.entPage || 1;
+  const shown = list.slice((p - 1) * per, p * per);
+  // render the original screen, then swap its table for this page
+  let h; try { UI._entShown = shown; UI.entSig2 = 1; h = _vEntries17(r); } finally { UI._entShown = null; }
+  const tot = list.reduce((t, e) => t + entryAmount(e), 0);
+  h = h.replace(/<div class="sub" style="margin-bottom:8px">[\s\S]*?<\/div>/, '<div class="row" style="margin-bottom:8px;gap:10px;flex-wrap:wrap"><div class="sub sp">' + (list.length ? 'عرض <b class="num">' + ((p - 1) * per + 1) + '–' + Math.min(p * per, list.length) + '</b> من <b class="num">' + list.length + '</b> حركة' : '0 حركة') + ' · إجمالي ' + f2(tot) + '</div><label class="row sub noprint" style="gap:6px">في الصفحة<select class="in" id="enPer" style="width:auto;padding:6px 10px">' + [['50', '50'], ['100', '100'], ['250', '250'], ['all', 'الكل']].map(([v, l]) => '<option value="' + v + '"' + (String(UI.entPer || '100') === v ? ' selected' : '') + '>' + l + '</option>').join('') + '</select></label></div>');
+  const pager = pages > 1 ? '<div class="row noprint pager" style="gap:6px;justify-content:center;flex-wrap:wrap;margin-top:14px"><button class="btn sm" data-pg="' + (p - 1) + '"' + (p <= 1 ? ' disabled' : '') + '>السابق</button>' +
+    Array.from({ length: pages }, (_, i) => i + 1).filter((i) => i === 1 || i === pages || Math.abs(i - p) <= 2).reduce((o, i, k, arr) => o + (k && i - arr[k - 1] > 1 ? '<span class="sub">…</span>' : '') + '<button class="btn sm' + (i === p ? ' p' : '') + '" data-pg="' + i + '">' + i + '</button>', '') +
+    '<button class="btn sm" data-pg="' + (p + 1) + '"' + (p >= pages ? ' disabled' : '') + '>التالي</button></div>' : '';
+  const i = h.lastIndexOf('</table></div>'); if (i >= 0 && pager) h = h.slice(0, i + 14) + pager + h.slice(i + 14);
+  return h;
+};
+const _afterEn17 = AFTER.entries;
+AFTER.entries = (r) => {
+  _afterEn17(r);
+  $$('[data-pg]').forEach((x) => x.onclick = () => { UI.entPage = +x.dataset.pg; render(); const t = $('#root main .card:last-of-type'); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  const pe = $('#enPer'); if (pe) pe.onchange = () => { UI.entPer = pe.value; render(); };
+  const ex = $('#enCsv'); if (ex) ex.onclick = () => { const b = book(r.cid); const rows = [['رقم', 'التاريخ', 'النوع', 'الحساب', 'صنف', 'الفرع', 'مدين', 'دائن', 'البيان']]; (UI._entList || []).slice().sort((x, y) => x.date.localeCompare(y.date)).forEach((e) => e.lines.forEach((l) => rows.push([e.no, e.date, (KIND[e.kind] || [''])[0], (acc(b, l.a) || {}).name || '', l.tag || '', branchName(b, l.b), l.dr || '', l.cr || '', entryDesc(b, e)]))); offerFile(company(r.cid).name + ' - الحركات.xlsx', new Blob([buildXlsx([{ name: 'الحركات', rows, widths: [8, 12, 12, 26, 12, 12, 13, 13, 40] }])], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })); };
+};
+
+// ---------- account statement screen (pick any account or group, period, branch)
+function vStatement(r) {
+  const c = company(r.cid), b = book(r.cid);
+  if (r.page === 'wallet' && r.arg) UI.stAcc = r.arg;
+  const a = acc(b, UI.stAcc); const brF = UI.stBr || '';
+  const list = b.accounts.filter((x) => !x.archived).slice().sort((x, y) => String(x.code).localeCompare(String(y.code)));
+  const lbl = (x) => x.code + ' — ' + x.name + (x.group ? ' (مجموعة)' : '');
+  const picker = '<div class="card grid noprint" style="gap:10px"><div class="row" style="gap:10px;flex-wrap:wrap"><label class="f sp" style="min-width:260px">الحساب<input class="in" id="stQ" list="stDL" placeholder="اكتب اسم الحساب أو الكود… (غاز، بنك، أيمن، 5201)" value="' + esc(a ? lbl(a) : '') + '" autocomplete="off"></label>' +
+    '<label class="f" style="width:200px">الفرع<select class="in" id="stBr">' + brOptions(b, brF, 'كل الفروع') + '</select></label></div><datalist id="stDL">' + list.map((x) => '<option value="' + esc(lbl(x)) + '">').join('') + '</datalist>' +
+    ((UI.stRecent || []).filter((id) => acc(b, id)).length ? '<div class="chips">' + UI.stRecent.filter((id) => acc(b, id)).map((id) => '<button class="chip' + (id === UI.stAcc ? ' on' : '') + '" data-str="' + id + '">' + esc(acc(b, id).name) + '</button>').join('') + '</div>' : '') + '</div>';
+  if (!a) return layout(r, 'كشف حساب', '<div class="head"><div><div class="sub">' + esc(c.name) + '</div><h1>كشف حساب</h1></div></div>' + picker + periodBar() + '<div class="card"><div class="empty">اختار الحساب من فوق عشان يظهر كشفه.</div></div>');
+  const ids = new Set(ddLeaves(b, a.id)); const sign = (a.type === 'asset' || a.type === 'expense') ? 1 : -1;
+  const PR = perRange(); const inBr = (l) => !brF || l.b === brF;
+  let open = 0; b.entries.forEach((e) => { if (e.date < PR.from) e.lines.forEach((l) => { if (ids.has(l.a) && inBr(l)) open += sign * (l.dr - l.cr); }); }); open = r2(open);
+  let bal = open, TD = 0, TC = 0; const rows = [];
+  b.entries.filter((e) => e.date >= PR.from && e.date <= PR.to).sort((x, y) => (x.date + x.ts).localeCompare(y.date + y.ts)).forEach((e) => e.lines.forEach((l) => { if (!ids.has(l.a) || !inBr(l)) return; bal = r2(bal + sign * (l.dr - l.cr)); TD += l.dr; TC += l.cr; rows.push({ e, l, bal }); }));
+  UI._stRows = { a, rows, open, bal, TD, TC, PR, brF };
+  const multi = ids.size > 1;
+  return layout(r, 'كشف حساب',
+    '<div class="head"><div><div class="sub">' + esc(c.name) + ' · كشف حساب' + (brF ? ' · ' + esc(branchName(b, brF)) : '') + '</div><h1>' + esc(a.name) + '</h1></div><div class="row noprint"><button class="btn" id="stX">' + ic('dl', 16) + 'Excel</button><button class="btn" onclick="window.print()">' + ic('print', 16) + 'PDF</button></div></div>' +
+    picker + periodBar() +
+    '<div class="grid g-kpi"><div class="card kpi"><span class="sub">رصيد أول المدة</span><span class="v num">' + f2(open) + '</span></div><div class="card kpi"><span class="sub">إجمالي المدين / الدائن</span><span class="v num" style="font-size:20px">' + f2(TD) + ' / ' + f2(TC) + '</span></div><div class="card kpi d"><span class="sub">رصيد آخر المدة</span><span class="v num">' + f2(bal) + '</span><span class="sub">' + esc(c.sym) + '</span></div><div class="card kpi"><span class="sub">عدد الحركات</span><span class="v num">' + rows.length + '</span></div></div>' +
+    '<div class="card"><div class="tw"><table><thead><tr><th>التاريخ</th><th>رقم</th><th>البيان</th>' + (multi ? '<th>الحساب</th>' : '') + '<th>الفرع</th><th class="l">مدين</th><th class="l">دائن</th><th class="l">الرصيد</th></tr></thead><tbody>' +
+    '<tr class="rgrp"><td class="num">' + PR.from + '</td><td></td><td>رصيد أول المدة</td>' + (multi ? '<td></td>' : '') + '<td></td><td></td><td></td><td class="l num" style="font-weight:700">' + f2(open) + '</td></tr>' +
+    rows.map(({ e, l, bal }) => '<tr class="click" data-view="' + e.id + '"><td class="num">' + e.date + '</td><td class="num sub">' + e.no + '</td><td style="white-space:normal;min-width:180px">' + esc(entryDesc(b, e)) + (l.n && l.n !== e.memo ? '<div class="sub">' + esc(l.n) + '</div>' : '') + (l.tag ? '<div class="sub">' + esc(l.tag) + '</div>' : '') + '</td>' + (multi ? '<td>' + esc((acc(b, l.a) || {}).name || '') + '</td>' : '') + '<td>' + esc(branchName(b, l.b)) + '</td><td class="l num">' + (l.dr ? f2(l.dr) : '') + '</td><td class="l num">' + (l.cr ? f2(l.cr) : '') + '</td><td class="l num" style="font-weight:600">' + f2(bal) + '</td></tr>').join('') +
+    '<tr class="tot"><td colspan="' + (multi ? 5 : 4) + '">الإجمالي · رصيد آخر المدة</td><td class="l num">' + f2(TD) + '</td><td class="l num">' + f2(TC) + '</td><td class="l num">' + f2(bal) + '</td></tr></tbody></table></div></div>');
+}
+vWallet = vStatement;
+AFTER.statement = AFTER.wallet = (r) => {
+  bindEntryTable(r.cid); bindPeriod();
+  const b = book(r.cid);
+  const pick = (id) => { if (!acc(b, id)) return; UI.stAcc = id; UI.stRecent = [id].concat((UI.stRecent || []).filter((x) => x !== id)).slice(0, 6); setTimeout(() => { if (r.page === 'wallet') go('#/c/' + r.cid + '/statement'); else render(); }, 0); };
+  const q = $('#stQ'); if (q) { q.onchange = () => { const v = q.value.trim(); const code = v.split(' — ')[0]; const x = b.accounts.find((y) => String(y.code) === code) || b.accounts.find((y) => y.name === v) || b.accounts.find((y) => tagNorm(y.name).includes(tagNorm(v))); if (x) pick(x.id); else toast('مفيش حساب بالاسم ده'); }; q.onfocus = () => q.select(); }
+  const br = $('#stBr'); if (br) br.onchange = () => { UI.stBr = br.value; render(); };
+  $$('[data-str]').forEach((x) => x.onclick = () => pick(x.dataset.str));
+  if (UI.stAcc && !(UI.stRecent || []).includes(UI.stAcc)) UI.stRecent = [UI.stAcc].concat(UI.stRecent || []).slice(0, 6);
+  const X = $('#stX'); if (X) X.onclick = () => { const S = UI._stRows; if (!S) return; const multi = S.rows.some((x) => x.l.a !== S.rows[0].l.a);
+    const rows = [['التاريخ', 'رقم القيد', 'البيان', 'ملاحظة السطر', 'الحساب', 'الفرع', 'مدين', 'دائن', 'الرصيد'], [S.PR.from, '', 'رصيد أول المدة', '', '', '', '', '', S.open]].concat(S.rows.map(({ e, l, bal }) => [e.date, e.no, entryDesc(b, e), l.n || '', (acc(b, l.a) || {}).name || '', branchName(b, l.b), l.dr || '', l.cr || '', bal]), [['', '', 'الإجمالي', '', '', '', r2(S.TD), r2(S.TC), S.bal]]);
+    offerFile('كشف حساب ' + S.a.name + ' ' + S.PR.from + ' - ' + S.PR.to + '.xlsx', new Blob([buildXlsx([{ name: 'كشف حساب', rows, widths: [12, 9, 36, 28, 22, 12, 13, 13, 14] }])], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })); };
+};
+
+// render hook: datalist for item fields
+const _render17 = render;
+render = function () { const o = _render17.apply(this, arguments); try { ensureTagDL(); } catch (e) { } return o; };
 </script>
 </body></html>
