@@ -184,7 +184,7 @@ tbody tr td{transition:background .15s}
 <div id="modal"></div>
 <script>
 'use strict';
-const APP_VERSION = '3.7.0';
+const APP_VERSION = '3.7.1';
 // ---------- helpers
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -763,7 +763,7 @@ function editEntry(cid, id) {
   if (e.kind === 'exp' && e.meta) { EXP = Object.assign(JSON.parse(JSON.stringify(e.meta)), { editId: id, cid }); go('#/c/' + cid + '/expense'); }
   else if (e.kind === 'rev' && e.meta) { REV = Object.assign(JSON.parse(JSON.stringify(e.meta)), { editId: id, cid }); go('#/c/' + cid + '/revenue'); }
   else if (e.kind === 'trf' && e.meta) { TRF = Object.assign(JSON.parse(JSON.stringify(e.meta)), { editId: id, cid }); go('#/c/' + cid + '/' + (e.meta.mode === 'owner' ? 'collect' : 'transfer')); }
-  else { JR = { cid, editId: id, date: e.date, memo: e.memo || '', open: e.kind === 'open', lines: e.lines.map((l) => ({ a: l.a, b: l.b || '', dr: l.dr || '', cr: l.cr || '', tag: l.tag || '' })) }; go('#/c/' + cid + '/journal'); }
+  else { JR = { cid, editId: id, date: e.date, memo: e.memo || '', open: e.kind === 'open', lines: e.lines.map((l) => ({ a: l.a, b: l.b || '', dr: l.dr || '', cr: l.cr || '', tag: l.tag || '', n: l.n, ch: l.ch, emp: l.emp, sec: l.sec })) }; go('#/c/' + cid + '/journal'); }
 }
 
 // ---------- charts
@@ -1120,7 +1120,7 @@ AFTER.journal = (r) => {
   $$('[data-l]').forEach((el) => {
     const i = +el.dataset.l, k = el.dataset.k;
     el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', () => {
-      J.lines[i][k] = el.value; if (k === 'a') { J.lines[i].tag = ''; if (i < J.lines.length - 1) render(); }
+      J.lines[i][k] = el.value; if (k === 'a') { J.lines[i].tag = ''; delete J.lines[i].emp; delete J.lines[i].ch; if (i < J.lines.length - 1) render(); }
       if (el.tagName !== 'SELECT') { let d = 0, c = 0; J.lines.forEach((l) => { d += num(l.dr); c += num(l.cr); }); const diff = r2(d - c); $('#jD').textContent = f2(d); $('#jC').textContent = f2(c); const t = $('#jDiff'); t.className = diff ? 'tag r' : 'tag a'; t.textContent = diff ? 'الفرق ' + f2(diff) : 'متوازن'; }
       if (k === 'a' && i === J.lines.length - 1) { J.lines.push({ a: '', b: '', dr: '', cr: '' }); render(); }
     });
@@ -1136,11 +1136,11 @@ AFTER.journal = (r) => {
     J.lines.push({ a: '', b: '', dr: '', cr: '' }); render();
   };
   $('#jSave').onclick = () => {
-    const lines = J.lines.filter((l) => l.a && (num(l.dr) || num(l.cr))).map((l) => ({ a: l.a, b: l.b || null, dr: num(l.dr), cr: num(l.cr), tag: l.tag || undefined }));
+    const lines = J.lines.filter((l) => l.a && (num(l.dr) || num(l.cr))).map((l) => { const o = { a: l.a, b: l.b || null, dr: num(l.dr), cr: num(l.cr), tag: l.tag || undefined }; ['n', 'ch', 'emp', 'sec'].forEach((k) => { if (l[k] !== undefined && l[k] !== null && l[k] !== '') o[k] = l[k]; }); return o; });
     if (lines.length < 2) return toast('يحتاج القيد إلى سطرين على الأقل');
     let d = 0, c = 0; lines.forEach((l) => { d += l.dr; c += l.cr; }); if (Math.abs(r2(d - c)) > 0.005) return toast('القيد غير متوازن — الفرق ' + f2(d - c));
     const bk = book(r.cid); const old = J.editId ? bk.entries.find((x) => x.id === J.editId) : null;
-    guarded(r.cid, [J.date].concat(old ? [old.date] : []), J.editId ? 'تعديل' : 'إضافة', J.memo || 'قيد يدوي', () => { try { addEntry(r.cid, { id: J.editId, kind: J.open ? 'open' : 'jr', date: J.date, memo: J.memo, lines }); toast('تم التسجيل ✓'); custodyWarn(r.cid); JR = null; go('#/c/' + r.cid + '/entries'); return d; } catch (err) { toast(err.message); return false; } });
+    guarded(r.cid, [J.date].concat(old ? [old.date] : []), J.editId ? 'تعديل' : 'إضافة', J.memo || 'قيد يدوي', () => { try { addEntry(r.cid, Object.assign({ id: J.editId, kind: J.open ? 'open' : (old && old.kind !== 'open' ? old.kind : 'jr'), date: J.date, memo: J.memo, lines }, old && old.meta ? { meta: old.meta } : {}, old && old.payM ? { payM: old.payM } : {})); toast('تم التسجيل ✓'); custodyWarn(r.cid); JR = null; go('#/c/' + r.cid + '/entries'); return d; } catch (err) { toast(err.message); return false; } });
   };
   const ca = $('#jCancel'); if (ca) ca.onclick = () => { JR = null; go('#/c/' + r.cid + '/entries'); };
 };
@@ -1920,6 +1920,8 @@ function bindPeriod() {
 
 // ---------- system accounts added after v2.2 (safe to run repeatedly)
 function ensureSys2(b) {
+  // an account whose lines carry a grocery item must offer the item list when edited
+  try { const T = new Set(); (b.entries || []).forEach((e) => e.lines.forEach((l) => { if (l.tag) T.add(l.a); })); b.accounts.forEach((a) => { if (T.has(a.id) && !a.tags) a.tags = true; }); } catch (e) { }
   const G = (k) => b.accounts.find((a) => a.group && a.key === k);
   const g51 = b.accounts.find((a) => a.group && a.level === 2 && a.code === '51'); if (g51 && g51.name === 'تكلفة المبيعات') g51.name = 'تكلفة المبيعات (مشتريات خامات)';
   const gc = G('cogs'); if (gc && gc.name === 'تكلفة المبيعات') gc.name = 'مشتريات خامات';
