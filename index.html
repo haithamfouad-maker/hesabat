@@ -177,14 +177,14 @@ tbody tr td{transition:background .15s}
 .click:hover td{background:#F7F5EF}
 @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
 @media print{.ddov{display:none !important}*{animation:none !important}.plt tr.tot td{background:#eee !important;color:#000 !important}}
-.drc.bad{border-color:#E8C4BC}.drt td{padding:5px 4px;vertical-align:top}.drt .in{padding:8px 10px;font-size:14px}.drt tr.bad td{background:var(--bads)}.drt tfoot td{font-weight:700}.pager .btn.p{pointer-events:none}.tagin{min-width:120px}.svbar{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:85;background:var(--dark);color:#fff;border-radius:14px;padding:10px 12px 10px 16px;display:flex;gap:10px;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,.25);max-width:calc(100% - 24px);font-size:14px;animation:svIn .25s ease both}.svbar.out{animation:svIn .25s ease reverse both}.svbar button{border:0;border-radius:10px;padding:6px 12px;font-weight:700;cursor:pointer;background:#fff;color:var(--dark)}.svbar #svBarX{background:transparent;color:#fff;font-size:18px;padding:2px 6px}@keyframes svIn{from{opacity:0;transform:translate(-50%,12px)}to{opacity:1;transform:translate(-50%,0)}}@media print{.svbar{display:none}}</style>
+.drc.bad{border-color:#E8C4BC}.drt td{padding:5px 4px;vertical-align:top}.drt .in{padding:8px 10px;font-size:14px}.drt tr.bad td{background:var(--bads)}.drt tfoot td{font-weight:700}.pager .btn.p{pointer-events:none}.tagin{min-width:120px}.svbar{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:85;background:var(--dark);color:#fff;border-radius:14px;padding:10px 12px 10px 16px;display:flex;gap:10px;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,.25);max-width:calc(100% - 24px);font-size:14px;animation:svIn .25s ease both}.svbar.out{animation:svIn .25s ease reverse both}.svbar button{border:0;border-radius:10px;padding:6px 12px;font-weight:700;cursor:pointer;background:#fff;color:var(--dark)}.svbar #svBarX{background:transparent;color:#fff;font-size:18px;padding:2px 6px}@keyframes svIn{from{opacity:0;transform:translate(-50%,12px)}to{opacity:1;transform:translate(-50%,0)}}@media print{.svbar{display:none}}tr.emp-stop td{background:#F3F1EC;color:#5F6368}tr.emp-new td{background:#F0F6F5}.pfil-full tr[data-est]:not([data-est=full]),.pfil-stop tr[data-est]:not([data-est=stop]),.pfil-new tr[data-est]:not([data-est=new]){display:none}@media (max-width:760px){.trit{flex-wrap:wrap !important;gap:6px}.trit[data-lvl="2"]{padding-right:10px !important}.trit[data-lvl="3"]{padding-right:20px !important}.trit[data-lvl="4"]{padding-right:30px !important}.trit>.row:first-child{width:100%}.trit>.row:first-child .in{max-width:none !important;flex:1;min-width:0}.trit>.row:last-child{width:100%;justify-content:flex-end;flex-wrap:wrap !important}}.navbadge{margin-right:auto;background:#E0A84E;color:#14161B;border-radius:99px;font-size:12px;font-weight:700;padding:1px 8px}.pvfx{border:0;background:transparent;color:inherit;cursor:pointer;font-size:15px;padding:0 2px}.pvt tr.pvl0 td{font-weight:700;background:#F1EFE8}.pvt tr.pvl1 td{font-weight:600}.pvt tr.pvl1 td:first-child{box-shadow:inset -4px 0 0 var(--acc)}.pvt tr.pvl2 td{font-size:13.5px;color:#4A4E57;background:#FCFBF8}.pvt tr.pvp{cursor:pointer}.pvt tr.pvl0:only-child td{background:none}.card.grid>*{min-width:0}.trit>.row:first-child{min-width:0}</style>
 </head>
 <body>
 <div id="root"></div>
 <div id="modal"></div>
 <script>
 'use strict';
-const APP_VERSION = '3.9.0';
+const APP_VERSION = '4.0.0';
 // ---------- helpers
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -557,7 +557,7 @@ function route() {
   if (h[0] === 'data') return { page: 'data' };
   return { page: 'home' };
 }
-const go = (p) => { location.hash = p; };
+const go = (p) => { if (location.hash === p) { closeModal(); render(); window.scrollTo(0, 0); } else location.hash = p; }; // same screen (e.g. editing from that screen's own list) still has to redraw
 window.addEventListener('hashchange', () => { if (isNarrow()) UI.sideOpen = false; closeModal(); render(); window.scrollTo(0, 0); });
 window.addEventListener('resize', () => { const n = isNarrow(); if (n !== UI._n) { UI._n = n; UI.sideOpen = null; render(); } });
 
@@ -639,7 +639,7 @@ function render() {
     else if (r.page === 'new') html = vNew();
     else if (r.page === 'data') html = vData();
     else {
-      const V = { dash: vDash, expense: vExpense, revenue: vRevenue, transfer: vTransfer, collect: vTransfer, close: vClose, payroll: vPayroll, journal: vJournal, entries: vEntries, wallets: vWallets, wallet: vWallet, statement: vStatement, drafts: vDrafts, reports: vReports, ready: vReady, trend: vTrend, pl: vPL, tb: vTB, settings: vSettings }[r.page] || vDash;
+      const V = { dash: vDash, expense: vExpense, revenue: vRevenue, transfer: vTransfer, collect: vTransfer, close: vClose, payroll: vPayroll, journal: vJournal, entries: vEntries, wallets: vWallets, wallet: vWallet, statement: vStatement, drafts: vDrafts, follow: vFollow, reports: vReports, ready: vReady, trend: vTrend, pl: vPL, tb: vTB, settings: vSettings }[r.page] || vDash;
       html = V(r);
     }
   } catch (err) { ERRORS.push({ t: new Date().toISOString(), m: err.message, s: err.stack }); html = '<div class="homewrap"><div class="note r">حدثت مشكلة في عرض هذه الصفحة. افتح <a href="#/data">صفحة البيانات</a> واضغط "نسخ تقرير المشكلة" وأرسله إليّ.</div></div>'; }
@@ -887,7 +887,7 @@ function expCompute(cid, E) {
     lines.push({ a: credit, b: crBranch, dr: 0, cr: gross });
     const per = splitAmount(net, Array.from({ length: n }, () => 1)); amort = [];
     for (let i = 0; i < n; i++) {
-      const k = addMonths(ym(E.date), i); const parts = splitAmount(per[i], sh.shares.map((x) => x.v || 0.000001));
+      const k = addMonths(E.pstart && E.pstart >= ym(E.date) ? E.pstart : ym(E.date), i); const parts = splitAmount(per[i], sh.shares.map((x) => x.v || 0.000001));
       const L = sh.shares.map((x, j) => ({ a: E.acc, b: x.b, dr: parts[j], cr: 0, tag: E.tag || undefined })).filter((l) => l.dr);
       L.push({ a: pp, b: null, dr: 0, cr: per[i] }); amort.push({ date: lastDay(k), lines: L, i: i + 1, n });
     }
@@ -923,7 +923,7 @@ function vExpense(r) {
   if (res.err) preview = '<div class="empty" style="padding:24px">' + esc(res.err) + '</div>';
   else {
     preview = jrPreview(b, res.lines) + '<div style="color:#7FD1C6;font-size:13px" class="row">' + ic('check', 16) + 'القيد متوازن · ' + f2(res.gross) + '</div>';
-    if (res.amort) preview += '<div style="border-top:1px solid #2A2D35;padding-top:12px"><b>وسيُنشأ كل شهر قيد استهلاك (' + res.amort.length + ' شهور):</b><div class="sub" style="color:#B9BDC6;margin:4px 0 8px">أول شهر ' + ymLabel(ym(res.amort[0].date)) + ' وآخر شهر ' + ymLabel(ym(res.amort[res.amort.length - 1].date)) + '</div>' + jrPreview(b, res.amort[0].lines) + '</div>';
+    if (res.amort) preview += '<div style="border-top:1px solid #2A2D35;padding-top:12px"><b>وسيُنشأ كل شهر قيد استهلاك (' + res.amort.length + ' شهور):</b><div class="sub" style="color:#B9BDC6;margin:4px 0 8px">أول شهر ' + ymLabel(ym(res.amort[0].date)) + ' وآخر شهر ' + ymLabel(ym(res.amort[res.amort.length - 1].date)) + '</div><div style="margin:0 0 10px;display:grid;gap:3px">' + res.amort.slice(0, 24).map((x) => '<div class="row" style="font-size:13px"><span class="sp num">' + x.i + ' · ' + x.date + '</span><span class="num">' + f2(x.lines.filter((l) => l.dr).reduce((t, l) => t + l.dr, 0)) + '</span></div>').join('') + '</div>' + jrPreview(b, res.amort[0].lines) + '</div>';
     if (res.adv) preview += '<div class="note" style="margin-top:4px">سلفة على المرتب: لا تُحسب مصروفًا الآن، وتُخصم تلقائيًا في شيت مرتبات الشهر.</div>';
     if (E.etype === 'accrued') preview += '<div class="note" style="margin-top:4px">عند سداده لاحقًا: من شاشة "تحويل / سداد" اختر من المصدر إلى "مصروفات مستحقة".</div>';
     if (res.note) preview += '<div class="note w">' + esc(res.note) + '</div>';
@@ -938,7 +938,7 @@ function vExpense(r) {
     '<label class="f">البند<select class="in" data-f="acc">' + groups + '</select></label>' +
     (groupKeyOf(b, A) === 'payroll' && (b.employees || []).length ? '<label class="f">الموظف<select class="in" data-f="emp"><option value="">— بدون موظف —</option>' + b.employees.filter((x) => x.active !== false).map((x) => '<option value="' + x.id + '"' + (x.id === E.emp ? ' selected' : '') + '>' + esc(x.name + ' — ' + branchName(b, x.branch)) + '</option>').join('') + '</select></label>' + (E.emp ? '<div class="chips" style="align-self:end"><button class="chip g' + (E.advance ? ' on' : '') + '" data-adv="1">سلفة على المرتب</button><button class="chip g' + (!E.advance ? ' on' : '') + '" data-adv="0">مصروف مرتبات مباشر</button></div>' : '<span></span>') : '') +
     (A.tags && b.tags.length ? '<label class="f">صنف البقالة<select class="in" data-f="tag"><option value="">— بدون —</option>' + b.tags.map((t) => '<option' + (t === E.tag ? ' selected' : '') + '>' + esc(t) + '</option>').join('') + '</select></label>' : (E.etype === 'prepaid' ? '' : '<span></span>')) +
-    (E.etype === 'prepaid' ? '<label class="f">عدد الشهور<input class="in num" data-f="months" value="' + esc(E.months) + '" inputmode="numeric"></label>' : '') + '</div>' +
+    (E.etype === 'prepaid' ? '<label class="f">عدد الشهور<input class="in num" data-f="months" value="' + esc(E.months) + '" inputmode="numeric"></label><label class="f">أول قسط في شهر<select class="in" data-f="pstart">' + monthRange(ym(E.date), addMonths(ym(E.date), 12)).map((k) => '<option value="' + k + '"' + ((E.pstart || ym(E.date)) === k ? ' selected' : '') + '>' + ymLabel(k) + (k === ym(E.date) ? ' (شهر الدفع)' : '') + '</option>').join('') + '</select></label>' : '') + '</div>' +
     (locked ? '<div class="note w">هذا التاريخ يقع في شهر مقفل، وستُسأل قبل الحفظ.</div>' : '') +
     '<div class="card row" style="background:var(--bg);border:0;gap:14px"><label class="f sp">المبلغ<input class="in big num" data-f="amount" value="' + esc(E.amount) + '" inputmode="decimal" placeholder="0.00" style="text-align:right"></label>' + (vatActive(c, E.date) ? '<button class="toggle' + (E.vatInc ? ' on' : '') + '" id="eVat"><i></i>شامل ضريبة ' + c.vatRate + '%</button>' : '') + '</div>' +
     (res.adv ? '<div class="sub">الفرع: ' + esc(branchName(b, (empOf(b, E.emp) || {}).branch)) + ' (فرع الموظف)</div>' : '<div class="grid" style="gap:10px"><b>التوزيع على الفروع</b><div class="chips">' + modes.map(([k, l]) => '<button class="chip g' + (E.mode === k ? ' on' : '') + '" data-mode="' + k + '">' + l + '</button>').join('') + '</div>' + brList + '</div>') +
@@ -1445,7 +1445,7 @@ function vSettings(r) {
     '<div class="card grid" style="gap:12px"><div class="row"><h2 class="sp">الفروع</h2><button class="btn sm" id="brAdd">' + ic('plus', 14) + 'فرع</button></div><div class="tw"><table><thead><tr><th>الاسم</th><th>النوع</th><th>خزينة النقدية</th><th></th></tr></thead><tbody>' + brRows + '</tbody></table></div><div class="sub">"مركز مصروفات" مثل الرئيسي: تُسجَّل مصروفاته منفصلة ولا مبيعات عليه. خزينة النقدية هي الحساب الذي يدخل فيه الإيراد النقدي للفرع.</div></div>' +
     '<div class="card grid" style="gap:12px"><div class="row"><h2 class="sp">قنوات البيع والعمولات</h2><button class="btn sm" id="chAdd">' + ic('plus', 14) + 'قناة</button></div><div class="tw"><table><thead><tr><th>القناة</th><th>العمولة %</th><th>حساب الإيداع</th><th></th></tr></thead><tbody>' + chRows + '</tbody></table></div><div class="note w">راجع نسب العمولات: وُضعت مبدئيًا نسب قريبة مما في ملفك، وأنت أعلم بالنسب الحالية.</div></div>' +
     '<div class="card grid" style="gap:12px"><div class="row"><h2 class="sp">أصناف البقالة</h2></div><div class="chips">' + b.tags.map((t, i) => '<span class="chip">' + esc(t) + '<button data-tgd="' + i + '" aria-label="حذف ' + esc(t) + '" style="border:0;background:transparent;cursor:pointer;padding:0;color:var(--mute)">×</button></span>').join('') + '</div><div class="row"><input class="in" id="tgNew" placeholder="صنف جديد" style="max-width:240px"><button class="btn sm" id="tgAdd">إضافة</button></div><div class="sub">تظهر في شاشة المصروف عند اختيار بند مفعّل عليه "أصناف" (مثل بقالة ومواد خام).</div></div>' +
-    '<div class="card grid" style="gap:12px"><div class="row"><h2 class="sp">شجرة الحسابات</h2><button class="btn sm" id="trOpen">فتح الكل</button><button class="btn sm" id="trClose">قفل الكل</button></div><label class="search" style="height:48px;border-radius:12px">' + ic('search') + '<input id="trQ" aria-label="بحث في الحسابات" placeholder="اكتب اسم الحساب أو الكود…" value="' + esc(UI.treeQ || '') + '" autocomplete="off" style="font-size:16px">' + (UI.treeQ ? '<button class="iconbtn" id="trQx" aria-label="مسح البحث" style="width:32px;height:32px;background:var(--line2);color:var(--ink)">' + ic('x', 14) + '</button>' : '') + '</label><div class="sub">أربعة مستويات، والأكواد تُنشأ تلقائيًا. يكون التسجيل على الحسابات التفصيلية (المستوى الرابع) فقط.</div>' + treeHtml(b) + '</div>' +
+    '<div class="card grid" style="gap:12px"><div class="row" style="flex-wrap:wrap"><h2 class="sp">شجرة الحسابات</h2><button class="btn sm" id="trOpen">فتح الكل</button><button class="btn sm" id="trClose">قفل الكل</button></div><label class="search" style="height:48px;border-radius:12px">' + ic('search') + '<input id="trQ" aria-label="بحث في الحسابات" placeholder="اكتب اسم الحساب أو الكود…" value="' + esc(UI.treeQ || '') + '" autocomplete="off" style="font-size:16px">' + (UI.treeQ ? '<button class="iconbtn" id="trQx" aria-label="مسح البحث" style="width:32px;height:32px;background:var(--line2);color:var(--ink)">' + ic('x', 14) + '</button>' : '') + '</label><div class="sub">أربعة مستويات، والأكواد تُنشأ تلقائيًا. يكون التسجيل على الحسابات التفصيلية (المستوى الرابع) فقط.</div>' + treeHtml(b) + '</div>' +
     '<div class="card grid" style="gap:10px;border-color:#E8C4BC"><h2 style="color:var(--bad)">حذف الشركة</h2><div class="sub">يحذف الشركة وجميع حركاتها من هذا الجهاز. احفظ نسخة احتياطية أولًا.</div><button class="btn r" id="coDel" style="align-self:flex-start">' + ic('trash', 16) + 'حذف الشركة</button></div>');
 }
 AFTER.settings = (r) => {
@@ -1493,7 +1493,7 @@ function treeHtml(b) {
     if (x.level > 1 && !(x.group && x.key)) acts.push('<button class="btn sm" data-tmv="' + x.id + '" aria-label="نقل">' + ic('move', 14) + '</button>');
     if (!x.group && !x.sys) acts.push(x.archived ? '<button class="btn sm" data-tarc="' + x.id + '">استعادة</button>' : '<button class="btn sm r" data-tarc="' + x.id + '">' + (used.has(x.id) ? 'إيقاف' : 'حذف') + '</button>');
     if (x.group && !x.key && x.level > 1 && !ks.length) acts.push('<button class="btn sm r" data-tdel="' + x.id + '">حذف</button>');
-    rows.push('<div class="it" style="padding:8px 0 8px 0;padding-right:' + ((x.level - 1) * 22) + 'px;' + (x.archived ? 'opacity:.55;' : '') + (hit.has(x.id) ? 'background:#FFF4E0;border-radius:10px;padding-left:8px;' : x.level === 1 ? 'background:#F4F3EE;border-radius:10px;padding-left:8px;' : '') + '">' +
+    rows.push('<div class="it trit" data-lvl="' + x.level + '" style="padding:8px 0 8px 0;padding-right:' + ((x.level - 1) * 22) + 'px;' + (x.archived ? 'opacity:.55;' : '') + (hit.has(x.id) ? 'background:#FFF4E0;border-radius:10px;padding-left:8px;' : x.level === 1 ? 'background:#F4F3EE;border-radius:10px;padding-left:8px;' : '') + '">' +
       '<div class="row" style="gap:8px;flex:1;min-width:0;flex-wrap:nowrap">' + (x.group ? '<button class="iconbtn" data-ttg="' + x.id + '" style="width:28px;height:28px;background:transparent;color:var(--mute)" aria-label="' + (closed ? 'فتح' : 'قفل') + '">' + (closed ? '◂' : '▾') + '</button>' : '<span style="width:28px"></span>') +
       '<span class="num" style="color:var(--mute);min-width:62px;font-size:13px">' + esc(x.code) + '</span>' +
       (x.level === 1 ? '<b>' + esc(x.name) + '</b>' : '<input class="in" data-tn="' + x.id + '" value="' + esc(x.name) + '" style="height:38px;' + (x.group ? 'font-weight:600;' : '') + 'max-width:280px">') + '<span class="hide-m">' + badges + '</span></div>' +
@@ -1777,7 +1777,7 @@ const xesc = (s) => String(s ?? '').replace(/[<>&"]/g, (c) => ({ '<': '&lt;', '>
 const colL = (i) => String.fromCharCode(65 + i);
 function buildXlsx(sheets, names) { // sheets: [{name, rows:[[...]], widths:[], validations:[{col, rows, ref}] }]
   const ws = sheets.map((sh) => {
-    const rows = sh.rows.map((r, ri) => '<row r="' + (ri + 1) + '">' + r.map((v, ci) => v === '' || v === null || v === undefined ? '' : (typeof v === 'number' ? '<c r="' + colL(ci) + (ri + 1) + '"' + (ri === 0 ? ' s="1"' : '') + '><v>' + v + '</v></c>' : '<c r="' + colL(ci) + (ri + 1) + '" t="inlineStr"' + (ri === 0 ? ' s="1"' : '') + '><is><t>' + xesc(v) + '</t></is></c>')).join('') + '</row>').join('');
+    const rows = sh.rows.map((r, ri) => '<row r="' + (ri + 1) + '">' + r.map((v, ci) => v === '' || v === null || v === undefined ? '' : (typeof v === 'number' ? '<c r="' + colL(ci) + (ri + 1) + '"' + (ri === 0 || (sh.bold && sh.bold.includes(ri)) ? ' s="1"' : '') + '><v>' + v + '</v></c>' : '<c r="' + colL(ci) + (ri + 1) + '" t="inlineStr"' + (ri === 0 || (sh.bold && sh.bold.includes(ri)) ? ' s="1"' : '') + '><is><t>' + xesc(v) + '</t></is></c>')).join('') + '</row>').join('');
     const cols = sh.widths ? '<cols>' + sh.widths.map((w, i) => '<col min="' + (i + 1) + '" max="' + (i + 1) + '" width="' + w + '" customWidth="1"/>').join('') + '</cols>' : '';
     const dvs = sh.validations && sh.validations.length ? '<dataValidations count="' + sh.validations.length + '">' + sh.validations.map((v) => '<dataValidation type="list" allowBlank="1" showErrorMessage="1"' + (v.soft ? ' errorStyle="information" errorTitle="صنف جديد" error="الصنف ده مش في القائمة — هيتضاف لما ترحّل القيد. دوس OK للتأكيد."' : ' errorTitle="قيمة غير موجودة" error="اختر من القائمة"') + ' sqref="' + v.col + '2:' + v.col + v.rows + '"><formula1>' + v.ref + '</formula1></dataValidation>').join('') + '</dataValidations>' : '';
     return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetViews><sheetView rightToLeft="1" workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>' + cols + '<sheetData>' + rows + '</sheetData>' + dvs + '</worksheet>';
@@ -1943,6 +1943,21 @@ const empAdvance = (b, id, upto, exM) => empLines(b, id, 'advances', upto, exM);
 const empPayable = (b, id, upto) => -empLines(b, id, 'salPay', upto); // credit balance = owed to employee
 function empInMonth(e, m) { const s = m + '-01', t = lastDay(m); if (e.start && e.start > t) return false; if (e.end && e.end < s) return false; return e.active !== false || !!(e.end && e.end >= s); } // a stopped employee still appears in the months he worked
 // a stopped employee stays in the list while he is owed money or his last month isn't posted yet
+// status of an employee within a payroll month (shown on the sheet itself)
+function empMonthState(b, e, m) {
+  const s = m + '-01', t = lastDay(m); const dd = (d) => d.slice(8, 10) + '/' + d.slice(5, 7);
+  const owe = r2(Math.max(0, empPayable(b, e.id)));
+  const oweH = owe > 0.004 && e.active === false ? '<span class="tag w" style="margin-top:4px">ليه مستحق ' + f2(owe) + '</span>' : '';
+  if (e.end && e.end >= s && e.end <= t) return { k: 'stop', h: '<div><span class="tag">متوقف من ' + dd(e.end) + '</span> ' + oweH + '</div>' };
+  if (e.active === false) return { k: 'stop', h: '<div><span class="tag">متوقف</span> ' + oweH + '</div>' };
+  if (e.start && e.start > s && e.start <= t) return { k: 'new', h: '<div><span class="tag a">جديد من ' + dd(e.start) + '</span></div>' };
+  return { k: 'full', h: '' };
+}
+function empSheetSummary(b, rows, m) {
+  const S = rows.map((x) => [x.e, empMonthState(b, x.e, m).k]); const stop = S.filter((x) => x[1] === 'stop'), nw = S.filter((x) => x[1] === 'new');
+  const f = UI.payFil || 'all'; const chip = (k, l) => '<button class="chip' + (f === k ? ' on' : '') + '" data-pfil="' + k + '">' + l + '</button>';
+  return '<div class="row" style="gap:10px;flex-wrap:wrap"><div class="sp">' + rows.length + ' موظف' + (stop.length ? ' · منهم <b>' + stop.length + ' متوقف</b> (' + stop.map((x) => esc(x[0].name)).join('، ') + ')' : '') + (nw.length ? ' · <b>' + nw.length + ' جديد</b> (' + nw.map((x) => esc(x[0].name)).join('، ') + ')' : '') + '</div><div class="chips noprint">' + chip('all', 'الكل') + chip('full', 'الشغّالين') + chip('stop', 'المتوقفين') + chip('new', 'الجداد') + '</div></div>';
+}
 function empStillOpen(b, e) {
   if (e.active !== false) return true;
   if (Math.abs(empPayable(b, e.id)) > 0.004 || Math.abs(empAdvance(b, e.id)) > 0.004) return true;
@@ -1985,8 +2000,8 @@ function vPayroll(r) {
     body = '<div class="card grid" style="gap:12px"><div class="row"><h2 class="sp">شيت مرتبات ' + ymLabel(m) + '</h2><select class="in" id="pM" style="width:auto">' + monthRange(addMonths(ym(today()), -12), addMonths(ym(today()), 1)).reverse().map((k) => '<option value="' + k + '"' + (k === m ? ' selected' : '') + '>' + ymLabel(k) + '</option>').join('') + '</select><button class="btn" id="pCsv">' + ic('dl', 16) + 'Excel</button><button class="btn" id="pTpl">' + ic('dl', 16) + 'قالب المرتبات</button><label class="btn a">' + ic('up', 16) + 'رفع القالب<input type="file" id="pUp" accept=".xlsx" hidden></label></div>' +
       '<div class="note">الأوفرتايم = أيام الأوفرتايم × (الأساسي ÷ 30) × 1.5 — على الأساسي بس، والبدلات والحوافز مش داخلة فيه.</div>' +
       (posted ? '<div class="note">✓ تم ترحيل مرتبات هذا الشهر (الحركة رقم ' + posted.no + '). أي تعديل بعد ذلك يحتاج إعادة الترحيل.</div>' : '<div class="note w">لم تُرحَّل مرتبات هذا الشهر بعد.</div>') +
-      (rows.length ? '<div class="tw"><table><thead><tr><th>الموظف</th><th>الفرع</th><th class="l">الأساسي</th><th class="l">اليومية</th><th class="l">أيام العمل</th><th class="l">المستحق</th><th class="l">أيام أوفرتايم</th><th class="l">الأوفرتايم</th><th class="l">حوافز</th><th class="l">بدلات</th><th class="l">خصومات</th><th class="l">الإجمالي</th><th class="l">خصم السلف</th><th class="l">الصافي</th></tr></thead><tbody>' +
-        rows.map((x) => { const C = (k, st) => '<td class="l num" data-c="' + x.e.id + ':' + k + '"' + (st ? ' style="' + st + '"' : '') + '>' + f2(x[k]) + '</td>'; return '<tr><td style="font-weight:600">' + esc(x.e.name) + '<div class="sub">' + esc(x.e.role || '') + '</div></td><td>' + esc(branchName(b, x.e.branch)) + '</td><td class="l num">' + f0(x.e.basic) + '</td><td class="l num">' + f2(x.daily) + '</td><td class="l">' + inp(x, 'days', x.days) + '</td>' + C('due') + '<td class="l">' + inp(x, 'ot', x.o.ot || '') + '</td>' + C('otAmt') + '<td class="l">' + inp(x, 'bonus', x.o.bonus || '') + '</td><td class="l">' + inp(x, 'allow', x.o.allow || '') + '</td><td class="l">' + inp(x, 'ded', x.o.ded || '') + '</td>' + C('gross', 'font-weight:600') + '<td class="l">' + inp(x, 'adv', x.adv) + (x.outAdv ? '<div class="sub num">من ' + f2(x.outAdv) + '</div>' : '') + '</td>' + C('net', 'font-weight:700;' + (x.net < 0 ? 'color:var(--bad)' : '')) + '</tr>'; }).join('') +
+      (rows.length ? empSheetSummary(b, rows, m) + '<div class="tw pfil-' + (UI.payFil || 'all') + '"><table><thead><tr><th>الموظف</th><th>الفرع</th><th class="l">الأساسي</th><th class="l">اليومية</th><th class="l">أيام العمل</th><th class="l">المستحق</th><th class="l">أيام أوفرتايم</th><th class="l">الأوفرتايم</th><th class="l">حوافز</th><th class="l">بدلات</th><th class="l">خصومات</th><th class="l">الإجمالي</th><th class="l">خصم السلف</th><th class="l">الصافي</th></tr></thead><tbody>' +
+        rows.map((x) => { const C = (k, st) => '<td class="l num" data-c="' + x.e.id + ':' + k + '"' + (st ? ' style="' + st + '"' : '') + '>' + f2(x[k]) + '</td>'; const st = empMonthState(b, x.e, m); return '<tr class="' + (st.k === 'stop' ? 'emp-stop' : st.k === 'new' ? 'emp-new' : '') + '" data-est="' + st.k + '"><td style="font-weight:600">' + esc(x.e.name) + '<div class="sub">' + esc(x.e.role || '') + '</div>' + st.h + '</td><td>' + esc(branchName(b, x.e.branch)) + '</td><td class="l num">' + f0(x.e.basic) + '</td><td class="l num">' + f2(x.daily) + '</td><td class="l">' + inp(x, 'days', x.days) + '</td>' + C('due') + '<td class="l">' + inp(x, 'ot', x.o.ot || '') + '</td>' + C('otAmt') + '<td class="l">' + inp(x, 'bonus', x.o.bonus || '') + '</td><td class="l">' + inp(x, 'allow', x.o.allow || '') + '</td><td class="l">' + inp(x, 'ded', x.o.ded || '') + '</td>' + C('gross', 'font-weight:600') + '<td class="l">' + inp(x, 'adv', x.adv) + (x.outAdv ? '<div class="sub num">من ' + f2(x.outAdv) + '</div>' : '') + '</td>' + C('net', 'font-weight:700;' + (x.net < 0 ? 'color:var(--bad)' : '')) + '</tr>'; }).join('') +
         '<tr class="tot"><td colspan="5">الإجمالي (' + rows.length + ' موظف)</td><td class="l num" data-t="due">' + f2(T('due')) + '</td><td></td><td class="l num" data-t="otAmt">' + f2(T('otAmt')) + '</td><td class="l num" data-t="bonus">' + f2(T('bonus')) + '</td><td class="l num" data-t="allow">' + f2(T('allow')) + '</td><td class="l num" data-t="ded">' + f2(T('ded')) + '</td><td class="l num" data-t="gross">' + f2(T('gross')) + '</td><td class="l num" data-t="adv">' + f2(T('adv')) + '</td><td class="l num" style="color:var(--acc)" data-t="net">' + f2(T('net')) + '</td></tr></tbody></table></div>' +
         '<div class="sub" style="line-height:1.8">اليومية = الأساسي ÷ 30 · الأوفرتايم = الأيام × اليومية × 1.5 · خصم السلف يُقترح تلقائيًا من رصيد سلف الموظف ويمكن تعديله.</div>' +
         '<div class="card" style="background:var(--dark);color:#fff;border:0"><b>قيد الترحيل (آخر يوم في الشهر)</b><div class="sub" style="color:#B9BDC6;line-height:1.9;margin-top:6px">من ح/ مرتبات وأجور (على فرع كل موظف): <span class="num" data-t="gross">' + f2(T('gross')) + '</span><br>إلى ح/ سلف الموظفين: <span class="num" data-t="adv">' + f2(T('adv')) + '</span><br>إلى ح/ مرتبات مستحقة: <span class="num" data-t="net">' + f2(T('net')) + '</span></div></div>' +
@@ -2043,6 +2058,7 @@ AFTER.payroll = (r) => {
     ['due', 'otAmt', 'bonus', 'allow', 'ded', 'gross', 'adv', 'net'].forEach((k) => { const v = f2(rows.reduce((t, x) => t + x[k], 0)); $$('[data-t="' + k + '"]').forEach((n) => n.textContent = v); });
     const pp = $('#pPost'); if (pp) pp.disabled = rows.some((x) => x.net < 0);
   }));
+  $$('[data-pfil]').forEach((x) => x.onclick = () => { UI.payFil = x.dataset.pfil; render(); });
   const pc = $('#pCsv'); if (pc) pc.onclick = () => { const m = UI.payM; const rows = payrollRows(b, m); downloadCSV(company(r.cid).name + ' - مرتبات ' + ymLabel(m) + '.csv', [['الموظف', 'الوظيفة', 'الفرع', 'الأساسي', 'اليومية', 'أيام العمل', 'المستحق', 'أيام أوفرتايم', 'الأوفرتايم', 'حوافز', 'بدلات', 'خصومات', 'الإجمالي', 'خصم السلف', 'الصافي']].concat(rows.map((x) => [x.e.name, x.e.role || '', branchName(b, x.e.branch), x.e.basic, x.daily, x.days, x.due, x.ot, x.otAmt, x.bonus, x.allow, x.ded, x.gross, x.adv, x.net]))); };
   const pp = $('#pPost'); if (pp) pp.onclick = () => {
     const m = UI.payM; const rows = payrollRows(b, m); const P = b.payrolls[m]; const old = P.posted && b.entries.find((e) => e.id === P.posted); const d = lastDay(m);
@@ -2175,9 +2191,9 @@ const READY = [
 ];
 function rTable(head, rows, opt) { // rows: [{l, v:[...], cls, ind, pct}]
   const o = opt || {};
-  const fmt = (r, v, i) => v === '' || v === null || (r.cls !== 'tot' && !r.pct && Math.abs(v) < 0.5) ? '' : (r.pct || (o.pct && o.pct(i))) ? (+v).toFixed(r.pct ? 0 : 1) + '%' : f0(v);
+  const fmt = (r, v, i) => v === '' || v === null || (r.cls !== 'tot' && !r.pct && !(o.keep0 && o.keep0(i)) && Math.abs(v) < 0.5) ? '' : (o.int && o.int(i)) ? String(Math.round(v)) : (o.chg && o.chg(i)) ? (v > 0 ? '↑ ' : v < 0 ? '↓ ' : '') + Math.abs(+v).toFixed(0) + '%' : (r.pct || (o.pct && o.pct(i))) ? (+v).toFixed(r.pct ? 0 : 1) + '%' : f0(v);
   return '<div class="tw"><table><thead><tr>' + head.map((h, i) => '<th' + (i ? ' class="l"' : '') + '>' + esc(h) + '</th>').join('') + '</tr></thead><tbody>' +
-    rows.map((r) => '<tr class="' + (r.cls === 'tot' ? 'tot' : r.cls === 'grp' ? 'rgrp' : r.ind ? 'rdet' : '') + '"><td' + (r.dd && r.dd[r.v.length - 1] ? dd(r.dd[r.v.length - 1]) : '') + ' style="white-space:normal;' + (r.ind ? 'padding-right:24px' : r.pct ? 'color:var(--mute)' : 'font-weight:' + (r.cls === 'grp' ? 700 : 600)) + '">' + esc(r.l) + '</td>' + r.v.map((v, i) => '<td' + (r.dd && r.dd[i] && Math.abs(v) >= 0.005 ? dd(r.dd[i]) : '') + ' class="l num" style="' + (r.pct ? 'color:var(--mute);' : '') + (i === r.v.length - 1 && o.boldLast || r.cls === 'grp' ? 'font-weight:700' : '') + '">' + fmt(r, v, i) + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>';
+    rows.map((r) => '<tr class="' + (r.cls === 'tot' ? 'tot' : r.cls === 'grp' ? 'rgrp' : r.ind ? 'rdet' : '') + '"><td' + (r.ddL ? dd(r.ddL) : r.dd && r.dd[r.v.length - 1] ? dd(r.dd[r.v.length - 1]) : '') + ' style="white-space:normal;' + (r.ind ? 'padding-right:24px' : r.pct ? 'color:var(--mute)' : 'font-weight:' + (r.cls === 'grp' ? 700 : 600)) + '">' + esc(r.l) + '</td>' + r.v.map((v, i) => '<td' + (r.dd && r.dd[i] && Math.abs(v) >= 0.005 ? dd(r.dd[i]) : '') + ' class="l num" style="' + (r.pct ? 'color:var(--mute);' : '') + (i === r.v.length - 1 && o.boldLast || r.cls === 'grp' ? 'font-weight:700' : '') + '">' + fmt(r, v, i) + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>';
 }
 const brOrder = (b) => allBranches(b).map((x) => x.id).concat(['_']);
 const brLbl = (b, k) => k === '_' ? 'بدون فرع' : branchName(b, k);
@@ -2322,7 +2338,7 @@ const FB_CONFIG = {
 };
 const FB_VER = '10.14.1';
 const CLOUD_MODE = /\.github\.io$/i.test(location.hostname) || !!window.FB_MOCK;
-const RO_PAGES = ['drafts', 'expense', 'revenue', 'transfer', 'collect', 'journal', 'payroll', 'close', 'settings'];
+const RO_PAGES = ['drafts', 'follow', 'expense', 'revenue', 'transfer', 'collect', 'journal', 'payroll', 'close', 'settings'];
 
 // ---------- thin adapter over the Firebase compat SDK (a test mock can replace it)
 function loadScript(src) { return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('load ' + src)); document.head.appendChild(s); }); }
@@ -3315,5 +3331,292 @@ function svRecentCard() {
 }
 const _render18 = render;
 render = function () { const o = _render18.apply(this, arguments); try { const r = route(); if (SV_FORMS.includes(r.page) && !(r.page === 'expense' && EXP && EXP.editId)) svRecentCard(); } catch (e) { } return o; };
+
+// ======================================================================
+// v4.0 — items report · pivot report builder · drafts in nav · follow-up (prepaid/accrued) screen
+// ======================================================================
+
+// ---------- 1) ready report "f": purchases by grocery item
+READY.push(['f', 'مشتريات الأصناف']);
+const _readyData19 = readyData;
+readyData = function (b, tab, PR) {
+  if (tab !== 'f') return _readyData19.apply(this, arguments);
+  const out = { tables: [], kpis: [], sheets: [], note: '' };
+  const tagAccs = b.accounts.filter((a) => a.tags && !a.group && (!UI.rdTagAcc || a.id === UI.rdTagAcc)); const TA = new Set(tagAccs.map((a) => a.id));
+  const nm = (k) => k === '_' ? '(بدون صنف)' : k;
+  const months = monthRange(ym(PR.from), ym(PR.to)); const n = months.length;
+  const pFrom = addMonths(ym(PR.from), -n) + '-01', pTo = lastDay(addMonths(ym(PR.to), -n));
+  const S = (t, x, f, from, to) => ({ t, from: from || PR.from, to: to || PR.to, x, f });
+  const FT = (tag, br, m) => (e, l, a) => TA.has(l.a) && (tag === '*' || (l.tag || '_') === tag) && (!br || br === '*' || (l.b || '_') === br) && (!m || ym(e.date) === m) ? l.dr - l.cr : 0;
+  const cur = {}, cnt = {}, prev = {}, byM = {}; const brs = new Set();
+  iterLines(b, { from: PR.from, to: PR.to }).forEach(({ e, l }) => { if (!TA.has(l.a)) return; const k = l.tag || '_', br = l.b || '_'; const v = l.dr - l.cr; brs.add(br);
+    cur[k] = cur[k] || {}; cur[k][br] = (cur[k][br] || 0) + v; cnt[k] = (cnt[k] || 0) + 1; const mk = ym(e.date); byM[k] = byM[k] || {}; byM[k][mk] = (byM[k][mk] || 0) + v; });
+  iterLines(b, { from: pFrom, to: pTo }).forEach(({ l }) => { if (!TA.has(l.a)) return; const k = l.tag || '_'; prev[k] = (prev[k] || 0) + l.dr - l.cr; });
+  const tot = (k) => Object.values(cur[k] || {}).reduce((t, v) => t + v, 0);
+  const keys = Object.keys(cur).filter((k) => Math.abs(tot(k)) >= 0.005).sort((x, y) => (x === '_') - (y === '_') || tot(y) - tot(x));
+  const G = keys.reduce((t, k) => t + tot(k), 0); const GP = Object.values(prev).reduce((t, v) => t + v, 0);
+  const cols = brOrder(b).filter((k) => brs.has(k));
+  const accName = UI.rdTagAcc ? (acc(b, UI.rdTagAcc) || {}).name : tagAccs.map((a) => a.name).join(' + ');
+  if (UI.rdTagView === 'months') {
+    const rows = keys.map((k) => { const v = months.map((m) => (byM[k] || {})[m] || 0); return { l: nm(k), v: v.concat([tot(k)]), dd: months.map((m, i) => S(nm(k) + ' · ' + ymLabel(m), v[i], FT(k, '*', m))).concat([S(nm(k), tot(k), FT(k, '*'))]) }; });
+    const mt = months.map((m) => keys.reduce((t, k) => t + ((byM[k] || {})[m] || 0), 0));
+    rows.push({ l: 'الإجمالي', cls: 'tot', v: mt.concat([G]), dd: months.map((m, i) => S('كل الأصناف · ' + ymLabel(m), mt[i], FT('*', '*', m))).concat([S('كل الأصناف', G, FT('*', '*'))]) });
+    out.tables.push({ title: 'مشتريات الأصناف بالشهور — ' + accName, head: ['الصنف'].concat(months.map(ymLabel), ['الإجمالي']), rows, opt: { boldLast: true } });
+    out.sheets.push({ name: 'الأصناف بالشهور', rows: [['الصنف'].concat(months.map(ymLabel), ['الإجمالي'])].concat(rows.map((x) => [x.l].concat(x.v.map(r2)))), widths: [20].concat(months.map(() => 13), [14]), bold: [rows.length] });
+  } else {
+    const head = ['الصنف'].concat(cols.map((k) => brLbl(b, k)), ['الإجمالي', '% من الإجمالي', 'عدد المرات', 'الفترة السابقة', 'التغيّر']);
+    const rows = keys.map((k) => { const t = tot(k), p = prev[k] || 0;
+      return { l: nm(k), v: cols.map((c) => (cur[k] || {})[c] || 0).concat([t, G ? t / G * 100 : 0, cnt[k] || 0, p, p ? (t - p) / Math.abs(p) * 100 : 0]),
+        dd: cols.map((c) => S(nm(k) + ' · ' + brLbl(b, c), (cur[k] || {})[c] || 0, FT(k, c))).concat([S(nm(k), t, FT(k, '*')), null, null, S(nm(k) + ' · الفترة السابقة', p, FT(k, '*'), pFrom, pTo), null]), ddL: S(nm(k), t, FT(k, '*')) }; });
+    const ct = cols.map((c) => keys.reduce((t, k) => t + ((cur[k] || {})[c] || 0), 0));
+    rows.push({ l: 'الإجمالي', cls: 'tot', v: ct.concat([G, 100, keys.reduce((t, k) => t + (cnt[k] || 0), 0), GP, GP ? (G - GP) / Math.abs(GP) * 100 : 0]), dd: cols.map((c, i) => S('كل الأصناف · ' + brLbl(b, c), ct[i], FT('*', c))).concat([S('كل الأصناف', G, FT('*', '*')), null, null, S('كل الأصناف · الفترة السابقة', GP, FT('*', '*'), pFrom, pTo), null]) });
+    const nc = cols.length;
+    out.tables.push({ title: 'مشتريات الأصناف — ' + accName, head, rows, opt: { pct: (i) => i === nc + 1, int: (i) => i === nc + 2, chg: (i) => i === nc + 4 } });
+    out.sheets.push({ name: 'مشتريات الأصناف', rows: [head].concat(rows.map((x) => [x.l].concat(x.v.map((v, i) => i === nc + 2 ? Math.round(v) : r2(v))))), widths: [20].concat(cols.map(() => 13), [14, 12, 11, 14, 10]), bold: [rows.length] });
+    out.note = 'الفترة السابقة = نفس عدد الشهور قبل الفترة المختارة (' + ymLabel(ym(pFrom)) + (n > 1 ? ' – ' + ymLabel(ym(pTo)) : '') + '). "(بدون صنف)" = مشتريات على البند من غير ما يتحدد الصنف.';
+  }
+  const top = keys.filter((k) => k !== '_').slice(0, 3);
+  out.kpis = [['إجمالي المشتريات', G, S('كل الأصناف', G, FT('*', '*'))]].concat(top.map((k) => ['الأعلى: ' + k, tot(k), S(k, tot(k), FT(k, '*'))]));
+  return out;
+};
+const _vReady19 = vReady;
+vReady = function (r) {
+  let h = _vReady19(r); if ((UI.readyTab || 'a') !== 'f') return h; const b = book(r.cid);
+  const ctl = '<div class="card row noprint" style="gap:10px;flex-wrap:wrap;padding:12px 14px"><label class="row" style="gap:6px">البند<select class="in" id="rfAcc" style="width:auto"><option value="">كل البنود اللي ليها أصناف</option>' + b.accounts.filter((a) => a.tags && !a.group).map((a) => '<option value="' + a.id + '"' + (a.id === UI.rdTagAcc ? ' selected' : '') + '>' + esc(a.name) + '</option>').join('') + '</select></label><div class="chips"><button class="chip' + (UI.rdTagView !== 'months' ? ' on' : '') + '" data-rfv="br">حسب الفرع</button><button class="chip' + (UI.rdTagView === 'months' ? ' on' : '') + '" data-rfv="months">حسب الشهور</button></div></div>';
+  const i = h.indexOf('<div class="card noprint per'); return i < 0 ? h.replace('<div class="grid g-kpi">', ctl + '<div class="grid g-kpi">') : h.slice(0, i) + ctl + h.slice(i);
+};
+const _afterReady19 = AFTER.ready;
+AFTER.ready = (r) => { _afterReady19(r); const s = $('#rfAcc'); if (s) s.onchange = () => { UI.rdTagAcc = s.value; render(); }; $$('[data-rfv]').forEach((x) => x.onclick = () => { UI.rdTagView = x.dataset.rfv; render(); }); };
+
+// ---------- 2) pivot report builder ("صمّم تقريرك")
+const PV_DIMS = [['branch', 'الفرع'], ['month', 'الشهر'], ['week', 'الأسبوع'], ['day', 'اليوم'], ['group', 'مجموعة البنود'], ['acc', 'البند'], ['tag', 'الصنف'], ['channel', 'قناة البيع'], ['src', 'المصدر (اتدفع منين)'], ['kind', 'نوع القيد'], ['emp', 'الموظف']];
+const PV_MEAS = [['exp', 'المصروفات'], ['rev', 'المبيعات'], ['net', 'الصافي (مبيعات − مصروفات)'], ['cnt', 'عدد مرات الصرف'], ['avg', 'متوسط المصروف']];
+const PV_FILT = [['br', 'الفرع'], ['grp', 'مجموعة البنود'], ['acc', 'البند'], ['tag', 'الصنف'], ['src', 'المصدر']];
+const pvDimName = (k) => (PV_DIMS.find((x) => x[0] === k) || [k, k])[1];
+function pvDefault(cid) { return { cid, meas: 'exp', r: ['acc'], c: 'month', f: {}, pct: '', sort: 'tot', hide0: true, heat: false, title: '', open: {} }; }
+function weekKey(d) { const t = new Date(d + 'T00:00:00Z'); const wd = (t.getUTCDay() + 1) % 7; t.setUTCDate(t.getUTCDate() - wd); return t.toISOString().slice(0, 10); } // weeks start Saturday
+function pvSrc(b, e) { if (e._src !== undefined) return e._src; const W = pvSrc.W || new Set(); const l = e.lines.find((x) => W.has(x.a) && x.cr > 0); Object.defineProperty(e, '_src', { value: l ? l.a : '', enumerable: false, configurable: true, writable: true }); return e._src; }
+function pvKey(b, dim, e, l, a, ch) {
+  switch (dim) {
+    case 'branch': return [l.b || '_', l.b ? branchName(b, l.b) : 'بدون فرع'];
+    case 'month': return [ym(e.date), ymLabel(ym(e.date))];
+    case 'week': { const w = weekKey(e.date); return [w, 'أسبوع ' + w.slice(8, 10) + '/' + w.slice(5, 7)]; }
+    case 'day': return [e.date, e.date];
+    case 'group': { const g = acc(b, a.parent); return [g ? g.code : '_', g ? g.name : '—']; }
+    case 'acc': return [a.code + '|' + a.id, a.name];
+    case 'tag': return [l.tag || '_', l.tag || '(بدون صنف)'];
+    case 'channel': return [ch || '_', ch && ch !== '_' ? chName(b, ch) : 'بدون قناة'];
+    case 'src': { const s = pvSrc(b, e); return [s || '_', s ? (acc(b, s) || {}).name || '?' : '—']; }
+    case 'kind': return [e.kind, (KIND[e.kind] || [e.kind])[0]];
+    case 'emp': { const x = l.emp && (b.employees || []).find((y) => y.id === l.emp); return [l.emp || '_', x ? x.name : '—']; }
+    case 'none': return ['*', 'الإجمالي'];
+  }
+  return ['_', '—'];
+}
+function pvContrib(b, P) { // → function(e,l,a) returning [{rk:[keys], rl:[labels], ck, cl, v, n}]
+  const F = P.f || {}; const has = (k) => F[k] && F[k].length;
+  pvSrc.W = new Set(wallets(b).map((x) => x.id));
+  const useCh = P.r.includes('channel') || P.c === 'channel';
+  return (e, l, a) => {
+    let v = 0, n = 0;
+    if (P.meas === 'rev') { if (a.type !== 'revenue') return []; v = l.cr - l.dr; }
+    else if (P.meas === 'net') { if (a.type === 'revenue') v = l.cr - l.dr; else if (a.type === 'expense') v = -(l.dr - l.cr); else return []; }
+    else { if (a.type !== 'expense') return []; v = l.dr - l.cr; n = 1; }
+    if (has('br') && !F.br.includes(l.b || '_')) return [];
+    if (has('grp') && !F.grp.includes(a.parent)) return [];
+    if (has('acc') && !F.acc.includes(a.id)) return [];
+    if (has('tag') && !F.tag.includes(l.tag || '_')) return [];
+    if (has('src') && !F.src.includes(pvSrc(b, e) || '_')) return [];
+    const parts = useCh ? lineParts(b, e, l, a) : [{ ch: null, f: 1 }];
+    return parts.map((pt) => { const R = P.r.map((d) => pvKey(b, d, e, l, a, pt.ch)); const C = pvKey(b, P.c || 'none', e, l, a, pt.ch); return { rk: R.map((x) => x[0]), rl: R.map((x) => x[1]), ck: C[0], cl: C[1], v: v * pt.f, n: n * pt.f }; });
+  };
+}
+function pvBuild(b, P, PR) {
+  const fn = pvContrib(b, P); const nodes = new Map(); const colL = {}; const colT = {}, colN = {}; let GT = 0, GN = 0;
+  iterLines(b, { from: PR.from, to: PR.to }).forEach(({ e, l }) => { const a = acc(b, l.a); if (!a) return;
+    fn(e, l, a).forEach((x) => { colL[x.ck] = x.cl; colT[x.ck] = (colT[x.ck] || 0) + x.v; colN[x.ck] = (colN[x.ck] || 0) + x.n; GT += x.v; GN += x.n;
+      for (let d = 0; d < x.rk.length; d++) { const path = x.rk.slice(0, d + 1).join('\u0001'); let nd = nodes.get(path); if (!nd) { nd = { path, lvl: d, key: x.rk[d], lab: x.rl[d], parent: d ? x.rk.slice(0, d).join('\u0001') : '', v: {}, n: {}, t: 0, tn: 0 }; nodes.set(path, nd); }
+        nd.v[x.ck] = (nd.v[x.ck] || 0) + x.v; nd.n[x.ck] = (nd.n[x.ck] || 0) + x.n; nd.t += x.v; nd.tn += x.n; } }); });
+  const timeDim = (d) => ['month', 'week', 'day'].includes(d);
+  const cols = Object.keys(colL).sort((x, y) => timeDim(P.c) ? x.localeCompare(y) : P.c === 'branch' ? brOrder(b).indexOf(x) - brOrder(b).indexOf(y) : (colT[y] || 0) - (colT[x] || 0));
+  return { nodes, cols, colL, colT, colN, GT, GN, fn };
+}
+function pvVal(P, v, n) { return P.meas === 'cnt' ? n : P.meas === 'avg' ? (n ? v / n : 0) : v; }
+function vPivot(r) {
+  const c = company(r.cid), b = book(r.cid);
+  if (!UI.pv || UI.pv.cid !== r.cid) UI.pv = pvDefault(r.cid);
+  const P = UI.pv; const PR = perRange(); const D = pvBuild(b, P, PR); UI._pvD = D;
+  const sel = (id, opts, v, extra) => '<select class="in" id="' + id + '" style="width:auto"' + (extra || '') + '>' + opts.map(([k, l]) => '<option value="' + k + '"' + (k === v ? ' selected' : '') + '>' + l + '</option>').join('') + '</select>';
+  const saved = ((b.settings || {}).pivots || []);
+  const fOpts = { br: brOrder(b).map((k) => [k, brLbl(b, k)]), grp: b.accounts.filter((a) => a.group && a.level === 3).map((a) => [a.id, a.name]), acc: leafAccs(b).filter((a) => a.type === 'expense' || a.type === 'revenue').map((a) => [a.id, a.name]), tag: b.tags.map((t) => [t, t]).concat([['_', '(بدون صنف)']]), src: wallets(b).map((a) => [a.id, a.name]) };
+  const fLab = (k, v) => ((fOpts[k] || []).find((x) => x[0] === v) || [v, v])[1];
+  const chips = Object.keys(P.f || {}).filter((k) => P.f[k] && P.f[k].length).map((k) => P.f[k].map((v) => '<span class="ddpill" style="display:inline-flex;gap:6px;align-items:center">' + esc(PV_FILT.find((x) => x[0] === k)[1]) + ': ' + esc(fLab(k, v)) + '<button class="pvfx" data-pvfx="' + k + '|' + esc(v) + '" aria-label="إزالة">×</button></span>').join('')).join('');
+  // table
+  const cols = D.cols; const multi = P.c && P.c !== 'none';
+  const nodeVal = (nd, ck) => ck === null ? pvVal(P, nd.t, nd.tn) : pvVal(P, nd.v[ck] || 0, nd.n[ck] || 0);
+  const G = pvVal(P, D.GT, D.GN); const colG = (ck) => pvVal(P, D.colT[ck] || 0, D.colN[ck] || 0);
+  const kids = {}; D.nodes.forEach((nd) => { (kids[nd.parent] = kids[nd.parent] || []).push(nd); });
+  const timeDim = (lvl) => ['month', 'week', 'day'].includes(P.r[lvl]);
+  const sortK = (arr, lvl) => arr.sort((x, y) => P.sort === 'lab' || (P.sort === 'tot' && timeDim(lvl)) ? (timeDim(lvl) ? x.key.localeCompare(y.key) : x.lab.localeCompare(y.lab, 'ar')) : P.sort === 'tot' ? Math.abs(nodeVal(y, null)) - Math.abs(nodeVal(x, null)) : (nodeVal(y, P.sort) - nodeVal(x, P.sort)));
+  let maxLeaf = 0; D.nodes.forEach((nd) => { if (nd.lvl === P.r.length - 1) cols.forEach((ck) => { maxLeaf = Math.max(maxLeaf, Math.abs(nodeVal(nd, ck))); }); });
+  const pctOf = (v, nd, ck) => P.pct === 'g' ? (G ? v / G * 100 : 0) : P.pct === 'r' ? (nodeVal(nd, null) ? v / nodeVal(nd, null) * 100 : 0) : P.pct === 'c' ? (ck === null ? (G ? v / G * 100 : 0) : (colG(ck) ? v / colG(ck) * 100 : 0)) : null;
+  const fmt = (v) => P.meas === 'cnt' ? String(Math.round(v)) : f2(v);
+  const pathMatch = (path) => { const ks = path ? path.split('\u0001') : []; return (x) => ks.every((k, i) => x.rk[i] === k); };
+  const ddFor = (nd, ck, lab, val) => dd({ t: lab + (ck !== null && multi ? ' · ' + D.colL[ck] : ''), sub: (PV_MEAS.find((x) => x[0] === P.meas) || [])[1], from: PR.from, to: PR.to, x: P.meas === 'cnt' || P.meas === 'avg' ? undefined : val,
+    f: (e, l, a) => { const m = nd ? pathMatch(nd.path) : () => true; return D.fn(e, l, a).reduce((t, x) => t + (m(x) && (ck === null || x.ck === ck) ? (P.meas === 'cnt' || P.meas === 'avg' ? x.v : x.v) : 0), 0); } });
+  const cell = (nd, ck, isLeaf) => { const v = nd ? nodeVal(nd, ck) : (ck === null ? G : colG(ck)); if (P.hide0 && Math.abs(v) < 0.005 && nd) return '<td class="l num"></td>';
+    const p = pctOf(v, nd, ck); const heat = P.heat && isLeaf && maxLeaf ? 'background:rgba(14,107,99,' + (Math.abs(v) / maxLeaf * 0.45).toFixed(3) + ');' : '';
+    return '<td class="l num" style="' + heat + (ck === null ? 'font-weight:700;' : '') + '"' + ddFor(nd, ck, nd ? nd.lab : 'الإجمالي', v) + '>' + fmt(v) + (p !== null ? '<div class="sub">' + p.toFixed(1) + '%</div>' : '') + '</td>'; };
+  const rowsH = []; const walk = (parent, lvl) => {
+    (sortK(kids[parent] || [], lvl)).forEach((nd) => { if (P.hide0 && Math.abs(nd.t) < 0.005 && P.meas !== 'cnt') return;
+      const leaf = lvl === P.r.length - 1; const open = !leaf && (P.open[nd.path] !== undefined ? P.open[nd.path] : false);
+      rowsH.push('<tr class="' + (leaf ? (lvl ? 'pvl2' : '') : 'pvl' + lvl + ' pvp') + '"' + (leaf ? '' : ' data-pvo="' + esc(nd.path) + '"') + '><td style="padding-right:' + (10 + lvl * 22) + 'px">' + (leaf ? '' : '<span class="plar">' + (open ? '▾' : '▸') + '</span>') + esc(nd.lab) + (leaf ? '' : ' <span class="sub">(' + (kids[nd.path] || []).length + ')</span>') + '</td>' + (multi ? cols.map((ck) => cell(nd, ck, leaf)).join('') : '') + cell(nd, null, leaf) + '</tr>');
+      if (open) walk(nd.path, lvl + 1); });
+  };
+  walk('', 0);
+  const head = '<tr><th>' + P.r.map(pvDimName).join(' ← ') + '</th>' + (multi ? cols.map((ck) => '<th class="l" data-pvs="' + esc(ck) + '" style="cursor:pointer">' + esc(D.colL[ck]) + (P.sort === ck ? ' ▾' : '') + '</th>').join('') : '') + '<th class="l" data-pvs="tot" style="cursor:pointer">الإجمالي' + (P.sort === 'tot' ? ' ▾' : '') + '</th></tr>';
+  const totRow = '<tr class="tot"><td>الإجمالي</td>' + (multi ? cols.map((ck) => cell(null, ck)).join('') : '') + cell(null, null) + '</tr>';
+  const title = P.title || ((PV_MEAS.find((x) => x[0] === P.meas) || [])[1] + ' حسب ' + P.r.map(pvDimName).join(' ثم ') + (multi ? ' × ' + pvDimName(P.c) : ''));
+  return layout(r, 'صمّم تقريرك',
+    '<div class="head"><div><div class="sub">' + esc(c.name) + ' · صمّم تقريرك</div><h1>' + esc(title) + '</h1></div><div class="row noprint" style="flex-wrap:wrap"><button class="btn" id="pvSave">' + ic('plus', 16) + 'حفظ التقرير</button><button class="btn" id="pvX">' + ic('dl', 16) + 'Excel</button><button class="btn" id="pvRaw">' + ic('dl', 16) + 'البيانات الخام</button><button class="btn a" onclick="window.print()">' + ic('print', 16) + 'PDF</button></div></div>' +
+    (saved.length ? '<div class="card noprint" style="padding:12px 14px"><div class="sub" style="margin-bottom:6px">تقاريرك المحفوظة</div><div class="chips">' + saved.map((x) => '<span class="chip" style="display:inline-flex;gap:8px;align-items:center"><span data-pvl="' + x.id + '" style="cursor:pointer">' + esc(x.name) + '</span><button class="pvfx" data-pvd="' + x.id + '" aria-label="حذف">×</button></span>').join('') + '</div></div>' : '') +
+    '<div class="card grid noprint" style="gap:12px"><div class="row" style="gap:10px;flex-wrap:wrap;align-items:end">' +
+    '<label class="f" style="width:auto">المقياس' + sel('pvM', PV_MEAS, P.meas) + '</label>' +
+    P.r.map((d, i) => '<label class="f" style="width:auto">' + (i ? 'ثم' : 'الصفوف') + sel('pvR' + i, (i ? [['', '— شيل —']] : []).concat(PV_DIMS.filter((x) => x[0] === d || !P.r.includes(x[0]))), d, ' data-pvr="' + i + '"') + '</label>').join('') +
+    (P.r.length < 3 ? '<button class="btn sm" id="pvAddR">+ مستوى</button>' : '') +
+    '<label class="f" style="width:auto">الأعمدة' + sel('pvC', [['none', 'من غير أعمدة']].concat(PV_DIMS.filter((x) => !P.r.includes(x[0]))), P.c || 'none') + '</label></div>' +
+    '<div class="row" style="gap:10px;flex-wrap:wrap;align-items:end"><label class="f" style="width:auto">فلتر' + sel('pvFk', [['', 'اختر نوع الفلتر…']].concat(PV_FILT), UI.pvFk || '') + '</label>' + (UI.pvFk ? '<label class="f" style="width:auto">القيمة' + sel('pvFv', [['', '— اختر —']].concat(fOpts[UI.pvFk] || []), '') + '</label>' : '') +
+    '<label class="f" style="width:auto">النسبة' + sel('pvP', [['', 'من غير نسب'], ['g', '% من الإجمالي'], ['r', '% من السطر'], ['c', '% من العمود']], P.pct) + '</label>' +
+    '<label class="row" style="gap:6px"><input type="checkbox" id="pvH0"' + (P.hide0 ? ' checked' : '') + '>إخفاء الأصفار</label><label class="row" style="gap:6px"><input type="checkbox" id="pvHt"' + (P.heat ? ' checked' : '') + '>تلوين الأرقام الكبيرة</label>' +
+    '<label class="f sp" style="min-width:160px">عنوان التقرير<input class="in" id="pvT" value="' + esc(P.title || '') + '" placeholder="اختياري"></label></div>' +
+    (chips ? '<div class="row" style="gap:6px;flex-wrap:wrap">' + chips + '<button class="btn sm" id="pvFclr">مسح الفلاتر</button></div>' : '') + '</div>' +
+    periodBar() +
+    '<div class="card"><div class="row noprint" style="margin-bottom:8px;gap:8px;flex-wrap:wrap"><span class="sub sp">اضغط على ▸ لفتح المستوى · اضغط على عنوان العمود للترتيب · اضغط على أي رقم لتفاصيله</span>' + (P.r.length > 1 ? '<button class="btn sm" id="pvOA">فتح الكل</button><button class="btn sm" id="pvOC">قفل الكل</button>' : '') + '<button class="btn sm" id="pvSL">' + (P.sort === 'lab' ? '✓ ' : '') + 'ترتيب أبجدي</button></div>' +
+    (D.nodes.size ? '<div class="tw pvt"><table><thead>' + head + '</thead><tbody>' + rowsH.join('') + totRow + '</tbody></table></div>' : '<div class="empty">مفيش أرقام بالاختيارات دي في الفترة دي</div>') + '</div>');
+}
+function pvExcel(cid) {
+  const b = book(cid), P = UI.pv, D = UI._pvD; if (!D) return; const multi = P.c && P.c !== 'none';
+  const kids = {}; D.nodes.forEach((nd) => { (kids[nd.parent] = kids[nd.parent] || []).push(nd); });
+  const rows = [[P.r.map(pvDimName).join(' ← ')].concat(multi ? D.cols.map((ck) => D.colL[ck]) : [], ['الإجمالي'])]; const bold = [];
+  const walk = (parent, lvl) => (kids[parent] || []).sort((x, y) => Math.abs(y.t) - Math.abs(x.t)).forEach((nd) => { if (P.hide0 && Math.abs(nd.t) < 0.005 && P.meas !== 'cnt') return; const leaf = lvl === P.r.length - 1; if (!leaf) bold.push(rows.length);
+    rows.push(['    '.repeat(lvl) + nd.lab].concat(multi ? D.cols.map((ck) => r2(pvVal(P, nd.v[ck] || 0, nd.n[ck] || 0))) : [], [r2(pvVal(P, nd.t, nd.tn))])); if (!leaf) walk(nd.path, lvl + 1); });
+  walk('', 0); bold.push(rows.length);
+  rows.push(['الإجمالي'].concat(multi ? D.cols.map((ck) => r2(pvVal(P, D.colT[ck] || 0, D.colN[ck] || 0))) : [], [r2(pvVal(P, D.GT, D.GN))]));
+  const name = (P.title || 'تقرير') + ' - ' + perLabel();
+  saveBytes(company(cid).name + ' - ' + name.replace(/[\\\/\?\*\[\]:]/g, ' ') + '.xlsx', buildXlsx([{ name: 'التقرير', rows, widths: [34].concat(multi ? D.cols.map(() => 13) : [], [15]), bold }]), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+}
+function pvRaw(cid) {
+  const b = book(cid), PR = perRange(); pvSrc.W = new Set(wallets(b).map((x) => x.id));
+  const rows = [['التاريخ', 'الشهر', 'الأسبوع', 'رقم القيد', 'نوع القيد', 'البيان', 'كود الحساب', 'الحساب', 'نوع الحساب', 'المجموعة', 'الصنف', 'الفرع', 'المصدر', 'القناة', 'الموظف', 'مدين', 'دائن', 'مصروف', 'إيراد']];
+  const TY = { asset: 'أصول', liability: 'خصوم', equity: 'حقوق ملكية', revenue: 'إيرادات', expense: 'مصروفات' };
+  iterLines(b, { from: PR.from, to: PR.to }).forEach(({ e, l }) => { const a = acc(b, l.a); if (!a) return; const s = pvSrc(b, e); const x = l.emp && (b.employees || []).find((y) => y.id === l.emp);
+    rows.push([e.date, ym(e.date), weekKey(e.date), e.no, (KIND[e.kind] || [e.kind])[0], entryDesc(b, e), a.code, a.name, TY[a.type] || a.type, (acc(b, a.parent) || {}).name || '', l.tag || '', l.b ? branchName(b, l.b) : '', s ? (acc(b, s) || {}).name : '', l.ch ? chName(b, l.ch) : '', x ? x.name : '', l.dr || '', l.cr || '', a.type === 'expense' ? r2(l.dr - l.cr) : '', a.type === 'revenue' ? r2(l.cr - l.dr) : '']); });
+  saveBytes(company(cid).name + ' - البيانات الخام - ' + perLabel() + '.xlsx', buildXlsx([{ name: 'البيانات', rows, widths: [11, 9, 11, 8, 12, 34, 9, 24, 11, 20, 12, 11, 18, 12, 14, 12, 12, 12, 12] }]), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  toast('اتنزّل ' + (rows.length - 1) + ' سطر — تقدر تعمل منه Pivot في الإكسيل');
+}
+vReports = vPivot;
+AFTER.reports = (r) => {
+  bindPeriod(); const b = book(r.cid); const P = UI.pv;
+  const set = (fn) => { fn(); render(); };
+  $('#pvM').onchange = (e) => set(() => { P.meas = e.target.value; });
+  $$('[data-pvr]').forEach((x) => x.onchange = () => set(() => { const i = +x.dataset.pvr; if (!x.value) P.r.splice(i, 1); else P.r[i] = x.value; if (P.r.includes(P.c)) P.c = 'none'; P.open = {}; }));
+  const ar = $('#pvAddR'); if (ar) ar.onclick = () => set(() => { const nx = PV_DIMS.find((d) => !P.r.includes(d[0]) && d[0] !== P.c); if (nx) P.r.push(nx[0]); });
+  $('#pvC').onchange = (e) => set(() => { P.c = e.target.value; if (P.sort !== 'tot' && P.sort !== 'lab') P.sort = 'tot'; });
+  $('#pvFk').onchange = (e) => set(() => { UI.pvFk = e.target.value; });
+  const fv = $('#pvFv'); if (fv) fv.onchange = () => set(() => { P.f = P.f || {}; const k = UI.pvFk; P.f[k] = P.f[k] || []; if (fv.value && !P.f[k].includes(fv.value)) P.f[k].push(fv.value); });
+  $$('[data-pvfx]').forEach((x) => x.onclick = () => set(() => { const [k, v] = x.dataset.pvfx.split('|'); P.f[k] = (P.f[k] || []).filter((y) => y !== v); }));
+  const fc = $('#pvFclr'); if (fc) fc.onclick = () => set(() => { P.f = {}; });
+  $('#pvP').onchange = (e) => set(() => { P.pct = e.target.value; });
+  $('#pvH0').onchange = (e) => set(() => { P.hide0 = e.target.checked; });
+  $('#pvHt').onchange = (e) => set(() => { P.heat = e.target.checked; });
+  $('#pvT').onchange = (e) => set(() => { P.title = e.target.value.trim(); });
+  $$('[data-pvo]').forEach((x) => x.onclick = () => set(() => { const k = x.dataset.pvo; P.open[k] = !P.open[k]; }));
+  $$('[data-pvs]').forEach((x) => x.onclick = () => set(() => { P.sort = x.dataset.pvs; }));
+  const sl = $('#pvSL'); if (sl) sl.onclick = () => set(() => { P.sort = P.sort === 'lab' ? 'tot' : 'lab'; });
+  const oa = $('#pvOA'); if (oa) oa.onclick = () => set(() => { (UI._pvD ? Array.from(UI._pvD.nodes.values()) : []).forEach((nd) => { if (nd.lvl < P.r.length - 1) P.open[nd.path] = true; }); });
+  const oc = $('#pvOC'); if (oc) oc.onclick = () => set(() => { P.open = {}; });
+  $('#pvX').onclick = () => pvExcel(r.cid); $('#pvRaw').onclick = () => pvRaw(r.cid);
+  $('#pvSave').onclick = () => modal('<h2>حفظ التقرير</h2><p class="sub" style="margin:0">يتحفظ الشكل كله (الصفوف والأعمدة والفلاتر والنسب) ونوع الفترة، وتفتحه بضغطة بالأرقام الجديدة.</p><label class="f">اسم التقرير<input class="in" id="pvN" value="' + esc(P.title || '') + '"></label><div class="row"><button class="btn p" id="pvNok">حفظ</button><button class="btn" id="pvNno">إلغاء</button></div>', (m) => {
+    $('#pvNno', m).onclick = closeModal; const n = $('#pvN', m); n.focus();
+    $('#pvNok', m).onclick = () => { const name = n.value.trim(); if (!name) return toast('اكتب اسم للتقرير'); b.settings = b.settings || {}; const L = (b.settings.pivots = b.settings.pivots || []);
+      const cfg = JSON.parse(JSON.stringify(Object.assign({}, P, { cid: undefined, open: {} }))); if (!cfg.title) cfg.title = name; const ex = L.find((x) => x.name === name);
+      if (ex) { ex.P = cfg; ex.per = Object.assign({}, UI.per || {}); } else L.push({ id: uid(), name, P: cfg, per: Object.assign({}, UI.per || {}) }); save(); closeModal(); toast('اتحفظ التقرير ✓'); render(); };
+  });
+  $$('[data-pvl]').forEach((x) => x.onclick = () => { const s = ((b.settings || {}).pivots || []).find((y) => y.id === x.dataset.pvl); if (!s) return; UI.pv = Object.assign(pvDefault(r.cid), JSON.parse(JSON.stringify(s.P)), { cid: r.cid, open: {} }); if (s.per && s.per.p) UI.per = Object.assign({}, s.per); render(); });
+  $$('[data-pvd]').forEach((x) => x.onclick = () => confirmBox('حذف التقرير المحفوظ؟', 'حذف', () => { b.settings.pivots = b.settings.pivots.filter((y) => y.id !== x.dataset.pvd); save(); render(); }, true));
+};
+// old saved reports (simple form) become pivots once
+function migrateSavedReps(b) {
+  try { const old = (b.settings || {}).savedReps; if (!old || !old.length || (b.settings.pivots && b.settings.pivotsMig)) return;
+    b.settings.pivots = b.settings.pivots || []; old.forEach((x) => { const c = x.cfg || {}; if (b.settings.pivots.find((y) => y.name === x.name)) return; b.settings.pivots.push({ id: x.id || uid(), name: x.name, per: x.per, P: { meas: c.meas || 'exp', r: [c.rows === 'none' ? 'acc' : (c.rows || 'acc')], c: c.cols || 'none', f: {}, pct: '', sort: 'tot', hide0: true, heat: false, title: x.name, open: {} } }); });
+    b.settings.pivotsMig = 1; } catch (e) { }
+}
+const _ensure19 = ensureSys2;
+ensureSys2 = function (b) { const o = _ensure19.apply(this, arguments); migrateSavedReps(b); return o; };
+
+// ---------- 4) drafts: nav item with a count, and a dashboard notice
+NAV.splice(NAV.findIndex((x) => x[0] === 'journal') + 1, 0, ['drafts', 'list', 'مسودات القيود']);
+function navDraftsFix() {
+  const r = route(); if (!r.cid) return; const b = book(r.cid); const n = ((b && b.jdrafts) || []).length;
+  $$('a.nav').forEach((a) => { if (!/\/drafts$/.test(a.getAttribute('href') || '')) return; if (!n && r.page !== 'drafts') a.style.display = 'none'; else if (!a.querySelector('.navbadge')) a.insertAdjacentHTML('beforeend', '<span class="navbadge">' + n + '</span>'); });
+}
+
+// ---------- 7) follow-up: prepaid & accrued that still need settling
+function fuData(b) {
+  const t = today(); const out = { pre: [], unsched: [], acc: [], sal: [], adv: [] };
+  const pp = sysAcc(b, 'prepaid'); const preAccs = pp ? ddLeaves(b, pp.parent).map((id) => acc(b, id)).filter((a) => a && a.type === 'asset') : [];
+  // scheduled: parents with linked amort entries still in the future
+  const byLink = {}; b.entries.forEach((e) => { if (e.kind === 'amort' && e.link) (byLink[e.link] = byLink[e.link] || []).push(e); });
+  Object.keys(byLink).forEach((pid) => { const L = byLink[pid].sort((x, y) => x.date.localeCompare(y.date)); const fut = L.filter((e) => e.date > t); if (!fut.length) return; const par = b.entries.find((e) => e.id === pid);
+    const amt = (e) => e.lines.reduce((s, l) => s + (+l.dr || 0), 0); out.pre.push({ par, done: L.length - fut.length, n: L.length, left: r2(fut.reduce((s, e) => s + amt(e), 0)), next: fut[0].date, nextAmt: r2(amt(fut[0])) }); });
+  // unscheduled: final balance of each prepaid account (after every scheduled installment) that nothing will release
+  preAccs.forEach((a) => { const v = r2(b.entries.reduce((s, e) => s + e.lines.reduce((s2, l) => s2 + (l.a === a.id ? l.dr - l.cr : 0), 0), 0)); if (Math.abs(v) >= 0.005) out.unsched.push({ a, v }); });
+  // accrued: open accrual lines, oldest settled first (FIFO per account)
+  const ac = sysAcc(b, 'accrued'); const accAccs = ac ? ddLeaves(b, ac.parent).map((id) => acc(b, id)).filter((a) => a && a.type === 'liability' && a.sys !== 'salPay' && a.sys !== 'vatOut' && !/ضريب/.test(a.name)) : [];
+  accAccs.forEach((a) => { const cr = [], dr = []; b.entries.slice().sort((x, y) => x.date.localeCompare(y.date)).forEach((e) => e.lines.forEach((l) => { if (l.a !== a.id) return; if (l.cr) cr.push({ e, l, left: l.cr }); if (l.dr) dr.push(l.dr); }));
+    let pay = dr.reduce((s, v) => s + v, 0); cr.forEach((x) => { const u = Math.min(pay, x.left); x.left = r2(x.left - u); pay -= u; });
+    cr.filter((x) => x.left >= 0.005).forEach((x) => { const exp = x.e.lines.find((l) => l.dr && (acc(b, l.a) || {}).type === 'expense'); out.acc.push({ a, e: x.e, left: x.left, age: Math.round((Date.parse(t) - Date.parse(x.e.date)) / 86400000), item: exp ? (acc(b, exp.a) || {}).name : entryDesc(b, x.e), br: (exp || x.l).b }); }); });
+  (b.employees || []).forEach((e) => { const p = r2(empPayable(b, e.id)); if (p >= 0.005) out.sal.push({ e, v: p }); const ad = r2(empAdvance(b, e.id)); if (ad >= 0.005) out.adv.push({ e, v: ad }); });
+  const m = ym(t); const P = (b.payrolls || {})[addMonths(m, -1)]; const usesPay = Object.values(b.payrolls || {}).some((x) => x.posted && b.entries.find((e) => e.id === x.posted)); out.prevPayrollOpen = (b.employees || []).length && (P || usesPay) && !(P && P.posted && b.entries.find((e) => e.id === P.posted)) && (P && Object.keys(P.rows || P.o || {}).length || usesPay) ? addMonths(m, -1) : null;
+  return out;
+}
+function vFollow(r) {
+  const c = company(r.cid), b = book(r.cid); const F = fuData(b); const t = today();
+  const sec = (title, n, body, tip) => '<div class="card grid" style="gap:10px"><div class="row"><h2 class="sp">' + title + ' <span class="sub">(' + n + ')</span></h2></div>' + (tip ? '<div class="sub">' + tip + '</div>' : '') + (n ? body : '<div class="empty" style="padding:14px">✓ مفيش حاجة مفتوحة</div>') + '</div>';
+  const preT = '<div class="tw"><table><thead><tr><th>الدفعة</th><th>اتدفعت</th><th class="l">اتحمّل</th><th class="l">الباقي</th><th>القسط الجاي</th></tr></thead><tbody>' + F.pre.map((x) => '<tr class="click" data-view="' + x.par.id + '"><td style="white-space:normal">' + esc(entryDesc(b, x.par)) + '</td><td class="num">' + x.par.date + '</td><td class="l num">' + x.done + ' من ' + x.n + '</td><td class="l num" style="font-weight:600">' + f2(x.left) + '</td><td class="num">' + x.next + ' · ' + f2(x.nextAmt) + '</td></tr>').join('') + '</tbody></table></div>';
+  const unT = '<div class="tw"><table><thead><tr><th>الحساب</th><th class="l">رصيد مالوش أقساط</th><th></th></tr></thead><tbody>' + F.unsched.map((x) => '<tr><td>' + esc(x.a.name) + '</td><td class="l num" style="font-weight:700;color:#9A5B00"' + dd({ t: x.a.name, sub: 'كل حركات الحساب', x: x.v, acc: x.a.id, f: ddAccs([x.a.id], 1) }) + '>' + f2(x.v) + '</td><td class="l"><button class="btn sm p" data-fuamort="' + x.a.id + '" data-v="' + x.v + '">سجّل التحميل</button></td></tr>').join('') + '</tbody></table></div>';
+  const acT = '<div class="tw"><table><thead><tr><th>البند</th><th>الفرع</th><th>تاريخ الاستحقاق</th><th class="l">بقاله</th><th class="l">الباقي</th><th></th></tr></thead><tbody>' + F.acc.sort((x, y) => y.age - x.age).map((x) => '<tr' + (x.age > 30 ? ' class="bad"' : '') + '><td style="white-space:normal">' + esc(x.item) + '<div class="sub">' + esc(x.a.name) + ' · قيد ' + x.e.no + '</div></td><td>' + esc(x.br ? branchName(b, x.br) : '—') + '</td><td class="num">' + x.e.date + '</td><td class="l num"' + (x.age > 30 ? ' style="color:var(--bad);font-weight:700"' : '') + '>' + x.age + ' يوم</td><td class="l num" style="font-weight:600">' + f2(x.left) + '</td><td class="l"><button class="btn sm" data-fupay="' + x.a.id + '" data-v="' + x.left + '" data-br="' + (x.br || '') + '" data-m="' + esc('سداد مستحق: ' + x.item) + '">سدّد</button></td></tr>').join('') + '</tbody></table></div>';
+  const emT = (L, lab) => '<div class="tw"><table><tbody>' + L.map((x) => '<tr><td>' + esc(x.e.name) + (x.e.active === false ? ' <span class="tag">متوقف</span>' : '') + '</td><td>' + esc(branchName(b, x.e.branch)) + '</td><td class="l num" style="font-weight:600">' + f2(x.v) + '</td></tr>').join('') + '<tr class="tot"><td colspan="2">' + lab + '</td><td class="l num">' + f2(L.reduce((s, x) => s + x.v, 0)) + '</td></tr></tbody></table></div>';
+  const old = F.acc.filter((x) => x.age > 30).length;
+  return layout(r, 'متابعة المقدم والمستحق',
+    '<div class="head"><div><div class="sub">' + esc(c.name) + ' · لحد ' + t + '</div><h1>متابعة المقدم والمستحق</h1></div></div>' +
+    '<div class="grid g-kpi"><div class="card kpi"><span class="sub">مقدم مالوش أقساط</span><span class="v num"' + (F.unsched.length ? ' style="color:#9A5B00"' : '') + '>' + F.unsched.length + '</span></div><div class="card kpi"><span class="sub">مستحقات مفتوحة</span><span class="v num">' + F.acc.length + '</span>' + (old ? '<span class="sub" style="color:var(--bad)">' + old + ' فاتت 30 يوم</span>' : '') + '</div><div class="card kpi"><span class="sub">مرتبات لسه ما اتصرفتش</span><span class="v num">' + f2(F.sal.reduce((s, x) => s + x.v, 0)) + '</span></div><div class="card kpi"><span class="sub">سلف قائمة</span><span class="v num">' + f2(F.adv.reduce((s, x) => s + x.v, 0)) + '</span></div></div>' +
+    (F.prevPayrollOpen ? '<div class="note w">مرتبات ' + ymLabel(F.prevPayrollOpen) + ' لسه ما اترحّلتش. <a href="#/c/' + r.cid + '/payroll">افتح شيت المرتبات</a></div>' : '') +
+    sec('⚠ مدفوع مقدمًا محتاج تسوية', F.unsched.length, unT, 'مبالغ دخلت حساب مدفوع مقدمًا (غالبًا بقيد يدوي) ومفيش لها أقساط تحمّلها على المصروف. دوس "سجّل التحميل" وهيفتحلك القيد جاهز، تختار بند المصروف والفرع والتاريخ.') +
+    sec('المدفوع مقدمًا الموزّع على شهور', F.pre.length, preT, 'دفعات اتسجّلت كـ"مقدم" وليها أقساط لسه جاية — بتتحمّل لوحدها في مواعيدها.') +
+    sec('المستحقات اللي لسه ما اتدفعتش', F.acc.length, acT, 'مصروفات اتسجّلت مستحقة. الأقدم بيتسدد الأول. الأحمر فات عليه أكتر من 30 يوم.') +
+    sec('مرتبات مترحّلة ولسه ما اتصرفتش', F.sal.length, emT(F.sal, 'الإجمالي')) +
+    sec('سلف الموظفين', F.adv.length, emT(F.adv, 'الإجمالي')));
+}
+AFTER.follow = (r) => {
+  bindEntryTable(r.cid); const b = book(r.cid);
+  $$('[data-fuamort]').forEach((x) => x.onclick = () => { const v = r2(+x.dataset.v); JR = { cid: r.cid, date: lastDay(ym(today())), memo: 'تحميل ' + (acc(b, x.dataset.fuamort) || {}).name, open: false, lines: [{ a: '', b: '', dr: String(Math.abs(v)), cr: '' }, { a: x.dataset.fuamort, b: '', dr: '', cr: String(Math.abs(v)) }] }; go('#/c/' + r.cid + '/journal'); setTimeout(() => toast('اختار بند المصروف والفرع وعدّل التاريخ والمبلغ لو محتاج'), 400); });
+  $$('[data-fupay]').forEach((x) => x.onclick = () => { const ws = wallets(b); TRF = { cid: r.cid, mode: 'trf', date: today(), from: (ws[0] || {}).id || '', to: x.dataset.fupay, amount: String(r2(+x.dataset.v)), br: x.dataset.br || '', memo: x.dataset.m }; go('#/c/' + r.cid + '/transfer'); setTimeout(() => toast('اختار الحساب اللي اتدفع منه وراجع المبلغ'), 400); });
+};
+NAV.splice(NAV.findIndex((x) => x[0] === 'statement') + 1, 0, ['follow', 'list', 'متابعة المقدم والمستحق']);
+// dashboard notice
+const _vDash19 = vDash;
+vDash = function (r) {
+  const h = _vDash19(r); try {
+    const b = book(r.cid); const F = fuData(b); const nd = (b.jdrafts || []).length; const old = F.acc.filter((x) => x.age > 30).length;
+    const msgs = []; if (F.unsched.length) msgs.push('<b>' + F.unsched.length + '</b> مدفوع مقدمًا محتاج تسوية'); if (old) msgs.push('<b>' + old + '</b> مستحقات فاتت 30 يوم'); if (F.prevPayrollOpen) msgs.push('مرتبات ' + ymLabel(F.prevPayrollOpen) + ' لسه ما اترحّلتش');
+    const end = +today().slice(8, 10) >= 25; let note = '';
+    if (msgs.length) note += '<a class="note w" href="#/c/' + r.cid + '/follow" style="display:block;text-decoration:none">' + (end ? '⏰ آخر الشهر — ' : '') + msgs.join(' · ') + ' — اضغط للمتابعة</a>';
+    if (nd) note += '<a class="note" href="#/c/' + r.cid + '/drafts" style="display:block;text-decoration:none">عندك <b>' + nd + '</b> قيد في المسودات لسه ما اترحّلتش — اضغط لمراجعتها</a>';
+    if (!note) return h; const i = h.indexOf('<div class="grid g-kpi">'); return i < 0 ? h : h.slice(0, i) + note + h.slice(i);
+  } catch (e) { return h; }
+};
+const _render19 = render;
+render = function () { const o = _render19.apply(this, arguments); try { navDraftsFix(); } catch (e) { } return o; };
 </script>
 </body></html>
