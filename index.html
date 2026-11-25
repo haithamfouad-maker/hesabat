@@ -177,14 +177,14 @@ tbody tr td{transition:background .15s}
 .click:hover td{background:#F7F5EF}
 @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
 @media print{.ddov{display:none !important}*{animation:none !important}.plt tr.tot td{background:#eee !important;color:#000 !important}}
-.drc.bad{border-color:#E8C4BC}.drt td{padding:5px 4px;vertical-align:top}.drt .in{padding:8px 10px;font-size:14px}.drt tr.bad td{background:var(--bads)}.drt tfoot td{font-weight:700}.pager .btn.p{pointer-events:none}.tagin{min-width:120px}</style>
+.drc.bad{border-color:#E8C4BC}.drt td{padding:5px 4px;vertical-align:top}.drt .in{padding:8px 10px;font-size:14px}.drt tr.bad td{background:var(--bads)}.drt tfoot td{font-weight:700}.pager .btn.p{pointer-events:none}.tagin{min-width:120px}.svbar{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:85;background:var(--dark);color:#fff;border-radius:14px;padding:10px 12px 10px 16px;display:flex;gap:10px;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,.25);max-width:calc(100% - 24px);font-size:14px;animation:svIn .25s ease both}.svbar.out{animation:svIn .25s ease reverse both}.svbar button{border:0;border-radius:10px;padding:6px 12px;font-weight:700;cursor:pointer;background:#fff;color:var(--dark)}.svbar #svBarX{background:transparent;color:#fff;font-size:18px;padding:2px 6px}@keyframes svIn{from{opacity:0;transform:translate(-50%,12px)}to{opacity:1;transform:translate(-50%,0)}}@media print{.svbar{display:none}}</style>
 </head>
 <body>
 <div id="root"></div>
 <div id="modal"></div>
 <script>
 'use strict';
-const APP_VERSION = '3.8.1';
+const APP_VERSION = '3.9.0';
 // ---------- helpers
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -3232,5 +3232,88 @@ AFTER.statement = AFTER.wallet = (r) => {
 // render hook: datalist for item fields
 const _render17 = render;
 render = function () { const o = _render17.apply(this, arguments); try { ensureTagDL(); } catch (e) { } return o; };
+
+// ---------- v3.9: show what was just saved
+// Every user save (one click → one or more addEntry calls) is collected; then:
+//   • the screen moved away (plain "save")       → a window with the saved entry/entries
+//   • stayed on the same entry screen ("save & add another") → a small bar with "عرض" + a "recently saved" card
+let _svBuf = null, _lastClick = 0;
+document.addEventListener('click', () => { _lastClick = Date.now(); }, true);
+document.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') _lastClick = Date.now(); }, true);
+const _addEntry18 = addEntry;
+addEntry = function (cid, e) {
+  const isEdit = !!(e && e.id && (book(cid) || { entries: [] }).entries.some((x) => x.id === e.id));
+  const out = _addEntry18.apply(this, arguments);
+  try {
+    if (Date.now() - _lastClick < 4000 || _svBuf) {
+      const saved = (out && out.id) ? out : (e && e.id ? book(cid).entries.find((x) => x.id === e.id) : book(cid).entries[book(cid).entries.length - 1]);
+      if (!_svBuf) _svBuf = { cid, ids: [], edits: 0, hash: location.hash, page: route().page };
+      if (saved && saved.id && !_svBuf.ids.includes(saved.id)) _svBuf.ids.push(saved.id); if (isEdit) _svBuf.edits++;
+      clearTimeout(addEntry._t18); addEntry._t18 = setTimeout(svShow, 350);
+    }
+  } catch (er) { }
+  return out;
+};
+const SV_FORMS = ['expense', 'revenue', 'transfer', 'collect', 'journal'];
+function svRemember(cid, ids) { UI.svRecent = ids.map((id) => ({ cid, id })).concat((UI.svRecent || []).filter((x) => !ids.includes(x.id))).slice(0, 8); }
+function svShow() {
+  const S = _svBuf; _svBuf = null; if (!S || !S.ids.length) return;
+  const b = book(S.cid); if (!b) return;
+  const es = S.ids.map((id) => b.entries.find((x) => x.id === id)).filter(Boolean); if (!es.length) return;
+  svRemember(S.cid, es.map((e) => e.id));
+  const stayed = location.hash === S.hash && SV_FORMS.includes(route().page);
+  if (stayed && es.length === 1) { svBar(S.cid, es[0], S.edits > 0); if (SV_FORMS.includes(route().page)) svRecentCard(); return; }
+  if (es.length > 60) { toast('اتسجّل ' + es.length + ' قيد ✓'); return; }
+  svModal(S.cid, es, S.edits > 0);
+}
+function svLines(b, e) {
+  const D = r2(e.lines.reduce((t, l) => t + (+l.dr || 0), 0)), C = r2(e.lines.reduce((t, l) => t + (+l.cr || 0), 0));
+  const hasB = e.lines.some((l) => l.b), hasT = e.lines.some((l) => l.tag), hasE = e.lines.some((l) => l.emp);
+  return '<div class="tw"><table class="ddt"><thead><tr><th>الحساب</th>' + (hasB ? '<th>الفرع</th>' : '') + (hasT ? '<th>الصنف</th>' : '') + (hasE ? '<th>الموظف</th>' : '') + '<th class="l">مدين</th><th class="l">دائن</th></tr></thead><tbody>' +
+    e.lines.map((l) => '<tr><td style="white-space:normal">' + esc((acc(b, l.a) || {}).name || '?') + (l.n && l.n !== e.memo ? '<div class="sub">' + esc(l.n) + '</div>' : '') + '</td>' + (hasB ? '<td>' + esc(l.b ? branchName(b, l.b) : '—') + '</td>' : '') + (hasT ? '<td>' + esc(l.tag || '—') + '</td>' : '') + (hasE ? '<td>' + esc(l.emp ? ((b.employees || []).find((x) => x.id === l.emp) || {}).name || '' : '—') + '</td>' : '') + '<td class="l num">' + (l.dr ? f2(l.dr) : '') + '</td><td class="l num">' + (l.cr ? f2(l.cr) : '') + '</td></tr>').join('') +
+    '<tr class="tot"><td colspan="' + (1 + (hasB ? 1 : 0) + (hasT ? 1 : 0) + (hasE ? 1 : 0)) + '">الإجمالي ' + (Math.abs(D - C) < 0.005 ? '<span class="tag a" style="margin-right:6px">✓ متوازن</span>' : '<span class="tag r">غير متوازن</span>') + '</td><td class="l num">' + f2(D) + '</td><td class="l num">' + f2(C) + '</td></tr></tbody></table></div>';
+}
+function svWarn(b, es) {
+  const W = new Set(wallets(b).map((a) => a.id)); const touched = new Set(); es.forEach((e) => e.lines.forEach((l) => { if (W.has(l.a)) touched.add(l.a); }));
+  const neg = []; touched.forEach((id) => { const a = acc(b, id); let v = 0; b.entries.forEach((e) => e.lines.forEach((l) => { if (l.a === id) v += l.dr - l.cr; })); if (v < -0.005 && (a.wallet === 'custody' || a.wallet === 'cash' || /عهدة|خزينة/.test(a.name))) neg.push([a, r2(v)]); });
+  return neg.length ? '<div class="note w">⚠ ' + neg.map(([a, v]) => esc(a.name) + ' بقت بالسالب <b class="num">' + f2(v) + '</b>').join('، ') + ' — اتأكد إن المصدر صح.</div>' : '';
+}
+function svModal(cid, es, edited) {
+  const b = book(cid); const one = es.length === 1; const e = es[0];
+  const tot = r2(es.reduce((t, x) => t + entryAmount(x), 0));
+  const body = one
+    ? '<div class="sub">' + esc(e.date) + ' · ' + esc((KIND[e.kind] || [''])[0]) + '</div><div style="font-weight:600">' + esc(entryDesc(b, e)) + '</div>' + svLines(b, e)
+    : '<div class="sub">' + es.length + ' قيد · إجمالي <span class="num">' + f2(tot) + '</span></div><div class="grid" style="gap:10px;max-height:58vh;overflow:auto">' + es.map((x) => '<div class="card grid" style="gap:6px;padding:12px"><div class="row"><b class="sp">قيد رقم <span class="num">' + x.no + '</span> · <span class="num">' + esc(x.date) + '</span> · ' + esc(entryDesc(b, x)) + '</b><button class="btn sm" data-sve="' + x.id + '">تعديل</button></div>' + svLines(b, x) + '</div>').join('') + '</div>';
+  modal('<div class="row"><h2 class="sp">' + (one ? (edited ? '✓ اتعدّل القيد رقم ' : '✓ اتسجّل القيد رقم ') + '<span class="num">' + e.no + '</span>' : '✓ اتسجّل ' + es.length + ' قيد') + '</h2><button class="iconbtn" data-close="1" style="background:var(--line2);color:var(--ink)" aria-label="إغلاق">' + ic('x') + '</button></div>' +
+    body + svWarn(b, es) +
+    '<div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn p" data-close="1">تمام</button>' + (one ? '<button class="btn" id="svEdit">تعديل</button>' : '') + '<a class="btn" id="svNew" href="#/c/' + cid + '/' + (svFormOf(e)) + '">تسجيل جديد</a><a class="btn" href="#/c/' + cid + '/entries">كل الحركات</a></div>', (m) => {
+    $$('[data-close]', m).forEach((x) => x.onclick = closeModal);
+    const ed = $('#svEdit', m); if (ed) ed.onclick = () => { closeModal(); editEntry(cid, e.id); };
+    $$('[data-sve]', m).forEach((x) => x.onclick = () => { closeModal(); editEntry(cid, x.dataset.sve); });
+    $$('a', m).forEach((x) => x.addEventListener('click', () => closeModal()));
+    if (es.length > 1) m.querySelector('.box').style.width = 'min(860px,100%)';
+  });
+}
+function svFormOf(e) { return e.kind === 'exp' ? 'expense' : e.kind === 'rev' ? 'revenue' : e.kind === 'trf' ? ((e.meta && e.meta.mode === 'owner') ? 'collect' : 'transfer') : e.kind === 'payroll' || e.kind === 'salpay' ? 'payroll' : 'journal'; }
+function svBar(cid, e, edited) {
+  const old = $('#svBar'); if (old) old.remove();
+  const d = document.createElement('div'); d.id = 'svBar'; d.className = 'svbar';
+  d.innerHTML = '<span>✓ ' + (edited ? 'اتعدّل' : 'اتسجّل') + ' القيد رقم <b class="num">' + e.no + '</b> · ' + esc(entryDesc(book(cid), e)).slice(0, 60) + ' · <span class="num">' + f2(entryAmount(e)) + '</span></span><button id="svBarV">عرض</button><button id="svBarX" aria-label="إغلاق">×</button>';
+  document.body.appendChild(d);
+  $('#svBarV').onclick = () => { d.remove(); showEntry(cid, e.id); };
+  $('#svBarX').onclick = () => d.remove();
+  clearTimeout(svBar.t); svBar.t = setTimeout(() => { d.classList.add('out'); setTimeout(() => d.remove(), 300); }, 7000);
+}
+function svRecentCard() {
+  const r = route(); if (!r.cid || !SV_FORMS.includes(r.page)) return;
+  const b = book(r.cid); const L = (UI.svRecent || []).filter((x) => x.cid === r.cid).map((x) => b.entries.find((e) => e.id === x.id)).filter(Boolean).slice(0, 5);
+  const old = $('#svRecent'); if (old) old.remove(); if (!L.length) return;
+  const m = $('#root main'); if (!m) return;
+  m.insertAdjacentHTML('beforeend', '<div class="card noprint" id="svRecent"><div class="row" style="margin-bottom:8px"><h2 class="sp" style="font-size:16px">آخر اللي سجّلته</h2><span class="sub">اضغط على أي قيد تشوفه أو تعدّله</span></div><div class="tw"><table><tbody>' +
+    L.map((e) => '<tr class="click" data-svr="' + e.id + '"><td class="num sub" style="width:60px">' + e.no + '</td><td class="num" style="width:100px">' + esc(e.date) + '</td><td style="white-space:normal">' + esc(entryDesc(b, e)) + '</td><td class="l num" style="font-weight:600">' + f2(entryAmount(e)) + '</td></tr>').join('') + '</tbody></table></div></div>');
+  $$('[data-svr]').forEach((x) => x.onclick = () => showEntry(r.cid, x.dataset.svr));
+}
+const _render18 = render;
+render = function () { const o = _render18.apply(this, arguments); try { const r = route(); if (SV_FORMS.includes(r.page) && !(r.page === 'expense' && EXP && EXP.editId)) svRecentCard(); } catch (e) { } return o; };
 </script>
 </body></html>
