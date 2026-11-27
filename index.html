@@ -7,7 +7,7 @@
 <title>نظام الحسابات</title><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#14161B"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
+<style>:where(.tw) table{background:#fff}:where(.tw) tr{background:inherit}:where(.tw table) :where(td:first-child,th:first-child){position:sticky;right:0;z-index:1;background:inherit}
 :root{--bg:#F4F3EE;--card:#FFFFFF;--ink:#15171C;--mute:#5F6368;--line:#E3E1DA;--line2:#EEECE6;--acc:#0E6B63;--acc2:#0A4F49;--accs:#E3F0EE;--dark:#14161B;--dark2:#1E2127;--dark3:#22252C;--warn:#9A5B00;--warns:#FFF4E0;--bad:#A1361F;--bads:#FBEAE6;--amber:#E0A84E}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans Arabic',system-ui,-apple-system,'Segoe UI',Tahoma,sans-serif;font-size:15px;-webkit-text-size-adjust:100%}
@@ -177,14 +177,21 @@ tbody tr td{transition:background .15s}
 .click:hover td{background:#F7F5EF}
 @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
 @media print{.ddov{display:none !important}*{animation:none !important}.plt tr.tot td{background:#eee !important;color:#000 !important}}
-.drc.bad{border-color:#E8C4BC}.drt td{padding:5px 4px;vertical-align:top}.drt .in{padding:8px 10px;font-size:14px}.drt tr.bad td{background:var(--bads)}.drt tfoot td{font-weight:700}.pager .btn.p{pointer-events:none}.tagin{min-width:120px}.svbar{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:85;background:var(--dark);color:#fff;border-radius:14px;padding:10px 12px 10px 16px;display:flex;gap:10px;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,.25);max-width:calc(100% - 24px);font-size:14px;animation:svIn .25s ease both}.svbar.out{animation:svIn .25s ease reverse both}.svbar button{border:0;border-radius:10px;padding:6px 12px;font-weight:700;cursor:pointer;background:#fff;color:var(--dark)}.svbar #svBarX{background:transparent;color:#fff;font-size:18px;padding:2px 6px}@keyframes svIn{from{opacity:0;transform:translate(-50%,12px)}to{opacity:1;transform:translate(-50%,0)}}@media print{.svbar{display:none}}tr.emp-stop td{background:#F3F1EC;color:#5F6368}tr.emp-new td{background:#F0F6F5}.pfil-full tr[data-est]:not([data-est=full]),.pfil-stop tr[data-est]:not([data-est=stop]),.pfil-new tr[data-est]:not([data-est=new]){display:none}@media (max-width:760px){.trit{flex-wrap:wrap !important;gap:6px}.trit[data-lvl="2"]{padding-right:10px !important}.trit[data-lvl="3"]{padding-right:20px !important}.trit[data-lvl="4"]{padding-right:30px !important}.trit>.row:first-child{width:100%}.trit>.row:first-child .in{max-width:none !important;flex:1;min-width:0}.trit>.row:last-child{width:100%;justify-content:flex-end;flex-wrap:wrap !important}}.navbadge{margin-right:auto;background:#E0A84E;color:#14161B;border-radius:99px;font-size:12px;font-weight:700;padding:1px 8px}.pvfx{border:0;background:transparent;color:inherit;cursor:pointer;font-size:15px;padding:0 2px}.pvt tr.pvl0 td{font-weight:700;background:#F1EFE8}.pvt tr.pvl1 td{font-weight:600}.pvt tr.pvl1 td:first-child{box-shadow:inset -4px 0 0 var(--acc)}.pvt tr.pvl2 td{font-size:13.5px;color:#4A4E57;background:#FCFBF8}.pvt tr.pvp{cursor:pointer}.pvt tr.pvl0:only-child td{background:none}.card.grid>*{min-width:0}.trit>.row:first-child{min-width:0}</style>
+.drc.bad{border-color:#E8C4BC}.drt td{padding:5px 4px;vertical-align:top}.drt .in{padding:8px 10px;font-size:14px}.drt tr.bad td{background:var(--bads)}.drt tfoot td{font-weight:700}.pager .btn.p{pointer-events:none}.tagin{min-width:120px}.svbar{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:85;background:var(--dark);color:#fff;border-radius:14px;padding:10px 12px 10px 16px;display:flex;gap:10px;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,.25);max-width:calc(100% - 24px);font-size:14px;animation:svIn .25s ease both}.svbar.out{animation:svIn .25s ease reverse both}.svbar button{border:0;border-radius:10px;padding:6px 12px;font-weight:700;cursor:pointer;background:#fff;color:var(--dark)}.svbar #svBarX{background:transparent;color:#fff;font-size:18px;padding:2px 6px}@keyframes svIn{from{opacity:0;transform:translate(-50%,12px)}to{opacity:1;transform:translate(-50%,0)}}@media print{.svbar{display:none}}tr.emp-stop td{background:#F3F1EC;color:#5F6368}tr.emp-new td{background:#F0F6F5}.pfil-full tr[data-est]:not([data-est=full]),.pfil-stop tr[data-est]:not([data-est=stop]),.pfil-new tr[data-est]:not([data-est=new]){display:none}@media (max-width:760px){.trit{flex-wrap:wrap !important;gap:6px}.trit[data-lvl="2"]{padding-right:10px !important}.trit[data-lvl="3"]{padding-right:20px !important}.trit[data-lvl="4"]{padding-right:30px !important}.trit>.row:first-child{width:100%}.trit>.row:first-child .in{max-width:none !important;flex:1;min-width:0}.trit>.row:last-child{width:100%;justify-content:flex-end;flex-wrap:wrap !important}}.navbadge{margin-right:auto;background:#E0A84E;color:#14161B;border-radius:99px;font-size:12px;font-weight:700;padding:1px 8px}.pvfx{border:0;background:transparent;color:inherit;cursor:pointer;font-size:15px;padding:0 2px}.pvt tr.pvl0 td{font-weight:700;background:#F1EFE8}.pvt tr.pvl1 td{font-weight:600}.pvt tr.pvl1 td:first-child{box-shadow:inset -4px 0 0 var(--acc)}.pvt tr.pvl2 td{font-size:13.5px;color:#4A4E57;background:#FCFBF8}.pvt tr.pvp{cursor:pointer}.pvt tr.pvl0:only-child td{background:none}.card.grid>*{min-width:0}.trit>.row:first-child{min-width:0}.prtonly,#prtEntry{display:none}
+.acx{position:relative;width:100%}.acx-sel{display:none !important}.acx-in{width:100%}
+.acx-list{position:fixed;z-index:120;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 14px 36px rgba(0,0,0,.16);overflow:auto;padding:6px}
+.acx-o{padding:8px 10px;border-radius:8px;cursor:pointer;font-size:14px}.acx-o.on{background:var(--accs)}.acx-o.cur{font-weight:700}.acx-g{font-size:12px;color:var(--mute);padding:8px 10px 2px;font-weight:600}
+#prtEntry{font-family:inherit;color:#000}.pe-h{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #000;padding-bottom:10px;margin-bottom:12px}.pe-co{font-size:22px;font-weight:700}.pe-t{font-size:18px;font-weight:700}.pe-sub{font-size:12px;color:#444}.pe-memo{margin:8px 0 12px;font-size:14px}
+.pe-tb{width:100%;border-collapse:collapse;font-size:12.5px}.pe-tb th,.pe-tb td{border:1px solid #999;padding:6px 8px;text-align:right}.pe-tb th{background:#eee}.pe-tb .n{text-align:left;direction:ltr;font-variant-numeric:tabular-nums;white-space:nowrap}.pe-tb tfoot td{font-weight:700;background:#f4f4f4}
+.pe-sig{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:40px;font-size:13px;text-align:center}.pe-sig span{display:block;border-bottom:1px solid #000;height:40px}.pe-foot{margin-top:24px;font-size:10px;color:#666}
+@media print{:where(.tw table) :where(td:first-child,th:first-child){position:static}.tw{overflow:visible !important}.prtfit table{zoom:var(--prtz)}.prtorig{display:none !important}.prtonly{display:block}.prtchunk{margin-bottom:10px}body.prt-entry>*:not(#prtEntry){display:none !important}body.prt-entry #prtEntry{display:block}body.prt-entry{background:#fff !important}.acx-list{display:none}}</style>
 </head>
 <body>
 <div id="root"></div>
 <div id="modal"></div>
 <script>
 'use strict';
-const APP_VERSION = '4.0.0';
+const APP_VERSION = '4.1.0';
 // ---------- helpers
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -797,6 +804,8 @@ function lineChart(months, series) {
 const SERIES_COLORS = [['#0E6B63', ''], ['#D9962F', ''], ['#5B74A8', '7 5'], ['#8A6F5A', '2 5'], ['#A1361F', '4 3'], ['#6B3FA0', '']];
 
 // ---------- dashboard
+// revenue that is not sales (earned discounts, misc income) — kept off the dashboard's sales figure
+function isOtherRev(b, a) { if (!a || a.type !== 'revenue') return false; if (String(a.code || '').startsWith('42')) return true; let p = acc(b, a.parent), n = 0; while (p && n++ < 4) { if (/أخرى|متنوعة/.test(p.name)) return true; p = acc(b, p.parent); } return false; }
 function vDash(r) {
   const c = company(r.cid), b = book(r.cid);
   if (UI.dashCid !== r.cid) { UI.dashCid = r.cid; UI.dashBr = 'all'; }
@@ -807,7 +816,8 @@ function vDash(r) {
   const flt = br === 'all' ? null : br;
   const resP = pnlByMonth(b, PR.from, PR.to); const cur = sumPnl(resP, Object.keys(resP), flt);
   const isMain = flt && !(b.branches.find((x) => x.id === flt) || {}).sells;
-  const revA = months.map((k) => sumPnl(res, [k], flt).rev), expA = months.map((k) => sumPnl(res, [k], flt).exp);
+  const othM = {}; let othP = 0; iterLines(b, { from: months[0] + '-01', to: m + '-31' }).forEach(({ e, l }) => { const a = acc(b, l.a); if (!isOtherRev(b, a) || (flt && l.b !== flt)) return; const k = ym(e.date); othM[k] = (othM[k] || 0) + l.cr - l.dr; }); iterLines(b, { from: PR.from, to: PR.to }).forEach(({ l }) => { const a = acc(b, l.a); if (isOtherRev(b, a) && (!flt || l.b === flt)) othP += l.cr - l.dr; });
+  const revA = months.map((k) => sumPnl(res, [k], flt).rev - (othM[k] || 0)), expA = months.map((k) => sumPnl(res, [k], flt).exp);
   const liq = wallets(b).reduce((t, a) => t + walletSigned(b, a), 0);
   const brObj = flt && b.branches.find((x) => x.id === flt);
   const brCash = brObj && brObj.cash && acc(b, brObj.cash) && b.branches.filter((x) => x.cash === brObj.cash).length === 1 ? accBalance(b, brObj.cash) : null;
@@ -829,12 +839,12 @@ function vDash(r) {
     (!b.entries.length ? '<div class="note">الشركة لا تحتوي على بيانات بعد. ابدأ من <a href="#/c/' + c.id + '/settings">الإعدادات</a> لمراجعة الفروع والحسابات، ثم سجّل <a href="#/c/' + c.id + '/journal/open">الأرصدة الافتتاحية</a> وأول <a href="#/c/' + c.id + '/expense">مصروف</a>.</div>' : '') +
     '<div class="grid g-kpi">' +
     (isMain ? '<div class="card kpi" style="border-style:dashed"><span class="sub">الرئيسي</span><b style="font-size:17px">مركز مصروفات، وليس فرع بيع</b><span class="sub">تُعرض مصروفاته منفصلة ولا تُوزَّع</span></div>' :
-      '<div class="card kpi ddk"' + kdd('المبيعات', DR, cur.rev) + '><span class="sub">المبيعات (بدون ضريبة)</span><span class="v num">' + f0(cur.rev) + '</span><span class="sub">' + sym + '</span></div>') +
+      '<div class="card kpi ddk"' + kdd('المبيعات', (e, l, a) => isOtherRev(b, a) ? 0 : DR(e, l, a), cur.rev - othP) + '><span class="sub">المبيعات (بدون ضريبة)</span><span class="v num">' + f0(cur.rev - othP) + '</span><span class="sub">' + sym + '</span></div>') +
     '<div class="card kpi ddk"' + kdd('المصروفات', DE, cur.exp) + '><span class="sub">المصروفات</span><span class="v num">' + f0(cur.exp) + '</span><span class="sub">' + (flt ? 'مصروفات مباشرة' : 'شاملة كل الفروع والرئيسي') + '</span></div>' +
     (isMain ? '' : '<div class="card kpi t ddk"' + kdd('الصافي', (e, l, a) => DR(e, l, a) - DE(e, l, a), cur.rev - cur.exp) + '><span class="sub">الصافي</span><span class="v num">' + f0(cur.rev - cur.exp) + '</span><span class="sub">هامش ' + (cur.rev ? Math.round((cur.rev - cur.exp) / cur.rev * 100) + '%' : '—') + '</span></div>') +
     (flt ? (brCash !== null ? '<div class="card kpi d ddk"' + dd({ t: 'خزينة الفرع' + bn, sub: 'الرصيد حتى اليوم', x: brCash, acc: brObj && brObj.cash, f: ddAccs([brObj && brObj.cash], 1) }) + '><span class="sub">خزينة الفرع</span><span class="v num">' + f0(brCash) + '</span><span class="sub">الرصيد الحالي</span></div>' : '') : '<div class="card kpi d ddk"' + dd({ t: 'رصيد الحسابات النقدية', sub: 'كل حركات البنوك والخزائن والعهد والتطبيقات', x: liq, f: ddAccs(liqIds, 1) }) + '><span class="sub">رصيد الحسابات النقدية</span><span class="v num">' + f0(liq) + '</span><span class="sub">البنوك والخزائن والعُهد والتطبيقات مخصومًا منها الدائنون</span></div>') +
     '</div>' +
-    '<div class="grid g-2" style="align-items:start"><div class="card grid" style="gap:12px"><div class="row"><h2 class="sp">آخر 6 شهور</h2><span class="sub row" style="gap:12px"><span class="row" style="gap:5px"><i style="width:10px;height:10px;border-radius:3px;background:#0E6B63;display:inline-block"></i>مبيعات</span><span class="row" style="gap:5px"><i style="width:10px;height:10px;border-radius:3px;background:#E0A84E;display:inline-block"></i>مصروفات</span></span></div>' + barChart(months, revA, expA, { dd: (i, w) => dd({ t: (w ? 'المصروفات' : 'المبيعات') + ' · ' + ymLabel(months[i]) + bn, from: months[i] + '-01', to: lastDay(months[i]), x: w ? expA[i] : revA[i], f: w ? DE : DR }) }) + '</div>' +
+    '<div class="grid g-2" style="align-items:start"><div class="card grid" style="gap:12px"><div class="row"><h2 class="sp">آخر 6 شهور</h2><span class="sub row" style="gap:12px"><span class="row" style="gap:5px"><i style="width:10px;height:10px;border-radius:3px;background:#0E6B63;display:inline-block"></i>مبيعات</span><span class="row" style="gap:5px"><i style="width:10px;height:10px;border-radius:3px;background:#E0A84E;display:inline-block"></i>مصروفات</span></span></div>' + barChart(months, revA, expA, { dd: (i, w) => dd({ t: (w ? 'المصروفات' : 'المبيعات') + ' · ' + ymLabel(months[i]) + bn, from: months[i] + '-01', to: lastDay(months[i]), x: w ? expA[i] : revA[i], f: w ? DE : (e, l, a) => isOtherRev(b, a) ? 0 : DR(e, l, a) }) }) + '</div>' +
     '<div class="card grid" style="gap:12px"><h2>أكبر بنود المصروفات · ' + perLabel() + '</h2>' + (top.length ? top.map(([id, v]) => '<div class="grid ddi" style="gap:6px"' + dd({ t: acc(b, id).name + bn, from: PR.from, to: PR.to, x: v, acc: id, f: (e, l) => l.a === id && (!flt || l.b === flt) ? l.dr - l.cr : 0 }) + '><div class="row"><span class="sp">' + esc(acc(b, id).name) + '</span><b class="num">' + f0(v) + '</b></div><div class="bar"><div style="width:' + Math.max(2, v / topMax * 100) + '%"></div></div></div>').join('') : '<div class="empty">لا توجد مصروفات في هذه المدة</div>') + '</div></div>' +
     '<div class="grid g-2" style="align-items:start"><div class="card grid" style="gap:10px"><div class="row"><h2 class="sp">آخر الحركات</h2><a class="btn sm" href="#/c/' + c.id + '/entries">كل الحركات</a></div>' + entriesTable(b, c.id, recent) + '</div>' +
     '<div class="card"><div class="row" style="margin-bottom:6px"><h2 class="sp">الحسابات النقدية</h2><a class="btn sm" href="#/c/' + c.id + '/wallets">التفاصيل</a></div><div class="list">' + wallets(b).map((a) => { const v = walletSigned(b, a); return '<a class="it" style="text-decoration:none;color:inherit" href="#/c/' + c.id + '/wallet/' + a.id + '"><span>' + esc(a.name) + '</span><b class="num ' + (v < 0 ? 'up' : '') + '">' + f0(v) + '</b></a>'; }).join('') + '<div class="it" style="font-weight:700"><span>الإجمالي</span><span class="num" style="color:var(--acc)">' + f0(liq) + '</span></div></div></div></div>');
@@ -936,7 +946,7 @@ function vExpense(r) {
     '<div class="grid g-f2"><label class="f">' + (E.etype === 'prepaid' ? 'تاريخ الدفع (وأول شهر)' : 'التاريخ') + '<input type="date" class="in" data-f="date" value="' + esc(E.date) + '"></label>' +
     (E.etype === 'accrued' ? '<label class="f">الدائن<input class="in" value="مصروفات مستحقة" disabled></label>' : '<label class="f">مصدر الدفع<select class="in" data-f="src">' + srcOptions(b, E.src) + '</select></label>') +
     '<label class="f">البند<select class="in" data-f="acc">' + groups + '</select></label>' +
-    (groupKeyOf(b, A) === 'payroll' && (b.employees || []).length ? '<label class="f">الموظف<select class="in" data-f="emp"><option value="">— بدون موظف —</option>' + b.employees.filter((x) => x.active !== false).map((x) => '<option value="' + x.id + '"' + (x.id === E.emp ? ' selected' : '') + '>' + esc(x.name + ' — ' + branchName(b, x.branch)) + '</option>').join('') + '</select></label>' + (E.emp ? '<div class="chips" style="align-self:end"><button class="chip g' + (E.advance ? ' on' : '') + '" data-adv="1">سلفة على المرتب</button><button class="chip g' + (!E.advance ? ' on' : '') + '" data-adv="0">مصروف مرتبات مباشر</button></div>' : '<span></span>') : '') +
+    (groupKeyOf(b, A) === 'payroll' && (b.employees || []).length ? '<label class="f">الموظف<select class="in" data-f="emp"><option value="">— بدون موظف —</option>' + b.employees.filter((x) => x.active !== false || empStillOpen(b, x) || x.id === E.emp).map((x) => '<option value="' + x.id + '"' + (x.id === E.emp ? ' selected' : '') + '>' + esc(x.name + ' — ' + branchName(b, x.branch) + (x.active === false ? ' (متوقف)' : '')) + '</option>').join('') + '</select></label>' + (E.emp ? '<div class="chips" style="align-self:end"><button class="chip g' + (E.advance ? ' on' : '') + '" data-adv="1">سلفة على المرتب</button><button class="chip g' + (!E.advance ? ' on' : '') + '" data-adv="0">مصروف مرتبات مباشر</button></div>' : '<span></span>') : '') +
     (A.tags && b.tags.length ? '<label class="f">صنف البقالة<select class="in" data-f="tag"><option value="">— بدون —</option>' + b.tags.map((t) => '<option' + (t === E.tag ? ' selected' : '') + '>' + esc(t) + '</option>').join('') + '</select></label>' : (E.etype === 'prepaid' ? '' : '<span></span>')) +
     (E.etype === 'prepaid' ? '<label class="f">عدد الشهور<input class="in num" data-f="months" value="' + esc(E.months) + '" inputmode="numeric"></label><label class="f">أول قسط في شهر<select class="in" data-f="pstart">' + monthRange(ym(E.date), addMonths(ym(E.date), 12)).map((k) => '<option value="' + k + '"' + ((E.pstart || ym(E.date)) === k ? ' selected' : '') + '>' + ymLabel(k) + (k === ym(E.date) ? ' (شهر الدفع)' : '') + '</option>').join('') + '</select></label>' : '') + '</div>' +
     (locked ? '<div class="note w">هذا التاريخ يقع في شهر مقفل، وستُسأل قبل الحفظ.</div>' : '') +
@@ -3391,7 +3401,7 @@ AFTER.ready = (r) => { _afterReady19(r); const s = $('#rfAcc'); if (s) s.onchang
 // ---------- 2) pivot report builder ("صمّم تقريرك")
 const PV_DIMS = [['branch', 'الفرع'], ['month', 'الشهر'], ['week', 'الأسبوع'], ['day', 'اليوم'], ['group', 'مجموعة البنود'], ['acc', 'البند'], ['tag', 'الصنف'], ['channel', 'قناة البيع'], ['src', 'المصدر (اتدفع منين)'], ['kind', 'نوع القيد'], ['emp', 'الموظف']];
 const PV_MEAS = [['exp', 'المصروفات'], ['rev', 'المبيعات'], ['net', 'الصافي (مبيعات − مصروفات)'], ['cnt', 'عدد مرات الصرف'], ['avg', 'متوسط المصروف']];
-const PV_FILT = [['br', 'الفرع'], ['grp', 'مجموعة البنود'], ['acc', 'البند'], ['tag', 'الصنف'], ['src', 'المصدر']];
+const PV_FILT = [['br', 'الفرع'], ['ch', 'قناة البيع'], ['grp', 'مجموعة البنود'], ['acc', 'البند'], ['tag', 'الصنف'], ['src', 'المصدر']];
 const pvDimName = (k) => (PV_DIMS.find((x) => x[0] === k) || [k, k])[1];
 function pvDefault(cid) { return { cid, meas: 'exp', r: ['acc'], c: 'month', f: {}, pct: '', sort: 'tot', hide0: true, heat: false, title: '', open: {} }; }
 function weekKey(d) { const t = new Date(d + 'T00:00:00Z'); const wd = (t.getUTCDay() + 1) % 7; t.setUTCDate(t.getUTCDate() - wd); return t.toISOString().slice(0, 10); } // weeks start Saturday
@@ -3416,7 +3426,7 @@ function pvKey(b, dim, e, l, a, ch) {
 function pvContrib(b, P) { // → function(e,l,a) returning [{rk:[keys], rl:[labels], ck, cl, v, n}]
   const F = P.f || {}; const has = (k) => F[k] && F[k].length;
   pvSrc.W = new Set(wallets(b).map((x) => x.id));
-  const useCh = P.r.includes('channel') || P.c === 'channel';
+  const useCh = P.r.includes('channel') || P.c === 'channel' || has('ch');
   return (e, l, a) => {
     let v = 0, n = 0;
     if (P.meas === 'rev') { if (a.type !== 'revenue') return []; v = l.cr - l.dr; }
@@ -3427,7 +3437,8 @@ function pvContrib(b, P) { // → function(e,l,a) returning [{rk:[keys], rl:[lab
     if (has('acc') && !F.acc.includes(a.id)) return [];
     if (has('tag') && !F.tag.includes(l.tag || '_')) return [];
     if (has('src') && !F.src.includes(pvSrc(b, e) || '_')) return [];
-    const parts = useCh ? lineParts(b, e, l, a) : [{ ch: null, f: 1 }];
+    let parts = useCh ? lineParts(b, e, l, a) : [{ ch: null, f: 1 }];
+    if (has('ch')) parts = parts.filter((pt) => F.ch.includes(pt.ch || '_'));
     return parts.map((pt) => { const R = P.r.map((d) => pvKey(b, d, e, l, a, pt.ch)); const C = pvKey(b, P.c || 'none', e, l, a, pt.ch); return { rk: R.map((x) => x[0]), rl: R.map((x) => x[1]), ck: C[0], cl: C[1], v: v * pt.f, n: n * pt.f }; });
   };
 }
@@ -3448,7 +3459,7 @@ function vPivot(r) {
   const P = UI.pv; const PR = perRange(); const D = pvBuild(b, P, PR); UI._pvD = D;
   const sel = (id, opts, v, extra) => '<select class="in" id="' + id + '" style="width:auto"' + (extra || '') + '>' + opts.map(([k, l]) => '<option value="' + k + '"' + (k === v ? ' selected' : '') + '>' + l + '</option>').join('') + '</select>';
   const saved = ((b.settings || {}).pivots || []);
-  const fOpts = { br: brOrder(b).map((k) => [k, brLbl(b, k)]), grp: b.accounts.filter((a) => a.group && a.level === 3).map((a) => [a.id, a.name]), acc: leafAccs(b).filter((a) => a.type === 'expense' || a.type === 'revenue').map((a) => [a.id, a.name]), tag: b.tags.map((t) => [t, t]).concat([['_', '(بدون صنف)']]), src: wallets(b).map((a) => [a.id, a.name]) };
+  const fOpts = { br: brOrder(b).map((k) => [k, brLbl(b, k)]), grp: b.accounts.filter((a) => a.group && a.level === 3).map((a) => [a.id, a.name]), acc: leafAccs(b).filter((a) => a.type === 'expense' || a.type === 'revenue').map((a) => [a.id, a.name]), tag: b.tags.map((t) => [t, t]).concat([['_', '(بدون صنف)']]), src: wallets(b).map((a) => [a.id, a.name]), ch: (b.channels || []).map((x) => [x.id, x.name]).concat([['_', 'بدون قناة']]) };
   const fLab = (k, v) => ((fOpts[k] || []).find((x) => x[0] === v) || [v, v])[1];
   const chips = Object.keys(P.f || {}).filter((k) => P.f[k] && P.f[k].length).map((k) => P.f[k].map((v) => '<span class="ddpill" style="display:inline-flex;gap:6px;align-items:center">' + esc(PV_FILT.find((x) => x[0] === k)[1]) + ': ' + esc(fLab(k, v)) + '<button class="pvfx" data-pvfx="' + k + '|' + esc(v) + '" aria-label="إزالة">×</button></span>').join('')).join('');
   // table
@@ -3618,5 +3629,199 @@ vDash = function (r) {
 };
 const _render19 = render;
 render = function () { const o = _render19.apply(this, arguments); try { navDraftsFix(); } catch (e) { } return o; };
+
+// ======================================================================
+// v4.1 — print/PDF dialog for reports · sticky first column · sidebar keeps its scroll ·
+//        pivot starters · ready-report filters · entry PDF · unfinished edits dropped on leave ·
+//        searchable account fields
+// ======================================================================
+
+// ---------- report print dialog (replaces the bare window.print on report screens)
+const PRT_PAGES = ['ready', 'reports', 'pl', 'tb', 'trend', 'statement', 'wallet', 'entries', 'follow', 'dash', 'payroll'];
+function prtDialog() {
+  const P = UI.prt = UI.prt || { or: 'landscape', size: 'A4', mode: 'fit' };
+  const ch = (k, v, l) => '<button class="chip' + (P[k] === v ? ' on' : '') + '" data-pk="' + k + '" data-pv="' + v + '">' + l + '</button>';
+  modal('<h2>تصدير / طباعة</h2><div class="sub" style="line-height:1.8">من نافذة الطباعة اختار <b>"حفظ كـ PDF"</b> عشان تنزّل الملف.</div>' +
+    '<div class="grid" style="gap:10px"><div><div class="sub" style="margin-bottom:6px">اتجاه الصفحة</div><div class="chips">' + ch('or', 'portrait', 'عمودي') + ch('or', 'landscape', 'أفقي') + '</div></div>' +
+    '<div><div class="sub" style="margin-bottom:6px">حجم الورقة</div><div class="chips">' + ch('size', 'A4', 'A4') + ch('size', 'A3', 'A3 (أكبر)') + '</div></div>' +
+    '<div><div class="sub" style="margin-bottom:6px">الجداول العريضة (زي أيام الشهر)</div><div class="chips">' + ch('mode', 'fit', 'تتصغّر في عرض صفحة واحدة') + ch('mode', 'split', 'تتقسم على كذا صفحة مع تكرار العمود الأول') + '</div></div></div>' +
+    '<div class="row"><button class="btn p" id="prtGo">' + ic('print', 16) + 'طباعة / PDF</button><button class="btn" id="prtNo">إلغاء</button></div>', (m) => {
+    $$('[data-pk]', m).forEach((x) => x.onclick = () => { P[x.dataset.pk] = x.dataset.pv; closeModal(); prtDialog(); });
+    $('#prtNo', m).onclick = closeModal;
+    $('#prtGo', m).onclick = () => { closeModal(); setTimeout(() => prtRun(P), 150); };
+  });
+}
+function prtRun(P) {
+  const W = { A4: { portrait: 190, landscape: 277 }, A3: { portrait: 277, landscape: 400 } }[P.size][P.or]; // printable width in mm
+  const pxW = W * 3.78;
+  let st = $('#prtSt'); if (!st) { st = document.createElement('style'); st.id = 'prtSt'; document.head.appendChild(st); }
+  st.textContent = '@page{size:' + P.size + ' ' + P.or + ';margin:8mm}';
+  const made = [];
+  $$('#root main .tw').forEach((tw) => {
+    const t = tw.querySelector('table'); if (!t) return; const need = t.scrollWidth;
+    if (need <= pxW + 4) return;
+    if (P.mode === 'fit') { tw.classList.add('prtfit'); tw.style.setProperty('--prtz', (pxW / need).toFixed(3)); made.push(() => { tw.classList.remove('prtfit'); tw.style.removeProperty('--prtz'); }); return; }
+    // split: chunks of columns, each with the first column repeated
+    const rows = Array.from(t.rows); const nCol = Math.max(...rows.map((r) => r.cells.length)); const widths = Array.from((rows[0] || { cells: [] }).cells).map((c) => c.getBoundingClientRect().width);
+    const firstW = widths[0] || 160; const chunks = []; let cur = [], w = firstW;
+    for (let i = 1; i < nCol; i++) { const cw = widths[i] || 90; if (cur.length && w + cw > pxW) { chunks.push(cur); cur = []; w = firstW; } cur.push(i); w += cw; }
+    if (cur.length) chunks.push(cur);
+    const box = document.createElement('div'); box.className = 'prtonly';
+    chunks.forEach((cols, ci) => { const nt = document.createElement('table'); nt.className = t.className;
+      rows.forEach((r) => { if (r.cells.length !== nCol) { const tr = r.cloneNode(true); nt.appendChild(tr); return; } const tr = document.createElement('tr'); tr.className = r.className; [0].concat(cols).forEach((i) => tr.appendChild(r.cells[i].cloneNode(true))); nt.appendChild(tr); });
+      const wrap = document.createElement('div'); wrap.className = 'tw prtchunk'; if (ci) wrap.style.breakBefore = 'page'; wrap.appendChild(nt); box.appendChild(wrap); });
+    tw.classList.add('prtorig'); tw.after(box); made.push(() => { tw.classList.remove('prtorig'); box.remove(); });
+  });
+  const done = () => { made.forEach((f) => f()); window.removeEventListener('afterprint', done); };
+  window.addEventListener('afterprint', done);
+  window.print();
+}
+document.addEventListener('click', (ev) => {
+  const btn = ev.target.closest('button[onclick="window.print()"]'); if (!btn) return;
+  const r = route(); if (!PRT_PAGES.includes(r.page)) return;
+  ev.preventDefault(); ev.stopPropagation(); btn.onclick = null; setTimeout(() => btn.setAttribute('onclick', 'window.print()'), 0); prtDialog();
+}, true);
+
+// ---------- sidebar keeps its scroll position across screens
+let _sideTop = 0;
+document.addEventListener('scroll', (ev) => { if (ev.target && ev.target.id === 'side') _sideTop = ev.target.scrollTop; }, true);
+const _render20 = render;
+render = function () {
+  const s0 = $('#side'); if (s0) _sideTop = s0.scrollTop;
+  const o = _render20.apply(this, arguments);
+  const s1 = $('#side'); if (s1 && _sideTop) s1.scrollTop = _sideTop;
+  try { enhanceAccFields(); } catch (e) { }
+  return o;
+};
+
+// ---------- pivot: ready-made starting points
+const PV_STARTS = [
+  ['المبيعات اليومية حسب الفرع والقناة', { meas: 'rev', r: ['branch', 'channel'], c: 'day' }],
+  ['المبيعات الشهرية حسب القناة', { meas: 'rev', r: ['channel'], c: 'month' }],
+  ['المصروفات: الفرع ← المجموعة ← البند (شهري)', { meas: 'exp', r: ['branch', 'group', 'acc'], c: 'month' }],
+  ['مشتريات الأصناف حسب الفرع', { meas: 'exp', r: ['tag'], c: 'branch', tagOnly: 1 }],
+  ['المصروفات حسب المصدر', { meas: 'exp', r: ['src'], c: 'month' }],
+  ['عدد مرات الصرف لكل بند', { meas: 'cnt', r: ['acc'], c: 'branch' }],
+];
+const _vPivot20 = vPivot;
+vPivot = vReports = function (r) {
+  const h = _vPivot20(r);
+  const bar = '<div class="card noprint" style="padding:12px 14px"><div class="sub" style="margin-bottom:6px">ابدأ من تقرير جاهز (وبعدين عدّل عليه زي ما تحب)</div><div class="chips">' + PV_STARTS.map((x, i) => '<button class="chip" data-pvst="' + i + '">' + esc(x[0]) + '</button>').join('') + '</div></div>';
+  const i = h.indexOf('<div class="card grid noprint" style="gap:12px">'); return i < 0 ? h : h.slice(0, i) + bar + h.slice(i);
+};
+const _afterRep20 = AFTER.reports;
+AFTER.reports = (r) => {
+  _afterRep20(r); const b = book(r.cid);
+  $$('[data-pvst]').forEach((x) => x.onclick = () => { const [nm, cfg] = PV_STARTS[+x.dataset.pvst]; const P = pvDefault(r.cid); Object.assign(P, { meas: cfg.meas, r: cfg.r.slice(), c: cfg.c, title: nm });
+    if (cfg.tagOnly) P.f = { acc: b.accounts.filter((a) => a.tags && !a.group).map((a) => a.id) }; if (cfg.c === 'day' && (!UI.per || UI.per.p === 'last3' || UI.per.p === 'year')) UI.per = { p: 'cur' }; UI.pv = P; render(); });
+};
+
+// ---------- ready reports: filters by branch / sales channel / item (combinable)
+const _iter20 = iterLines;
+iterLines = function (b, f) {
+  const L = _iter20(b, f); const F = UI.rdF; const r = route();
+  if (r.page !== 'ready' || !F || !(F.br || F.ch || F.acc)) return L;
+  const AS = F.acc ? new Set(ddLeaves(b, F.acc)) : null;
+  return L.filter(({ e, l }) => (!F.br || (l.b || '_') === F.br) && (!F.ch || (lineCh(b, l) || ((b.channels || []).find((c) => c.sales === l.a) || {}).id) === F.ch) && (!AS || AS.has(l.a)));
+};
+const _vReady20 = vReady;
+vReady = function (r) {
+  const h = _vReady20(r); const b = book(r.cid); const F = UI.rdF = UI.rdF || {};
+  const opt = (list, v, l0) => '<option value="">' + l0 + '</option>' + list.map(([k, l]) => '<option value="' + esc(k) + '"' + (k === v ? ' selected' : '') + '>' + esc(l) + '</option>').join('');
+  const accs = b.accounts.filter((a) => (a.type === 'expense' || a.type === 'revenue') && (a.level === 3 || !a.group)).sort((x, y) => String(x.code).localeCompare(String(y.code))).map((a) => [a.id, (a.group ? '▸ ' : '') + a.name]);
+  const on = F.br || F.ch || F.acc;
+  const bar = '<div class="card row noprint" style="gap:10px;flex-wrap:wrap;padding:12px 14px;align-items:end"><span class="sub">فلتر التقرير:</span>' +
+    '<label class="f" style="width:auto">الفرع<select class="in" data-rdf="br" style="width:auto">' + opt(brOrder(b).map((k) => [k, brLbl(b, k)]), F.br, 'كل الفروع') + '</select></label>' +
+    '<label class="f" style="width:auto">قناة البيع<select class="in" data-rdf="ch" style="width:auto">' + opt((b.channels || []).map((x) => [x.id, x.name]), F.ch, 'كل القنوات') + '</select></label>' +
+    '<label class="f" style="width:auto">البند<select class="in" data-rdf="acc" style="width:auto;max-width:240px">' + opt(accs, F.acc, 'كل البنود') + '</select></label>' +
+    (on ? '<button class="btn sm" id="rdfClr">مسح الفلاتر</button><span class="tag w">التقرير متفلتر</span>' : '') + '</div>';
+  const i = h.indexOf('<div class="grid g-kpi">'); return i < 0 ? h : h.slice(0, i) + bar + h.slice(i);
+};
+const _afterReady20 = AFTER.ready;
+AFTER.ready = (r) => { _afterReady20(r); $$('[data-rdf]').forEach((x) => x.onchange = () => { UI.rdF[x.dataset.rdf] = x.value; render(); }); const c = $('#rdfClr'); if (c) c.onclick = () => { UI.rdF = {}; render(); }; };
+
+// ---------- one entry as a printable page (PDF)
+function entryPdfHtml(cid, id) {
+  const b = book(cid), c = company(cid), e = b.entries.find((x) => x.id === id); if (!e) return '';
+  const D = r2(e.lines.reduce((t, l) => t + (+l.dr || 0), 0)), C = r2(e.lines.reduce((t, l) => t + (+l.cr || 0), 0));
+  const hasB = e.lines.some((l) => l.b), hasT = e.lines.some((l) => l.tag);
+  return '<div class="pe-h"><div><div class="pe-co">' + esc(c.name) + '</div><div class="pe-sub">' + esc(c.sym || '') + '</div></div><div style="text-align:left"><div class="pe-t">' + esc((KIND[e.kind] || ['قيد'])[0]) + '</div><div class="pe-sub">قيد رقم <b>' + e.no + '</b> · ' + esc(e.date) + '</div></div></div>' +
+    '<div class="pe-memo"><b>البيان:</b> ' + esc(entryDesc(b, e)) + '</div>' +
+    '<table class="pe-tb"><thead><tr><th>#</th><th>الحساب</th><th>الكود</th>' + (hasB ? '<th>الفرع</th>' : '') + (hasT ? '<th>الصنف</th>' : '') + '<th>ملاحظة</th><th>مدين</th><th>دائن</th></tr></thead><tbody>' +
+    e.lines.map((l, i) => { const a = acc(b, l.a) || {}; return '<tr><td>' + (i + 1) + '</td><td>' + esc(a.name || '') + '</td><td>' + esc(a.code || '') + '</td>' + (hasB ? '<td>' + esc(l.b ? branchName(b, l.b) : '') + '</td>' : '') + (hasT ? '<td>' + esc(l.tag || '') + '</td>' : '') + '<td>' + esc(l.n && l.n !== e.memo ? l.n : '') + '</td><td class="n">' + (l.dr ? f2(l.dr) : '') + '</td><td class="n">' + (l.cr ? f2(l.cr) : '') + '</td></tr>'; }).join('') +
+    '</tbody><tfoot><tr><td colspan="' + (4 + (hasB ? 1 : 0) + (hasT ? 1 : 0)) + '">الإجمالي</td><td class="n">' + f2(D) + '</td><td class="n">' + f2(C) + '</td></tr></tfoot></table>' +
+    '<div class="pe-sig"><div>المحاسب<br><span></span></div><div>المراجع<br><span></span></div><div>الاعتماد<br><span></span></div></div>' +
+    '<div class="pe-foot">طُبع في ' + new Date().toLocaleString('en-GB') + '</div>';
+}
+function entryPdfMany(cid, ids) {
+  const old = $('#prtEntry'); if (old) old.remove();
+  document.body.insertAdjacentHTML('beforeend', '<div id="prtEntry">' + ids.map((id, i) => '<div' + (i ? ' style="break-before:page"' : '') + '>' + entryPdfHtml(cid, id) + '</div>').join('') + '</div>');
+  document.body.classList.add('prt-entry');
+  let st = $('#prtSt'); if (!st) { st = document.createElement('style'); st.id = 'prtSt'; document.head.appendChild(st); } st.textContent = '@page{size:A4 portrait;margin:12mm}';
+  const done = () => { document.body.classList.remove('prt-entry'); const x = $('#prtEntry'); if (x) x.remove(); window.removeEventListener('afterprint', done); };
+  window.addEventListener('afterprint', done);
+  try { const b = book(cid); logAct('print', 'قيد ' + ids.map((id) => (b.entries.find((e) => e.id === id) || {}).no).join('، '), cid); } catch (er) { }
+  setTimeout(() => window.print(), 60);
+}
+function entryPdf(cid, id) { entryPdfMany(cid, [id]); }
+const _showEntry20 = showEntry;
+showEntry = function (cid, id) {
+  const o = _showEntry20.apply(this, arguments);
+  setTimeout(() => { const ed = $('#mEdit'); const row = ed ? ed.parentElement : $('.box .row:last-child'); if (row && !$('#mPdf')) { row.insertAdjacentHTML('beforeend', '<button class="btn" id="mPdf">' + ic('print', 16) + 'PDF / طباعة</button>'); $('#mPdf').onclick = () => { closeModal(); entryPdf(cid, id); }; } }, 30);
+  return o;
+};
+const _svModal20 = svModal;
+svModal = function (cid, es, edited) {
+  const o = _svModal20.apply(this, arguments);
+  setTimeout(() => { const nw = $('#svNew'); if (nw && !$('#svPdf')) { nw.insertAdjacentHTML('beforebegin', '<button class="btn" id="svPdf">' + ic('print', 16) + 'PDF / طباعة</button>'); $('#svPdf').onclick = () => { closeModal(); if (es.length === 1) entryPdf(cid, es[0].id); else entryPdfMany(cid, es.map((x) => x.id)); }; } }, 30);
+  return o;
+};
+// ---------- leaving a form drops an unfinished edit (next visit starts a fresh entry)
+const FORM_STATE = { expense: () => EXP, revenue: () => REV, transfer: () => TRF, collect: () => TRF, journal: () => JR };
+let _prevPage20 = route().page;
+window.addEventListener('hashchange', () => {
+  const np = route().page; const pp = _prevPage20; _prevPage20 = np;
+  if (!FORM_STATE[pp] || np === pp) return;
+  const S = FORM_STATE[pp](); if (!S || !S.editId) return;
+  if (pp === 'expense') EXP = null; else if (pp === 'revenue') REV = null; else if (pp === 'journal') JR = null; else TRF = null;
+}, true);
+
+// ---------- searchable account fields: type part of the name (or the code); codes stay visible
+const ACC_SEL = 'select[data-k="a"], select[data-dl][data-k="a"], select[data-r][data-k="acc"], select[data-f="acc"], select[data-f="from"], select[data-f="to"], select[data-f="src"]';
+function enhanceAccFields() {
+  $$(ACC_SEL).forEach((sel) => {
+    if (sel.dataset.acx || sel.closest('.box')) return; sel.dataset.acx = '1';
+    const opts = []; let grp = '';
+    Array.from(sel.children).forEach((ch) => { if (ch.tagName === 'OPTGROUP') { Array.from(ch.children).forEach((o) => opts.push({ v: o.value, t: o.textContent, g: ch.label })); } else opts.push({ v: ch.value, t: ch.textContent, g: '' }); });
+    if (opts.length < 8) return;
+    const wrap = document.createElement('div'); wrap.className = 'acx'; sel.parentNode.insertBefore(wrap, sel); wrap.appendChild(sel); sel.classList.add('acx-sel');
+    const inp = document.createElement('input'); inp.className = 'in acx-in'; inp.autocomplete = 'off'; inp.placeholder = 'اكتب الاسم أو الكود…';
+    const curT = () => { const o = opts.find((x) => x.v === sel.value); return o && o.v ? o.t + (o.g && !o.t.includes('(') ? ' (' + o.g + ')' : '') : ''; };
+    inp.value = curT(); wrap.appendChild(inp);
+    let list = null, hi = 0, shown = [];
+    const close = () => { if (list) { list.remove(); list = null; } inp.value = curT(); };
+    const pick = (o) => { close(); if (sel.value !== o.v) { sel.value = o.v; sel.dispatchEvent(new Event('change', { bubbles: true })); } inp.value = curT(); };
+    const draw = () => {
+      const q = tagNorm(inp.value === curT() ? '' : inp.value).split(' ').filter(Boolean);
+      shown = opts.filter((o) => { if (!o.v) return false; const h = tagNorm(o.t + ' ' + o.g); return q.every((w) => h.includes(w)); }).slice(0, 80);
+      if (!list) { list = document.createElement('div'); list.className = 'acx-list'; document.body.appendChild(list); }
+      const rc = inp.getBoundingClientRect(); list.style.top = Math.min(rc.bottom + 4, window.innerHeight - 60) + 'px'; list.style.right = (window.innerWidth - rc.right) + 'px'; list.style.width = Math.max(rc.width, 280) + 'px'; list.style.maxHeight = Math.max(160, window.innerHeight - rc.bottom - 16) + 'px';
+      let lastG = null; hi = Math.min(hi, Math.max(0, shown.length - 1));
+      list.innerHTML = shown.length ? shown.map((o, i) => { const gh = o.g && o.g !== lastG ? '<div class="acx-g">' + esc(o.g) + '</div>' : ''; lastG = o.g; return gh + '<div class="acx-o' + (i === hi ? ' on' : '') + (o.v === sel.value ? ' cur' : '') + '" data-i="' + i + '">' + esc(o.t) + '</div>'; }).join('') : '<div class="acx-g">مفيش حساب بالاسم ده</div>';
+      $$('.acx-o', list).forEach((x) => x.onmousedown = (ev) => { ev.preventDefault(); pick(shown[+x.dataset.i]); });
+      const h2 = list.querySelector('.acx-o.on'); if (h2) h2.scrollIntoView({ block: 'nearest' });
+    };
+    inp.onfocus = () => { inp.select(); hi = 0; draw(); };
+    inp.oninput = () => { hi = 0; draw(); };
+    inp.onblur = () => setTimeout(close, 120);
+    inp.onkeydown = (ev) => {
+      if (ev.key === 'ArrowDown') { ev.preventDefault(); hi = Math.min(hi + 1, shown.length - 1); draw(); }
+      else if (ev.key === 'ArrowUp') { ev.preventDefault(); hi = Math.max(hi - 1, 0); draw(); }
+      else if (ev.key === 'Enter') { ev.preventDefault(); if (shown[hi]) pick(shown[hi]); }
+      else if (ev.key === 'Escape') { close(); inp.blur(); }
+    };
+  });
+}
+window.addEventListener('scroll', () => { const l = $('.acx-list'); if (l && document.activeElement && document.activeElement.classList.contains('acx-in')) { const rc = document.activeElement.getBoundingClientRect(); l.style.top = (rc.bottom + 4) + 'px'; } }, true);
 </script>
 </body></html>
